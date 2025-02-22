@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tech Incident Manager{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <style>
+        .severity-CRITICAL { background-color: #ffcccc; }
+        .severity-HIGH { background-color: #ffeecc; }
+        .severity-MEDIUM { background-color: #ffffcc; }
+        .severity-LOW { background-color: #e6ffcc; }
+        
+        .timeline {
+            position: relative;
+            margin: 50px 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .timeline:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px;
+            width: 4px;
+            background: #ddd;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 60px;
+        }
+        
+        .timeline-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-size: 1.2em;
+            color: white;
+            background-color: #6c757d;
+        }
+        
+        .timeline-badge.severity-CRITICAL { background-color: #dc3545; }
+        .timeline-badge.severity-HIGH { background-color: #fd7e14; }
+        .timeline-badge.severity-MEDIUM { background-color: #ffc107; }
+        .timeline-badge.severity-LOW { background-color: #28a745; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'incident_list' %}">Tech Incident Manager</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'incident_list' %}">Incidents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'incident_timeline' %}">Timeline</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'yearly_report' %}">Annual Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'incident_create' %}">New Incident</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
