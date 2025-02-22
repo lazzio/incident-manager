@@ -1,0 +1,161 @@
+{% extends "incidents/base.html" %}
+
+{% block title %}{{ incident.title }} | Tech Incident Manager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{{ incident.title }}</h1>
+            <div>
+                <a href="{% url 'incident_update' incident.pk %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'incident_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="card mb-4 severity-{{ incident.severity }}">
+            <div class="card-header">
+                <h5 class="mb-0">Incident Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Severity:</strong> {{ incident.get_severity_display }}</p>
+                        <p><strong>Start Date:</strong> {{ incident.start_date }}</p>
+                        <p><strong>End Date:</strong> {% if incident.end_date %}{{ incident.end_date }}{% else %}Ongoing{% endif %}</p>
+                        <p><strong>Duration:</strong> {% if incident.duration %}{{ incident.duration }}{% else %}Ongoing{% endif %}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Created By:</strong> {{ incident.created_by.get_full_name|default:incident.created_by.username }}</p>
+                        <p><strong>Created:</strong> {{ incident.created_at }}</p>
+                        <p><strong>Last Updated:</strong> {{ incident.updated_at }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">{{ incident.details|linebreaks }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Impact</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">{{ incident.impact|linebreaks }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Resolution Process</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">{{ incident.resolution_process|linebreaks }}</div>
+            </div>
+        </div>
+
+        {% if incident.links.exists or incident.attachments.exists %}
+        <div class="row">
+            {% if incident.links.exists %}
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Related Links</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for link in incident.links.all %}
+                            <li class="list-group-item">
+                                <a href="{{ link.url }}" target="_blank">{{ link.title }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if incident.attachments.exists %}
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Attachments</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for attachment in incident.attachments.all %}
+                            <li class="list-group-item">
+                                <a href="{{ attachment.file.url }}" target="_blank">
+                                    {{ attachment.description|default:attachment.file.name }}
+                                </a>
+                                <small class="text-muted d-block">Uploaded: {{ attachment.uploaded_at }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Updates</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'add_incident_update' incident.pk %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ update_form.update_text.id_for_label }}" class="form-label">Add Update</label>
+                        {{ update_form.update_text }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Update</button>
+                </form>
+                
+                <hr>
+                
+                {% if updates %}
+                <div class="timeline">
+                    {% for update in updates %}
+                    <div class="timeline-item">
+                        <div class="timeline-badge">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>{{ update.updated_by.get_full_name|default:update.updated_by.username }}</span>
+                                <small class="text-muted">{{ update.timestamp }}</small>
+                            </div>
+                            <div class="card-body">
+                                {{ update.update_text|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-muted">No updates recorded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
