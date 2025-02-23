@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Count, Avg, F, ExpressionWrapper, fields
 
-from .models import Incident, IncidentAttachment, IncidentLink, IncidentUpdate
+from .models import Incident, Severity, IncidentAttachment, IncidentLink, IncidentUpdate
 from .forms import (
     IncidentForm, IncidentAttachmentForm, IncidentLinkForm, 
     IncidentUpdateForm, AttachmentFormSet, LinkFormSet
@@ -22,6 +22,12 @@ class IncidentListView(LoginRequiredMixin, ListView):
     template_name = 'incidents/incident_list.html'
     context_object_name = 'incidents'
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['status_choices'] = Incident.STATUS_CHOICES
+        context['priority_choices'] = Severity.choices
+        return context
 
 
 class IncidentDetailView(LoginRequiredMixin, DetailView):
@@ -64,6 +70,8 @@ def create_incident(request):
         'form': form,
         'attachment_formset': attachment_formset,
         'link_formset': link_formset,
+        'status_choices': Incident.STATUS_CHOICES,
+        'priority_choices': Severity.choices
     })
 
 
