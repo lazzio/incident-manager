@@ -38,16 +38,16 @@ jobs:
         
       - name: Get current version
         id: current_version
+        shell: bash
         run: |
-          CURRENT_VERSION=$(poetry version -s)
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "version=$(poetry version -s)" >> $GITHUB_OUTPUT
 
       - name: Bump patch version
         id: bump_version
+        shell: bash
         run: |
           poetry version patch
-          NEW_VERSION=$(poetry version -s)
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "version=$(poetry version -s)" >> $GITHUB_OUTPUT
           
       - name: Configure Git
         run: |
@@ -66,15 +66,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.bump_version.outputs.new_version }}
-          release_name: Release v${{ steps.bump_version.outputs.new_version }}
+          tag_name: v${{ steps.bump_version.outputs.version }}
+          release_name: Release v${{ steps.bump_version.outputs.version }}
           body: |
             Automatic release created from PR #${{ github.event.pull_request.number }} merge
             
-            Previous version: v${{ steps.current_version.outputs.current_version }}
-            New version: v${{ steps.bump_version.outputs.new_version }}
+            Previous version: v${{ steps.current_version.outputs.version }}
+            New version: v${{ steps.bump_version.outputs.version }}
             
             PR Title: ${{ github.event.pull_request.title }}
+            Author: @${{ github.event.pull_request.user.login }}
             
             [View changes](https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }})
           draft: false
