@@ -1,15 +1,11 @@
 import subprocess
-import sys
 
 def tests():
     """Execute tests"""
     return subprocess.call(["pytest"])
 
 def lint():
-    """Linter le code Django avec des outils spécifiques"""
-    import subprocess
-    import sys
-    
+    """Linter le code Django avec des outils spécifiques"""    
     print("Linting du code Django...")
     
     # Exécuter pylint avec configuration Django
@@ -43,4 +39,9 @@ def lint():
 def dev():
     """Run development server"""
     return subprocess.call(["python", "manage.py", "runserver"])
+
+def migrate():
+    """Apply migrations"""
+    subprocess.call(["python", "manage.py", "makemigrations"])
+    subprocess.call(["python", "manage.py", "migrate"])
     return 0

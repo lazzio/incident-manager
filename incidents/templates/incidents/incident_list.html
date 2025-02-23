@@ -1,98 +1,185 @@
-{% extends "incidents/base.html" %}
-
-{% block title %}Incidents List | Tech Incident Manager{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Liste des Incidents{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Incidents</h1>
-            <a href="{% url 'incident_create' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> New Incident
+<div class="space-y-6">
+    <div class="sm:flex sm:items-center sm:justify-between">
+        <h1 class="text-3xl font-bold tracking-tight">Liste des Incidents</h1>
+        <div class="mt-4 sm:mt-0">
+            <a href="{% url 'incident_create' %}" 
+               class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90">
+                <i class="fas fa-plus mr-2"></i>
+                Nouvel incident
             </a>
         </div>
+    </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Severity</th>
-                                <th>Start Date</th>
-                                <th>Duration</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for incident in incidents %}
-                            <tr class="severity-{{ incident.severity }}">
-                                <td>
-                                    <a href="{% url 'incident_detail' incident.pk %}">
-                                        {{ incident.title }}
-                                    </a>
-                                </td>
-                                <td>{{ incident.get_severity_display }}</td>
-                                <td>{{ incident.start_date }}</td>
-                                <td>
-                                    {% if incident.duration %}
-                                        {{ incident.duration }}
-                                    {% else %}
-                                        Ongoing
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{% url 'incident_detail' incident.pk %}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{% url 'incident_update' incident.pk %}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{% url 'incident_delete' incident.pk %}" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center">No incidents recorded yet.</td>
-                            </tr>
+    <!-- Filtres -->
+    <div class="bg-card rounded-lg shadow">
+        <div class="p-6">
+            <form method="get" class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div>
+                        <label for="search" class="block text-sm font-medium">Recherche</label>
+                        <input type="text" name="search" id="search" value="{{ request.GET.search }}"
+                               class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium">Statut</label>
+                        <select name="status" id="status"
+                                class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option value="">Tous</option>
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="priority" class="block text-sm font-medium">Priorité</label>
+                        <select name="priority" id="priority"
+                                class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option value="">Toutes</option>
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if request.GET.priority == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" 
+                            class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90">
+                        <i class="fas fa-search mr-2"></i>
+                        Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des incidents -->
+    <div class="bg-card rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-border">
+                <thead class="bg-muted">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Titre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Statut</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Priorité</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date de création</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for incident in incidents %}
+                    <tr class="hover:bg-muted/50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ incident.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ incident.title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                {% if incident.status == 'nouveau' %}bg-blue-100 text-blue-800
+                                {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800
+                                {% elif incident.status == 'résolu' %}bg-green-100 text-green-800
+                                {% endif %}">
+                                {{ incident.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                {% if incident.priority == 'basse' %}bg-gray-100 text-gray-800
+                                {% elif incident.priority == 'moyenne' %}bg-blue-100 text-blue-800
+                                {% elif incident.priority == 'haute' %}bg-orange-100 text-orange-800
+                                {% elif incident.priority == 'critique' %}bg-red-100 text-red-800
+                                {% endif %}">
+                                {{ incident.get_priority_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                            {{ incident.created_at|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                            <div class="flex space-x-3">
+                                <a href="{% url 'incident_detail' incident.id %}" class="text-primary hover:text-primary/80">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'incident_update' incident.id %}" class="text-yellow-600 hover:text-yellow-700">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'incident_delete' incident.id %}" class="text-destructive hover:text-destructive/80">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground text-center">
+                            Aucun incident trouvé.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if incidents.has_other_pages %}
+        <div class="bg-card px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if incidents.has_previous %}
+                <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   class="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
+                    Précédent
+                </a>
+                {% endif %}
+                {% if incidents.has_next %}
+                <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
+                    Suivant
+                </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-muted-foreground">
+                        Affichage de <span class="font-medium">{{ incidents.start_index }}</span> à
+                        <span class="font-medium">{{ incidents.end_index }}</span> sur
+                        <span class="font-medium">{{ incidents.paginator.count }}</span> résultats
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if incidents.has_previous %}
+                        <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
+                            <span class="sr-only">Précédent</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% endif %}
+
+                        {% for i in incidents.paginator.page_range %}
+                            {% if incidents.number == i %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-primary bg-primary text-sm font-medium text-primary-foreground">
+                                {{ i }}
+                            </span>
+                            {% else %}
+                            <a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               class="relative inline-flex items-center px-4 py-2 border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
+                                {{ i }}
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if incidents.has_next %}
+                        <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
+                            <span class="sr-only">Suivant</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% endif %}
+                    </nav>
                 </div>
             </div>
         </div>
-
-        {% if is_paginated %}
-        <nav class="mt-4">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; first</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
-                </li>
-                {% endif %}
-
-                <li class="page-item disabled">
-                    <a class="page-link">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                    </a>
-                </li>
-
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
         {% endif %}
     </div>
 </div>

@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-3xl font-bold tracking-tight">Tableau de bord</h1>
+    
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Total des incidents -->
+        <div class="bg-card overflow-hidden rounded-lg shadow">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-ticket-alt text-primary text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">Total des incidents</dt>
+                            <dd class="text-3xl font-semibold">{{ total_incidents }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incidents ouverts -->
+        <div class="bg-card overflow-hidden rounded-lg shadow">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-folder-open text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">Incidents ouverts</dt>
+                            <dd class="text-3xl font-semibold">{{ open_incidents }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incidents en cours -->
+        <div class="bg-card overflow-hidden rounded-lg shadow">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-spinner text-yellow-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">En cours</dt>
+                            <dd class="text-3xl font-semibold">{{ in_progress_incidents }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incidents résolus -->
+        <div class="bg-card overflow-hidden rounded-lg shadow">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">Résolus</dt>
+                            <dd class="text-3xl font-semibold">{{ resolved_incidents }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques et listes -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Incidents récents -->
+        <div class="bg-card rounded-lg shadow">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-4">Incidents récents</h2>
+                <div class="flow-root">
+                    <ul role="list" class="divide-y divide-border">
+                        {% for incident in recent_incidents %}
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">
+                                        <a href="{% url 'incident_detail' incident.id %}" class="hover:text-primary">
+                                            {{ incident.title }}
+                                        </a>
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        {{ incident.created_at|date:"d/m/Y H:i" }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                        {% if incident.status == 'nouveau' %}bg-blue-100 text-blue-800
+                                        {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800
+                                        {% elif incident.status == 'résolu' %}bg-green-100 text-green-800
+                                        {% endif %}">
+                                        {{ incident.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="mt-6">
+                    <a href="{% url 'incident_list' %}" class="text-primary hover:text-primary/80">
+                        Voir tous les incidents →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribution par catégorie -->
+        <div class="bg-card rounded-lg shadow">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-4">Distribution par catégorie</h2>
+                <div class="space-y-4">
+                    {% for category in categories %}
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">{{ category.name }}</span>
+                            <span class="text-sm text-muted-foreground">{{ category.count }}</span>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" style="width: {{ category.percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,251 +1,209 @@
-{% extends "incidents/base.html" %}
+{% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
-    {% if incident %}Edit Incident{% else %}New Incident{% endif %} | Tech Incident Manager
-{% endblock %}
-
-{% block extra_css %}
-<style>
-    .formset-item {
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        background-color: #f8f9fa;
-    }
-    
-    .delete-row {
-        color: #dc3545;
-        cursor: pointer;
-    }
-    
-    .add-row {
-        cursor: pointer;
-    }
-</style>
+    {% if incident %}Modifier l'incident{% else %}Nouvel incident{% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>{% if incident %}Edit Incident{% else %}New Incident{% endif %}</h1>
-            <a href="{% url 'incident_list' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to List
-            </a>
-        </div>
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-foreground">
+            {% if incident %}Modifier l'incident{% else %}Nouvel incident{% endif %}
+        </h1>
+        <a href="{% url 'incident_list' %}" 
+           class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Retour
+        </a>
+    </div>
 
-        <form method="post" enctype="multipart/form-data">
+    <!-- Carte principale du formulaire -->
+    <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
+        <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
             {% csrf_token %}
-            
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Incident Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.start_date.id_for_label }}" class="form-label">Start Date</label>
-                            {{ form.start_date }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.end_date.id_for_label }}" class="form-label">End Date</label>
-                            {{ form.end_date }}
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label for="{{ form.details.id_for_label }}" class="form-label">Details</label>
-                            {{ form.details }}
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label for="{{ form.impact.id_for_label }}" class="form-label">Impact</label>
-                            {{ form.impact }}
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label for="{{ form.resolution_process.id_for_label }}" class="form-label">Resolution Process</label>
-                            {{ form.resolution_process }}
-                        </div>
-                    </div>
-                </div>
+
+            <!-- Messages d'erreur généraux -->
+            {% if form.non_field_errors %}
+            <div class="p-4 mb-4 rounded-lg bg-destructive/10 text-destructive text-sm">
+                {{ form.non_field_errors }}
             </div>
-            
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Attachments</h5>
-                    <button type="button" class="btn btn-sm btn-success add-row" data-formset="attachments">
-                        <i class="fas fa-plus"></i> Add Attachment
-                    </button>
+            {% endif %}
+
+            <div class="grid gap-6 sm:grid-cols-2">
+                <!-- Titre -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label for="{{ form.title.id_for_label }}" 
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Titre <span class="text-destructive">*</span>
+                    </label>
+                    {% if form.title.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.title.errors }}
+                    </div>
+                    {% endif %}
+                    <input type="text"
+                           id="{{ form.title.id_for_label }}"
+                           name="{{ form.title.name }}"
+                           value="{{ form.title.value|default:'' }}"
+                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                           required>
                 </div>
-                <div class="card-body">
-                    {{ attachment_formset.management_form }}
-                    <div id="attachments-container">
-                        {% for form in attachment_formset.forms %}
-                        <div class="formset-item attachments-form">
-                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.file.id_for_label }}" class="form-label">File</label>
-                                    {{ form.file }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                                    {{ form.description }}
-                                    {% if form.instance.pk %}
-                                    <div class="mt-2">
-                                        <a href="{{ form.instance.file.url }}" target="_blank">
-                                            {{ form.instance.file.name }}
-                                        </a>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% if form.instance.pk %}
-                            <div class="text-end">
-                                <label class="form-check-label">
-                                    <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" class="form-check-input">
-                                    Delete this attachment
-                                </label>
-                            </div>
-                            {% else %}
-                            <div class="text-end">
-                                <a href="#" class="delete-row text-danger" data-formset="attachments">
-                                    <i class="fas fa-trash"></i> Remove
-                                </a>
-                            </div>
-                            {% endif %}
-                        </div>
+
+                <!-- Catégorie -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label for="{{ form.category.id_for_label }}"
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Catégorie <span class="text-destructive">*</span>
+                    </label>
+                    {% if form.category.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.category.errors }}
+                    </div>
+                    {% endif %}
+                    <select id="{{ form.category.id_for_label }}"
+                            name="{{ form.category.name }}"
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            required>
+                        <option value="">Sélectionner une catégorie</option>
+                        {% for value, label in form.category.field.choices %}
+                        <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
                         {% endfor %}
-                    </div>
-                    <div id="empty-attachment-form" style="display: none;">
-                        <div class="formset-item attachments-form">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">File</label>
-                                    {{ attachment_formset.empty_form.file }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Description</label>
-                                    {{ attachment_formset.empty_form.description }}
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <a href="#" class="delete-row text-danger" data-formset="attachments">
-                                    <i class="fas fa-trash"></i> Remove
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    </select>
                 </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Links</h5>
-                    <button type="button" class="btn btn-sm btn-success add-row" data-formset="links">
-                        <i class="fas fa-plus"></i> Add Link
-                    </button>
-                </div>
-                <div class="card-body">
-                    {{ link_formset.management_form }}
-                    <div id="links-container">
-                        {% for form in link_formset.forms %}
-                        <div class="formset-item links-form">
-                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.url.id_for_label }}" class="form-label">URL</label>
-                                    {{ form.url }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
-                                    {{ form.title }}
-                                </div>
-                            </div>
-                            {% if form.instance.pk %}
-                            <div class="text-end">
-                                <label class="form-check-label">
-                                    <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" class="form-check-input">
-                                    Delete this link
-                                </label>
-                            </div>
-                            {% else %}
-                            <div class="text-end">
-                                <a href="#" class="delete-row text-danger" data-formset="links">
-                                    <i class="fas fa-trash"></i> Remove
-                                </a>
-                            </div>
-                            {% endif %}
-                        </div>
+
+                <!-- Statut -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label for="{{ form.status.id_for_label }}"
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Statut <span class="text-destructive">*</span>
+                    </label>
+                    {% if form.status.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.status.errors }}
+                    </div>
+                    {% endif %}
+                    <select id="{{ form.status.id_for_label }}"
+                            name="{{ form.status.name }}"
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            required>
+                        {% for value, label in form.status.field.choices %}
+                        <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
                         {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Priorité -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label for="{{ form.priority.id_for_label }}"
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Priorité <span class="text-destructive">*</span>
+                    </label>
+                    {% if form.priority.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.priority.errors }}
                     </div>
-                    <div id="empty-link-form" style="display: none;">
-                        <div class="formset-item links-form">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">URL</label>
-                                    {{ link_formset.empty_form.url }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Title</label>
-                                    {{ link_formset.empty_form.title }}
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <a href="#" class="delete-row text-danger" data-formset="links">
-                                    <i class="fas fa-trash"></i> Remove
-                                </a>
-                            </div>
-                        </div>
+                    {% endif %}
+                    <select id="{{ form.priority.id_for_label }}"
+                            name="{{ form.priority.name }}"
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            required>
+                        {% for value, label in form.priority.field.choices %}
+                        <option value="{{ value }}" {% if form.priority.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="col-span-2">
+                    <label for="{{ form.description.id_for_label }}"
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Description <span class="text-destructive">*</span>
+                    </label>
+                    {% if form.description.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.description.errors }}
                     </div>
+                    {% endif %}
+                    <textarea id="{{ form.description.id_for_label }}"
+                              name="{{ form.description.name }}"
+                              rows="5"
+                              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              required>{{ form.description.value|default:'' }}</textarea>
+                </div>
+
+                <!-- Assigné à -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label for="{{ form.assigned_to.id_for_label }}"
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Assigné à
+                    </label>
+                    {% if form.assigned_to.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.assigned_to.errors }}
+                    </div>
+                    {% endif %}
+                    <select id="{{ form.assigned_to.id_for_label }}"
+                            name="{{ form.assigned_to.name }}"
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">Non assigné</option>
+                        {% for value, label in form.assigned_to.field.choices %}
+                        <option value="{{ value }}" {% if form.assigned_to.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Pièce jointe -->
+                <div class="col-span-2 sm:col-span-1">
+                    <label for="{{ form.attachment.id_for_label }}"
+                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Pièce jointe
+                    </label>
+                    {% if form.attachment.errors %}
+                    <div class="text-sm text-destructive mt-1">
+                        {{ form.attachment.errors }}
+                    </div>
+                    {% endif %}
+                    {% if form.instance.attachment %}
+                    <div class="text-sm text-muted-foreground mt-1 mb-2">
+                        Fichier actuel : 
+                        <a href="{{ form.instance.attachment.url }}" 
+                           class="text-primary hover:underline"
+                           target="_blank">
+                            {{ form.instance.attachment.name }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    <input type="file"
+                           id="{{ form.attachment.id_for_label }}"
+                           name="{{ form.attachment.name }}"
+                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 </div>
             </div>
-            
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'incident_list' %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">
-                    {% if incident %}Update{% else %}Create{% endif %} Incident
+
+            <!-- Boutons de soumission -->
+            <div class="flex justify-end space-x-4 pt-6">
+                <button type="button" 
+                        onclick="window.location.href='{% url 'incident_list' %}'"
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    <i class="fas fa-save mr-2"></i>
+                    {% if incident %}Mettre à jour{% else %}Créer{% endif %}
                 </button>
             </div>
         </form>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    $(document).ready(function() {
-        // Add Django form classes
-        $('input[type="text"], input[type="url"], input[type="file"], textarea, select').addClass('form-control');
-        
-        // Handle formset addition
-        $('.add-row').click(function() {
-            var formsetName = $(this).data('formset');
-            var container = $('#' + formsetName + '-container');
-            var totalForms = $('#id_' + formsetName + '-TOTAL_FORMS');
-            var newForm = $('#empty-' + formsetName + '-form').html();
-            var formNum = parseInt(totalForms.val());
-            
-            newForm = newForm.replace(/__prefix__/g, formNum);
-            container.append(newForm);
-            totalForms.val(formNum + 1);
-            
-            // Re-add form classes to new form
-            $('.form-control').addClass('form-control');
-        });
-        
-        // Handle formset deletion
-        $(document).on('click', '.delete-row', function(e) {
-            e.preventDefault();
-            $(this).closest('.formset-item').remove();
-        });
-    });
-</script>
 {% endblock %}
