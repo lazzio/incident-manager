@@ -9,6 +9,10 @@ class Severity(models.TextChoices):
     MEDIUM = 'MEDIUM', _('Medium')
     LOW = 'LOW', _('Low')
 
+class Category(models.TextChoices):
+    CATEGORIE = 'categorie', 'Catégorie'
+    AUTRE = 'autre', 'Autre'
+
 class Incident(models.Model):
     STATUS_CHOICES = [
         ('new', 'New'),
@@ -36,6 +40,11 @@ class Incident(models.Model):
         choices=STATUS_CHOICES,
         default='new',
         verbose_name='Status'
+    )
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices,
+        default=Category.CATEGORIE
     )
     
     def save(self, *args, **kwargs):
