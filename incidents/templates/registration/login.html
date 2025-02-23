@@ -1,54 +1,156 @@
-{% extends "incidents/base.html" %}
-
-{% block title %}Connexion | Gestionnaire d'Incidents Tech{% endblock %}
-
-{% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3 mt-5">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Connexion</h4>
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestion des Incidents{% endblock %}</title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Contenu principal -->
+        <main>
+            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+<div class="flex min-h-[calc(100vh-200px)] items-center justify-center">
+    <div class="w-full max-w-md space-y-8">
+        <!-- Logo et titre -->
+        <div class="flex flex-col items-center space-y-4">
+            <div class="rounded-full bg-primary/10 p-4">
+                <i class="fas fa-ticket-alt text-3xl text-primary"></i>
             </div>
-            <div class="card-body">
-                <form method="post">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold tracking-tight">Connexion</h2>
+                <p class="text-muted-foreground mt-2">
+                    Accédez à votre espace de gestion des incidents
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulaire de connexion -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
+            <div class="p-6">
+                <form method="post" class="space-y-6">
                     {% csrf_token %}
-                    
+
                     {% if form.errors %}
-                    <div class="alert alert-danger">
-                        Votre nom d'utilisateur et votre mot de passe ne correspondent pas. Veuillez réessayer.
+                    <div class="rounded-md bg-destructive/10 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-destructive"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-destructive">
+                                    Erreur de connexion
+                                </h3>
+                                <div class="mt-2 text-sm text-destructive">
+                                    Identifiants incorrects. Veuillez réessayer.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {% endif %}
-                    
-                    {% if next %}
-                        {% if user.is_authenticated %}
-                        <div class="alert alert-warning">
-                            Votre compte n'a pas accès à cette page. Pour continuer, veuillez vous connecter avec un compte ayant les autorisations nécessaires.
-                        </div>
-                        {% else %}
-                        <div class="alert alert-info">
-                            Veuillez vous connecter pour accéder à cette page.
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                    
-                    <div class="mb-3">
-                        <label for="id_username" class="form-label">Nom d'utilisateur</label>
-                        <input type="text" name="username" id="id_username" class="form-control" required autofocus>
+
+                    <!-- Champ Nom d'utilisateur -->
+                    <div class="space-y-2">
+                        <label for="id_username" 
+                               class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            Nom d'utilisateur
+                        </label>
+                        <input type="text"
+                               id="id_username"
+                               name="username"
+                               autocomplete="username"
+                               required
+                               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                               placeholder="Entrez votre nom d'utilisateur">
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="id_password" class="form-label">Mot de passe</label>
-                        <input type="password" name="password" id="id_password" class="form-control" required>
+
+                    <!-- Champ Mot de passe -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label for="id_password"
+                                   class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                Mot de passe
+                            </label>
+                            <a href="{% url 'password_reset' %}" 
+                               class="text-sm font-medium text-primary hover:underline">
+                                Mot de passe oublié ?
+                            </a>
+                        </div>
+                        <input type="password"
+                               id="id_password"
+                               name="password"
+                               autocomplete="current-password"
+                               required
+                               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                               placeholder="Entrez votre mot de passe">
                     </div>
-                    
-                    <input type="hidden" name="next" value="{{ next }}">
-                    
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Connexion</button>
+
+                    <!-- Case à cocher "Se souvenir de moi" -->
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox"
+                               id="remember"
+                               name="remember"
+                               class="h-4 w-4 rounded border-input bg-background text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <label for="remember" 
+                               class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            Se souvenir de moi
+                        </label>
+                    </div>
+
+                    <!-- Bouton de connexion -->
+                    <div>
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Se connecter
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
+
+        <!-- Lien d'inscription -->
+        {% if REGISTRATION_OPEN %}
+        <div class="text-center">
+            <p class="text-sm text-muted-foreground">
+                Vous n'avez pas de compte ?
+                <a href="{% url 'register' %}" class="font-medium text-primary hover:underline">
+                    Créer un compte
+                </a>
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Séparateur -->
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <span class="w-full border-t"></span>
+            </div>
+            <div class="relative flex justify-center text-xs uppercase">
+                <span class="bg-background px-2 text-muted-foreground">Ou continuer avec</span>
+            </div>
+        </div>
+
+        <!-- Boutons de connexion sociale -->
+        <div class="grid grid-cols-2 gap-4">
+            <button type="button"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <i class="fab fa-google mr-2"></i>
+                Google
+            </button>
+            <button type="button"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <i class="fab fa-github mr-2"></i>
+                GitHub
+            </button>
+        </div>
     </div>
 </div>
-{% endblock %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>

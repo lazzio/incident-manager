@@ -75,7 +75,6 @@ jobs:
             New version: v${{ steps.bump_version.outputs.version }}
             
             PR Title: ${{ github.event.pull_request.title }}
-            Author: @${{ github.event.pull_request.user.login }}
             
             [View changes](https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }})
           draft: false

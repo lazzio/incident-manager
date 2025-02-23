@@ -1,564 +1,308 @@
-{% extends "incidents/base.html" %}
-{% load incident_extras %}
+{% extends 'base.html' %}
+{% load static %}
+{% load incident_tags %}
 
-{% block title %}Bilan Annuel {{ year }} | Gestionnaire d'Incidents Tech{% endblock %}
+{% block title %}Rapport Annuel {{ year }}{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dashboard-card {
-        transition: all 0.3s ease;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    
-    .stat-card {
-        text-align: center;
-        padding: 1.5rem;
-    }
-    
-    .stat-card .card-title {
-        color: #6c757d;
-        font-size: 1rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    .stat-card .display-4 {
-        font-weight: 700;
-        margin: 1rem 0;
-    }
-    
-    .stat-card .stat-icon {
-        font-size: 2.5rem;
-        opacity: 0.2;
-        position: absolute;
-        top: 15px;
-        right: 15px;
-    }
-    
-    .chart-wrapper {
-        height: 350px;
-    }
-    
-    .severity-CRITICAL {
-        background-color: rgba(220, 53, 69, 0.1);
-        border-left: 4px solid #dc3545;
-    }
-    
-    .severity-HIGH {
-        background-color: rgba(253, 126, 20, 0.1);
-        border-left: 4px solid #fd7e14;
-    }
-    
-    .severity-MEDIUM {
-        background-color: rgba(255, 193, 7, 0.1);
-        border-left: 4px solid #ffc107;
-    }
-    
-    .severity-LOW {
-        background-color: rgba(40, 167, 69, 0.1);
-        border-left: 4px solid #28a745;
-    }
-    
-    .trend-indicator {
-        font-size: 0.9rem;
-        margin-left: 0.5rem;
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .trend-up {
-        color: #dc3545;
-    }
-    
-    .trend-down {
-        color: #28a745;
-    }
-    
-    .trend-same {
-        color: #6c757d;
+    @media print {
+        .no-print {
+            display: none;
+        }
+        .print-break-inside-avoid {
+            break-inside: avoid;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Bilan Annuel {{ year }}</h1>
-            <div class="d-flex align-items-center">
-                <div class="me-3">
-                    <button id="print-report" class="btn btn-outline-secondary">
-                        <i class="fas fa-print"></i> Imprimer
-                    </button>
-                    <a href="#" class="btn btn-outline-primary" id="export-pdf">
-                        <i class="fas fa-file-pdf"></i> Exporter PDF
-                    </a>
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <h1 class="text-3xl font-bold text-foreground">
+            Rapport Annuel {{ year }}
+        </h1>
+        <div class="flex gap-3 no-print">
+            <button onclick="window.print()" 
+                    class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                <i class="fas fa-print mr-2"></i>
+                Imprimer
+            </button>
+            <form method="post" action="{% url 'export_yearly_report' year %}" class="inline">
+                {% csrf_token %}
+                <button type="submit"
+                        class="inline-flex items-center px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors">
+                    <i class="fas fa-file-excel mr-2"></i>
+                    Exporter Excel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Résumé des statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total des incidents -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-blue-100 dark:bg-blue-900">
+                    <i class="fas fa-ticket-alt text-blue-600 dark:text-blue-300"></i>
                 </div>
-                <select id="year-select" class="form-select">
-                    {% for year_option in available_years %}
-                    <option value="{{ year_option }}" {% if year_option == year %}selected{% endif %}>{{ year_option }}</option>
-                    {% endfor %}
-                </select>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-muted-foreground">Total des incidents</p>
+                    <p class="text-2xl font-bold">{{ total_incidents }}</p>
+                </div>
+            </div>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <span class="{% if incident_growth >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    <i class="fas fa-{% if incident_growth >= 0 %}arrow-up{% else %}arrow-down{% endif %} mr-1"></i>
+                    {{ incident_growth|abs_filter }}%
+                </span>
+                par rapport à l'année précédente
             </div>
         </div>
 
-        <div class="card mb-4 dashboard-card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Résumé de l'année {{ year }}</h5>
+        <!-- Temps moyen de résolution -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-green-100 dark:bg-green-900">
+                    <i class="fas fa-clock text-green-600 dark:text-green-300"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-muted-foreground">Temps moyen de résolution</p>
+                    <p class="text-2xl font-bold">{{ avg_resolution_time }}</p>
+                </div>
             </div>
-            <div class="card-body">
-                <p>Ce rapport présente une analyse des incidents techniques survenus au cours de l'année {{ year }}. 
-                Il inclut des statistiques sur la fréquence, la sévérité et la durée des incidents, 
-                ainsi que des graphiques pour visualiser les tendances.</p>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <span class="{% if resolution_time_improvement >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    <i class="fas fa-{% if resolution_time_improvement >= 0 %}arrow-down{% else %}arrow-up{% endif %} mr-1"></i>
+                    {{ resolution_time_improvement|abs_filter }}%
+                </span>
+                d'amélioration
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 dashboard-card">
-                    <div class="card-body stat-card">
-                        <i class="fas fa-exclamation-circle stat-icon text-primary"></i>
-                        <h5 class="card-title">Total des Incidents</h5>
-                        <h2 class="display-4">{{ total_incidents }}</h2>
-                        
-                        {% if prev_year_data %}
-                        <div class="trend-indicator 
-                        {% if total_incidents > prev_year_data.total_incidents %}trend-up
-                        {% elif total_incidents < prev_year_data.total_incidents %}trend-down
-                        {% else %}trend-same{% endif %}">
-                            {% if total_incidents > prev_year_data.total_incidents %}
-                            <i class="fas fa-arrow-up me-1"></i> +{{ total_incidents|add:"-"|add:prev_year_data.total_incidents }} vs {{ year|add:"-1" }}
-                            {% elif total_incidents < prev_year_data.total_incidents %}
-                            <i class="fas fa-arrow-down me-1"></i> {{ total_incidents|add:"-"|add:prev_year_data.total_incidents }} vs {{ year|add:"-1" }}
-                            {% else %}
-                            <i class="fas fa-equals me-1"></i> Aucun changement vs {{ year|add:"-1" }}
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
+        <!-- Taux de résolution -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-purple-100 dark:bg-purple-900">
+                    <i class="fas fa-check-circle text-purple-600 dark:text-purple-300"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-muted-foreground">Taux de résolution</p>
+                    <p class="text-2xl font-bold">{{ resolution_rate }}%</p>
                 </div>
             </div>
-            
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 dashboard-card">
-                    <div class="card-body stat-card">
-                        <i class="fas fa-radiation stat-icon text-danger"></i>
-                        <h5 class="card-title">Incidents Critiques</h5>
-                        <h2 class="display-4">
-                            {% with critical_count=0 %}
-                                {% for item in severity_counts %}
-                                    {% if item.severity == "CRITICAL" %}
-                                        {% with critical_count=item.count %}{{ critical_count }}{% endwith %}
-                                    {% endif %}
-                                {% endfor %}
-                                {% if critical_count == 0 %}0{% endif %}
-                            {% endwith %}
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 dashboard-card">
-                    <div class="card-body stat-card">
-                        <i class="fas fa-clock stat-icon text-warning"></i>
-                        <h5 class="card-title">Temps de Résolution Moyen</h5>
-                        <h2 class="display-4">{{ avg_resolution_time|floatformat:1 }}h</h2>
-                        
-                        {% if prev_year_data %}
-                        <div class="trend-indicator 
-                        {% if avg_resolution_time > prev_year_data.avg_resolution_time %}trend-up
-                        {% elif avg_resolution_time < prev_year_data.avg_resolution_time %}trend-down
-                        {% else %}trend-same{% endif %}">
-                            {% if avg_resolution_time > prev_year_data.avg_resolution_time %}
-                            <i class="fas fa-arrow-up me-1"></i> +{{ avg_resolution_time|subtract:prev_year_data.avg_resolution_time|floatformat:1 }}h vs {{ year|add:"-1" }}
-                            {% elif avg_resolution_time < prev_year_data.avg_resolution_time %}
-                            <i class="fas fa-arrow-down me-1"></i> -{{ prev_year_data.avg_resolution_time|subtract:avg_resolution_time|floatformat:1 }}h vs {{ year|add:"-1" }}
-                            {% else %}
-                            <i class="fas fa-equals me-1"></i> Aucun changement vs {{ year|add:"-1" }}
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 dashboard-card">
-                    <div class="card-body stat-card">
-                        <i class="fas fa-calendar-day stat-icon text-info"></i>
-                        <h5 class="card-title">Mois le Plus Chargé</h5>
-                        <h2 class="display-4">
-                            {% if monthly_counts %}
-                            {% with max_month=monthly_counts|dictsortreversed:"count"|first %}
-                            {{ max_month.month|date:"M" }}
-                            {% endwith %}
-                            {% else %}
-                            -
-                            {% endif %}
-                        </h2>
-                    </div>
-                </div>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <span class="{% if resolution_rate_growth >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    <i class="fas fa-{% if resolution_rate_growth >= 0 %}arrow-up{% else %}arrow-down{% endif %} mr-1"></i>
+                    {{ resolution_rate_growth|abs_filter }}%
+                </span>
+                par rapport à l'année précédente
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card dashboard-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Distribution Mensuelle des Incidents</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <canvas id="monthlyChart"></canvas>
-                        </div>
-                    </div>
+        <!-- Satisfaction client -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-yellow-100 dark:bg-yellow-900">
+                    <i class="fas fa-star text-yellow-600 dark:text-yellow-300"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-muted-foreground">Satisfaction client</p>
+                    <p class="text-2xl font-bold">{{ satisfaction_rate }}%</p>
                 </div>
             </div>
-            
-            <div class="col-md-6 mb-4">
-                <div class="card dashboard-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Incidents par Sévérité</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <canvas id="severityChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card dashboard-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Durée Moyenne par Sévérité</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <canvas id="durationBySeverityChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 mb-4">
-                <div class="card dashboard-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Tendance Annuelle des Incidents</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <canvas id="yearlyTrendChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {% if longest_incidents %}
-        <div class="card mb-4 dashboard-card">
-            <div class="card-header">
-                <h5 class="mb-0">Incidents les Plus Longs</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Incident</th>
-                                <th>Sévérité</th>
-                                <th>Date de Début</th>
-                                <th>Date de Fin</th>
-                                <th>Durée</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for incident in longest_incidents %}
-                            <tr class="severity-{{ incident.severity }}">
-                                <td>
-                                    <a href="{% url 'incident_detail' incident.pk %}">
-                                        {{ incident.title }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <span class="badge {% if incident.severity == 'CRITICAL' %}bg-danger{% elif incident.severity == 'HIGH' %}bg-warning text-dark{% elif incident.severity == 'MEDIUM' %}bg-info text-dark{% else %}bg-success{% endif %}">
-                                        {{ incident.get_severity_display }}
-                                    </span>
-                                </td>
-                                <td>{{ incident.start_date }}</td>
-                                <td>{% if incident.end_date %}{{ incident.end_date }}{% else %}En cours{% endif %}</td>
-                                <td>{{ incident.duration }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <div class="card mb-4 dashboard-card">
-            <div class="card-header">
-                <h5 class="mb-0">Recommandations et Actions</h5>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <h6 class="alert-heading"><i class="fas fa-lightbulb"></i> Analyse automatique</h6>
-                    <p class="mb-0">Basé sur l'analyse des incidents de {{ year }}, voici quelques recommandations pour améliorer la gestion des incidents:</p>
-                    <ul class="mt-2 mb-0">
-                        {% if avg_resolution_time > 24 %}
-                        <li>Le temps moyen de résolution ({{ avg_resolution_time|floatformat:1 }}h) est élevé. Envisagez de revoir les procédures de résolution d'incidents.</li>
-                        {% endif %}
-                        
-                        {% if severity_counts.0.severity == 'CRITICAL' and severity_counts.0.count > 5 %}
-                        <li>Le nombre d'incidents critiques ({{ severity_counts.0.count }}) est important. Renforcez les mesures préventives.</li>
-                        {% endif %}
-                        
-                        {% with max_month=monthly_counts|dictsortreversed:"count"|first %}
-                        <li>Le mois de {{ max_month.month|date:"F" }} a connu le plus grand nombre d'incidents ({{ max_month.count }}). Vérifiez s'il y a un facteur spécifique à cette période qui pourrait être atténué.</li>
-                        {% endwith %}
-                        
-                        <li>Documentez et partagez les leçons apprises des incidents les plus longs pour éviter leur répétition.</li>
-                    </ul>
-                </div>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <span class="{% if satisfaction_growth >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    <i class="fas fa-{% if satisfaction_growth >= 0 %}arrow-up{% else %}arrow-down{% endif %} mr-1"></i>
+                    {{ satisfaction_growth|abs_filter }}%
+                </span>
+                par rapport à l'année précédente
             </div>
         </div>
     </div>
+
+    <!-- Graphiques et analyses détaillées -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Répartition par mois -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
+            <h2 class="text-xl font-semibold mb-6">Répartition mensuelle des incidents</h2>
+            <div class="h-[300px]">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Répartition par catégorie -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
+            <h2 class="text-xl font-semibold mb-6">Répartition par catégorie</h2>
+            <div class="h-[300px]">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Répartition par priorité -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
+            <h2 class="text-xl font-semibold mb-6">Répartition par priorité</h2>
+            <div class="space-y-4">
+                {% for priority in priority_stats %}
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium">{{ priority.name }}</span>
+                        <span class="text-sm text-muted-foreground">{{ priority.count }} incidents ({{ priority.percentage }}%)</span>
+                    </div>
+                    <div class="w-full bg-muted rounded-full h-2">
+                        <div class="h-2 rounded-full {% if priority.level == 'basse' %}bg-green-500{% elif priority.level == 'moyenne' %}bg-yellow-500{% elif priority.level == 'haute' %}bg-orange-500{% else %}bg-red-500{% endif %}"
+                             style="width: {{ priority.percentage }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Performance par équipe -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
+            <h2 class="text-xl font-semibold mb-6">Performance par équipe</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-border">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Équipe</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Incidents traités</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Temps moyen</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Satisfaction</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border">
+                        {% for team in team_stats %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ team.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ team.incidents_handled }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ team.avg_resolution_time }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <div class="flex items-center">
+                                    <span class="text-yellow-500 mr-1">
+                                        <i class="fas fa-star"></i>
+                                    </span>
+                                    {{ team.satisfaction_rate }}%
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tendances et recommandations -->
+    <div class="mt-8 bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
+        <h2 class="text-xl font-semibold mb-6">Tendances et recommandations</h2>
+        
+        <!-- Principales tendances -->
+        <div class="mb-6">
+            <h3 class="text-lg font-medium mb-4">Principales tendances</h3>
+            <ul class="space-y-3">
+                {% for trend in trends %}
+                <li class="flex items-start">
+                    <span class="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-line text-sm"></i>
+                    </span>
+                    <span class="text-sm">{{ trend }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Recommandations -->
+        <div>
+            <h3 class="text-lg font-medium mb-4">Recommandations</h3>
+            <ul class="space-y-3">
+                {% for recommendation in recommendations %}
+                <li class="flex items-start">
+                    <span class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb text-sm"></i>
+                    </span>
+                    <span class="text-sm">{{ recommendation }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.getElementById('year-select').addEventListener('change', function() {
-        window.location.href = "{% url 'yearly_report' %}?year=" + this.value;
-    });
-    
-    document.getElementById('print-report').addEventListener('click', function() {
-        window.print();
-    });
-    
-    // Ajouter l'export PDF ici (nécessite une implémentation côté serveur)
-    document.getElementById('export-pdf').addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Fonctionnalité à implémenter: Exportation au format PDF');
-    });
-    
-    // Load chart data via AJAX
-    fetch("{% url 'incident_chart_data' %}?year={{ year }}")
-        .then(response => response.json())
-        .then(data => {
-            createMonthlyChart(data);
-            createSeverityChart(data);
-            createDurationBySeverityChart(data);
-            createYearlyTrendChart(data);
-        });
-    
-    function createMonthlyChart(data) {
-        const ctx = document.getElementById('monthlyChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.months,
-                datasets: [{
-                    label: 'Nombre d\'Incidents',
-                    data: data.counts,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
+    // Configuration et données pour le graphique mensuel
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: {{ monthly_labels|safe }},
+            datasets: [{
+                label: 'Nombre d\'incidents',
+                data: {{ monthly_data|safe }},
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false
                     }
                 },
-                plugins: {
-                    title: {
-                        display: false,
-                        text: 'Distribution Mensuelle des Incidents'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `Nombre d'incidents: ${context.raw}`;
-                            }
-                        }
+                x: {
+                    grid: {
+                        display: false
                     }
                 }
             }
-        });
-    }
-    
-    function createSeverityChart(data) {
-        const ctx = document.getElementById('severityChart').getContext('2d');
-        const backgroundColors = {
-            'CRITICAL': 'rgba(220, 53, 69, 0.8)',
-            'HIGH': 'rgba(253, 126, 20, 0.8)',
-            'MEDIUM': 'rgba(255, 193, 7, 0.8)',
-            'LOW': 'rgba(40, 167, 69, 0.8)'
-        };
-        
-        const colors = data.severity_labels.map(label => backgroundColors[label] || 'rgba(108, 117, 125, 0.8)');
-        
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: data.severity_labels.map(label => {
-                    const readableLabels = {
-                        'CRITICAL': 'Critique',
-                        'HIGH': 'Élevé',
-                        'MEDIUM': 'Moyen',
-                        'LOW': 'Faible'
-                    };
-                    return readableLabels[label] || label;
-                }),
-                datasets: [{
-                    data: data.severity_counts,
-                    backgroundColor: colors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: false,
-                        text: 'Incidents par Sévérité'
-                    },
-                    legend: {
-                        position: 'right',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw;
-                                const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${label}: ${value} (${percentage}%)`;
-                            }
-                        }
-                    }
+        }
+    });
+
+    // Configuration et données pour le graphique par catégorie
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ category_labels|safe }},
+            datasets: [{
+                data: {{ category_data|safe }},
+                backgroundColor: [
+                    '#3b82f6',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#8b5cf6',
+                    '#ec4899'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
                 }
             }
-        });
-    }
-    
-    function createDurationBySeverityChart(data) {
-        if (!data.duration_by_severity) return;
-        
-        const ctx = document.getElementById('durationBySeverityChart').getContext('2d');
-        const backgroundColors = {
-            'CRITICAL': 'rgba(220, 53, 69, 0.8)',
-            'HIGH': 'rgba(253, 126, 20, 0.8)',
-            'MEDIUM': 'rgba(255, 193, 7, 0.8)',
-            'LOW': 'rgba(40, 167, 69, 0.8)'
-        };
-        
-        const readableLabels = {
-            'CRITICAL': 'Critique',
-            'HIGH': 'Élevé',
-            'MEDIUM': 'Moyen',
-            'LOW': 'Faible'
-        };
-        
-        const labels = data.duration_by_severity.map(item => readableLabels[item.severity] || item.severity);
-        const values = data.duration_by_severity.map(item => item.avg_duration);
-        const colors = data.duration_by_severity.map(item => backgroundColors[item.severity] || 'rgba(108, 117, 125, 0.8)');
-        
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Durée moyenne (heures)',
-                    data: values,
-                    backgroundColor: colors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Heures'
-                        }
-                    }
-                },
-                plugins: {
-                    title: {
-                        display: false,
-                        text: 'Durée Moyenne par Sévérité'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `${context.raw.toFixed(1)} heures`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    function createYearlyTrendChart(data) {
-        if (!data.yearly_trend) return;
-        
-        const ctx = document.getElementById('yearlyTrendChart').getContext('2d');
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.yearly_trend.map(item => item.year.toString()),
-                datasets: [{
-                    label: 'Nombre total d\'incidents',
-                    data: data.yearly_trend.map(item => item.count),
-                    fill: false,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                },
-                plugins: {
-                    title: {
-                        display: false,
-                        text: 'Tendance Annuelle des Incidents'
-                    }
-                }
-            }
-        });
-    }
+        }
+    });
 </script>
 {% endblock %}

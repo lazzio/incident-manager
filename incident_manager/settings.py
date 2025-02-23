@@ -124,5 +124,14 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Chemin de redirection de connexion
-LOGIN_URL = '/admin/login/'
-LOGIN_REDIRECT_URL = '/'
+# LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = 'dashboard'  # ou votre page d'accueil
+LOGOUT_REDIRECT_URL = 'login'
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+APPEND_SLASH = True

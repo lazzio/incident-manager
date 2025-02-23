@@ -293,3 +293,52 @@ def incident_chart_data(request):
     }
     
     return JsonResponse(data)
+
+@login_required
+def export_yearly_report(request, year):
+    from openpyxl import Workbook
+    from django.http import HttpResponse
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"Rapport {year}"
+    
+    # En-têtes
+    headers = ['Mois', 'Nombre d\'incidents', 'Temps moyen de résolution']
+    ws.append(headers)
+    
+    # Données mensuelles
+    incidents = Incident.objects.filter(start_date__year=year)
+    monthly_data = (incidents.annotate(month=TruncMonth('start_date'))
+                   .values('month')
+                   .annotate(count=Count('id'))
+                   .order_by('month'))
+    
+    for data in monthly_data:
+        ws.append([
+            data['month'].strftime('%B %Y'),
+            data['count'],
+        ])
+    
+    # Préparation de la réponse
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=rapport_incidents_{year}.xlsx'
+    
+    wb.save(response)
+    return response
+
+def dashboard(request):
+    total_incidents = Incident.objects.count()
+    context = {
+        'total_incidents': total_incidents,
+        'open_incidents': Incident.objects.filter(status='nouveau').count(),
+        'in_progress_incidents': Incident.objects.filter(status='en_cours').count(),
+        'resolved_incidents': Incident.objects.filter(status='résolu').count(),
+        'recent_incidents': Incident.objects.order_by('-created_at')[:5],
+        'categories': Incident.objects.values('severity').annotate(
+            count=Count('id'),
+            name=F('severity'),
+            percentage=100.0 * Count('id') / total_incidents
+        ).order_by('severity')
+    }
+    return render(request, 'incidents/dashboard.html', context)

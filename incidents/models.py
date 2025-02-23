@@ -10,6 +10,12 @@ class Severity(models.TextChoices):
     LOW = 'LOW', _('Low')
 
 class Incident(models.Model):
+    STATUS_CHOICES = [
+        ('nouveau', 'Nouveau'),
+        ('en_cours', 'En cours'),
+        ('résolu', 'Résolu'),
+    ]
+    
     title = models.CharField(max_length=200)
     severity = models.CharField(
         max_length=10,
@@ -25,6 +31,12 @@ class Incident(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_incidents')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='nouveau',
+        verbose_name='Statut'
+    )
     
     def save(self, *args, **kwargs):
         if self.start_date and self.end_date:

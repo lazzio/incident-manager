@@ -1,159 +1,170 @@
-{% extends "incidents/base.html" %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ incident.title }} | Tech Incident Manager{% endblock %}
+{% block title %}Incident #{{ incident.id }} - {{ incident.title }}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>{{ incident.title }}</h1>
-            <div>
-                <a href="{% url 'incident_update' incident.pk %}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-                <a href="{% url 'incident_list' %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to List
-                </a>
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <h1 class="text-3xl font-bold text-foreground">
+            Incident #{{ incident.id }} - {{ incident.title }}
+        </h1>
+        <div class="flex gap-3">
+            <a href="{% url 'incident_list' %}" 
+               class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Retour
+            </a>
+            <a href="{% url 'incident_update' incident.id %}" 
+               class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                <i class="fas fa-edit mr-2"></i>
+                Modifier
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Informations de l'incident -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-6">Informations de l'incident</h2>
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Statut -->
+                    <div class="sm:col-span-2">
+                        <dt class="text-sm font-medium text-muted-foreground">Statut</dt>
+                        <dd class="mt-1">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                {% if incident.status == 'nouveau' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                                {% elif incident.status == 'résolu' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                                {% endif %}">
+                                {{ incident.get_status_display }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    <!-- Priorité -->
+                    <div class="sm:col-span-2">
+                        <dt class="text-sm font-medium text-muted-foreground">Priorité</dt>
+                        <dd class="mt-1">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                {% if incident.priority == 'basse' %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200
+                                {% elif incident.priority == 'moyenne' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                {% elif incident.priority == 'haute' %}bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
+                                {% elif incident.priority == 'critique' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                                {% endif %}">
+                                {{ incident.get_priority_display }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    <!-- Catégorie -->
+                    <div class="sm:col-span-2">
+                        <dt class="text-sm font-medium text-muted-foreground">Catégorie</dt>
+                        <dd class="mt-1 text-sm">{{ incident.get_category_display }}</dd>
+                    </div>
+
+                    <!-- Créé par -->
+                    <div>
+                        <dt class="text-sm font-medium text-muted-foreground">Créé par</dt>
+                        <dd class="mt-1 text-sm">{{ incident.created_by.get_full_name|default:incident.created_by.username }}</dd>
+                    </div>
+
+                    <!-- Assigné à -->
+                    <div>
+                        <dt class="text-sm font-medium text-muted-foreground">Assigné à</dt>
+                        <dd class="mt-1 text-sm">{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username|default:"Non assigné" }}</dd>
+                    </div>
+
+                    <!-- Date de création -->
+                    <div>
+                        <dt class="text-sm font-medium text-muted-foreground">Date de création</dt>
+                        <dd class="mt-1 text-sm">{{ incident.created_at|date:"d/m/Y H:i" }}</dd>
+                    </div>
+
+                    <!-- Dernière mise à jour -->
+                    <div>
+                        <dt class="text-sm font-medium text-muted-foreground">Dernière mise à jour</dt>
+                        <dd class="mt-1 text-sm">{{ incident.updated_at|date:"d/m/Y H:i" }}</dd>
+                    </div>
+                </dl>
             </div>
         </div>
 
-        <div class="card mb-4 severity-{{ incident.severity }}">
-            <div class="card-header">
-                <h5 class="mb-0">Incident Details</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Severity:</strong> {{ incident.get_severity_display }}</p>
-                        <p><strong>Start Date:</strong> {{ incident.start_date }}</p>
-                        <p><strong>End Date:</strong> {% if incident.end_date %}{{ incident.end_date }}{% else %}Ongoing{% endif %}</p>
-                        <p><strong>Duration:</strong> {% if incident.duration %}{{ incident.duration }}{% else %}Ongoing{% endif %}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Created By:</strong> {{ incident.created_by.get_full_name|default:incident.created_by.username }}</p>
-                        <p><strong>Created:</strong> {{ incident.created_at }}</p>
-                        <p><strong>Last Updated:</strong> {{ incident.updated_at }}</p>
-                    </div>
+        <!-- Description et pièce jointe -->
+        <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-6">Description</h2>
+                <div class="bg-muted/30 rounded-lg p-4 text-sm whitespace-pre-wrap">
+                    {{ incident.description }}
                 </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Details</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-2">{{ incident.details|linebreaks }}</div>
-                    </div>
+                {% if incident.attachment %}
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium mb-3">Pièce jointe</h3>
+                    <a href="{{ incident.attachment.url }}" 
+                       class="inline-flex items-center px-3 py-2 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                       target="_blank">
+                        <i class="fas fa-paperclip mr-2"></i>
+                        {{ incident.attachment.name }}
+                        <i class="fas fa-external-link-alt ml-2"></i>
+                    </a>
                 </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Impact</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-2">{{ incident.impact|linebreaks }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Resolution Process</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-2">{{ incident.resolution_process|linebreaks }}</div>
-            </div>
-        </div>
-
-        {% if incident.links.exists or incident.attachments.exists %}
-        <div class="row">
-            {% if incident.links.exists %}
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Related Links</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            {% for link in incident.links.all %}
-                            <li class="list-group-item">
-                                <a href="{{ link.url }}" target="_blank">{{ link.title }}</a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            
-            {% if incident.attachments.exists %}
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Attachments</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            {% for attachment in incident.attachments.all %}
-                            <li class="list-group-item">
-                                <a href="{{ attachment.file.url }}" target="_blank">
-                                    {{ attachment.description|default:attachment.file.name }}
-                                </a>
-                                <small class="text-muted d-block">Uploaded: {{ attachment.uploaded_at }}</small>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Updates</h5>
-            </div>
-            <div class="card-body">
-                <form method="post" action="{% url 'add_incident_update' incident.pk %}" class="mb-4">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="{{ update_form.update_text.id_for_label }}" class="form-label">Add Update</label>
-                        {{ update_form.update_text }}
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Update</button>
-                </form>
-                
-                <hr>
-                
-                {% if updates %}
-                <div class="timeline">
-                    {% for update in updates %}
-                    <div class="timeline-item">
-                        <div class="timeline-badge">
-                            <i class="fas fa-comment"></i>
-                        </div>
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <span>{{ update.updated_by.get_full_name|default:update.updated_by.username }}</span>
-                                <small class="text-muted">{{ update.timestamp }}</small>
-                            </div>
-                            <div class="card-body">
-                                {{ update.update_text|linebreaks }}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p class="text-center text-muted">No updates recorded yet.</p>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Section des commentaires -->
+    <div class="mt-8 bg-card text-card-foreground rounded-lg border shadow-sm">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-6">Commentaires</h2>
+
+            <!-- Liste des commentaires -->
+            <div class="space-y-4 mb-8">
+                {% for comment in comments %}
+                <div class="bg-muted/30 rounded-lg p-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                        <span class="font-medium">
+                            {{ comment.created_by.get_full_name|default:comment.created_by.username }}
+                        </span>
+                        <span class="text-sm text-muted-foreground">
+                            {{ comment.created_at|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                    <div class="text-sm whitespace-pre-wrap">{{ comment.content }}</div>
+                </div>
+                {% empty %}
+                <p class="text-muted-foreground text-sm italic text-center py-4">
+                    Aucun commentaire pour cet incident.
+                </p>
+                {% endfor %}
+            </div>
+
+            <!-- Formulaire d'ajout de commentaire -->
+            <div class="border-t border-border pt-6">
+                <h3 class="text-lg font-medium mb-4">Ajouter un commentaire</h3>
+                <form method="post" action="{% url 'add_comment' incident.id %}" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="content" class="sr-only">Commentaire</label>
+                        <textarea id="content" 
+                                  name="content" 
+                                  rows="4"
+                                  required
+                                  placeholder="Votre commentaire..."
+                                  class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Envoyer
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

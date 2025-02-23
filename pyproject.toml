@@ -1,5 +1,5 @@
 [project]
-name = "incident-management"
+name = "incident_manager"
 version = "0.1.2"
 description = ""
 authors = [
@@ -26,6 +26,7 @@ python-dateutil = "2.8.2"
 django-storages = "1.14.2"
 gunicorn = "21.2.0"
 django-environ = "0.11.2"
+openpyxl = "3.1.5"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^2.17"
@@ -43,3 +44,4 @@ multi_line_output = 3
 test = "scripts:tests"
 lint = "scripts:lint"
 dev  = "scripts:dev"
+migrate = "scripts:migrate"
