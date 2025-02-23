@@ -1,15 +1,14 @@
 name: Create Release
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
 
 jobs:
   release:
-    if: github.event.pull_request.merged == true
+    # Skip running release workflow on release commits
+    if: "!contains(github.event.head_commit.message, 'chore(release)')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,8 +20,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
+          persist-credentials: false
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -138,4 +142,6 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          npx semantic-release
