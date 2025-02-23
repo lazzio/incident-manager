@@ -5,8 +5,10 @@ from django.forms import inlineformset_factory
 class IncidentForm(forms.ModelForm):
     class Meta:
         model = Incident
-        fields = ['title', 'severity', 'start_date', 'end_date', 'details', 
-                  'resolution_process', 'impact']
+        fields = [
+            'title', 'category', 'status', 'severity',
+            'start_date', 'end_date', 'details', 'resolution_process', 'impact'
+        ]
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
