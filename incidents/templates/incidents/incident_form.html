@@ -67,11 +67,7 @@
                             class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             required>
                         <option value="">Select a category</option>
-                        {% for value, label in form.category.field.choices %}
-                        <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
+                        <option value="categorie" selected>categorie</option>
                     </select>
                 </div>
 
@@ -90,11 +86,9 @@
                             name="{{ form.status.name }}"
                             class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             required>
-                        {% for value, label in form.status.field.choices %}
-                        <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
                     </select>
                 </div>
 
@@ -113,11 +107,9 @@
                             name="{{ form.priority.name }}"
                             class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             required>
-                        {% for value, label in form.priority.field.choices %}
-                        <option value="{{ value }}" {% if form.priority.value == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if request.GET.priority == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
                     </select>
                 </div>
 
