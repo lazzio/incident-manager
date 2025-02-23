@@ -8,11 +8,13 @@ on:
       - main
 
 jobs:
-  create-release:
+  release:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
     
     steps:
       - name: Checkout code
@@ -21,6 +23,11 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -36,46 +43,99 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --no-root
         
-      - name: Get current version
-        id: current_version
-        shell: bash
+      - name: Install semantic-release
         run: |
-          echo "version=$(poetry version -s)" >> $GITHUB_OUTPUT
-
-      - name: Bump patch version
-        id: bump_version
-        shell: bash
-        run: |
-          poetry version patch
-          echo "version=$(poetry version -s)" >> $GITHUB_OUTPUT
+          npm install -g @semantic-release/git \
+            @semantic-release/changelog \
+            @semantic-release/exec \
+            @semantic-release/commit-analyzer \
+            @semantic-release/release-notes-generator \
+            @semantic-release/github \
+            @semantic-release/npm \
+            semantic-release \
+            conventional-changelog-conventionalcommits \
+            semantic-release-replace-plugin
           
-      - name: Configure Git
+      - name: Create .releaserc
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          cat > .releaserc << EOF
+          {
+            "branches": [
+              "master",
+              "main"
+            ],
+            "plugins": [
+              [
+                "@semantic-release/commit-analyzer",
+                {
+                  "preset": "conventionalcommits",
+                  "releaseRules": [
+                    {"breaking": true, "release": "major"},
+                    {"type": "feat", "release": "minor"},
+                    {"type": "fix", "release": "patch"},
+                    {"type": "hotfix", "release": "patch"},
+                    {"type": "docs", "release": "patch"},
+                    {"type": "perf", "release": "patch"},
+                    {"type": "refactor", "release": "patch"},
+                    {"type": "revert", "release": "patch"},
+                    {"type": "style", "release": "patch"}
+                  ],
+                  "parserOpts": {
+                    "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+                  }
+                }
+              ],
+              [
+                "@semantic-release/release-notes-generator",
+                {
+                  "preset": "conventionalcommits",
+                  "presetConfig" : {
+                    "types": [
+                      {"type": "feat", "section": "Features"},
+                      {"type": "fix", "section": "Bug Fixes"},
+                      {"type": "hotfix", "section": "Hotfix"},
+                      {"type": "docs", "section": "Documentation"},
+                      {"type": "perf", "section": "Performance"},
+                      {"type": "refactor", "section": "Refactor"},
+                      {"type": "revert", "section": "Revert"},
+                      {"type": "style", "section": "Style"}
+                    ],
+                    "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/-/commit/{{hash}}",
+                    "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/-/compare/{{previousTag}}...{{currentTag}}",
+                    "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/-/issues/{{id}}"
+                  },
+                  "parserOpts": {
+                    "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+                  }
+                }
+              ],
+              ["@semantic-release/exec", {
+                "prepareCmd": "poetry version \${nextRelease.version}"
+              }],
+              "@semantic-release/changelog",
+              "@semantic-release/npm",
+              [
+                "@semantic-release/git",
+                {
+                  "assets": [
+                    "package.json",
+                    "CHANGELOG.md",
+                    "package.json"
+                  ],
+                  "message": "chore(release): \${nextRelease.version} [skip ci]\n\n\${nextRelease.notes}"
+                }
+              ],
+              [
+                "@semantic-release/github",
+                {
+                  "assets": []
+                }
+              ]
+            ]
+          }
+          EOF
           
-      - name: Commit version update
-        run: |
-          git add pyproject.toml
-          git commit -m "chore: bump version to ${{ steps.bump_version.outputs.new_version }} [skip ci]"
-          git push
-          
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.bump_version.outputs.version }}
-          release_name: Release v${{ steps.bump_version.outputs.version }}
-          body: |
-            Automatic release created from PR #${{ github.event.pull_request.number }} merge
-            
-            Previous version: v${{ steps.current_version.outputs.version }}
-            New version: v${{ steps.bump_version.outputs.version }}
-            
-            PR Title: ${{ github.event.pull_request.title }}
-            
-            [View changes](https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }})
-          draft: false
-          prerelease: false
+        run: npx semantic-release

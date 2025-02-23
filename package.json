@@ -2,13 +2,15 @@
   "name": "incident_management",
   "version": "1.0.0",
   "main": "index.js",
+  "private": true,
+  "repository": "git@github.com:lazzio/incident-manager.git",
   "scripts": {
     "dev": "tailwindcss -i ./static/css/global.css -o ./static/css/output.css --watch",
     "build": "tailwindcss -i ./static/css/global.css -o ./static/css/output.css --minify"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",
