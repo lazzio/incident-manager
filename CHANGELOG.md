@@ -1,3 +1,9 @@
+## [0.2.1](https://github.com/lazzio/incident-manager/-/compare/v0.2.0...v0.2.1) (2025-02-23)
+
+### Bug Fixes
+
+* add new field category ([#11](https://github.com/lazzio/incident-manager/-/issues/11)) ([dad78ec](https://github.com/lazzio/incident-manager/-/commit/dad78ec0464beda0f603faf9e0e1df7d4708066d))
+
 ## [0.2.0](https://github.com/lazzio/incident-manager/-/compare/v0.1.3...v0.2.0) (2025-02-23)
 
 ### Features
