@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Gestion des Incidents{% endblock %}</title>
+    <title>{% block title %}Incidents management{% endblock %}</title>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -21,9 +21,9 @@
                 <i class="fas fa-ticket-alt text-3xl text-primary"></i>
             </div>
             <div class="text-center">
-                <h2 class="text-2xl font-bold tracking-tight">Connexion</h2>
+                <h2 class="text-2xl font-bold tracking-tight">Login</h2>
                 <p class="text-muted-foreground mt-2">
-                    Accédez à votre espace de gestion des incidents
+                    Access your incident management area
                 </p>
             </div>
         </div>
@@ -42,10 +42,10 @@
                             </div>
                             <div class="ml-3">
                                 <h3 class="text-sm font-medium text-destructive">
-                                    Erreur de connexion
+                                    connection error
                                 </h3>
                                 <div class="mt-2 text-sm text-destructive">
-                                    Identifiants incorrects. Veuillez réessayer.
+                                    Incorrect credentials. Please try again.
                                 </div>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                     <div class="space-y-2">
                         <label for="id_username" 
                                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Nom d'utilisateur
+                            Username
                         </label>
                         <input type="text"
                                id="id_username"
@@ -64,7 +64,7 @@
                                autocomplete="username"
                                required
                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                               placeholder="Entrez votre nom d'utilisateur">
+                               placeholder="Enter a username">
                     </div>
 
                     <!-- Champ Mot de passe -->
@@ -72,11 +72,11 @@
                         <div class="flex items-center justify-between">
                             <label for="id_password"
                                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Mot de passe
+                                Password
                             </label>
                             <a href="{% url 'password_reset' %}" 
                                class="text-sm font-medium text-primary hover:underline">
-                                Mot de passe oublié ?
+                                Forgot password ?
                             </a>
                         </div>
                         <input type="password"
@@ -85,7 +85,7 @@
                                autocomplete="current-password"
                                required
                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                               placeholder="Entrez votre mot de passe">
+                               placeholder="Enter password">
                     </div>
 
                     <!-- Case à cocher "Se souvenir de moi" -->
@@ -96,7 +96,7 @@
                                class="h-4 w-4 rounded border-input bg-background text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                         <label for="remember" 
                                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Se souvenir de moi
+                            Remember me
                         </label>
                     </div>
 
@@ -105,7 +105,7 @@
                         <button type="submit"
                                 class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full">
                             <i class="fas fa-sign-in-alt mr-2"></i>
-                            Se connecter
+                            Login
                         </button>
                     </div>
                 </form>
@@ -116,9 +116,9 @@
         {% if REGISTRATION_OPEN %}
         <div class="text-center">
             <p class="text-sm text-muted-foreground">
-                Vous n'avez pas de compte ?
+                Don't have an account?
                 <a href="{% url 'register' %}" class="font-medium text-primary hover:underline">
-                    Créer un compte
+                    Create account
                 </a>
             </p>
         </div>
@@ -130,7 +130,7 @@
                 <span class="w-full border-t"></span>
             </div>
             <div class="relative flex justify-center text-xs uppercase">
-                <span class="bg-background px-2 text-muted-foreground">Ou continuer avec</span>
+                <span class="bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
         </div>
 

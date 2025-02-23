@@ -2,7 +2,7 @@
 {% load static %}
 {% load incident_tags %}
 
-{% block title %}Rapport Annuel {{ year }}{% endblock %}
+{% block title %}Yearly report {{ year }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -22,20 +22,20 @@
     <!-- En-tête -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <h1 class="text-3xl font-bold text-foreground">
-            Rapport Annuel {{ year }}
+            Yearly report {{ year }}
         </h1>
         <div class="flex gap-3 no-print">
             <button onclick="window.print()" 
                     class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
                 <i class="fas fa-print mr-2"></i>
-                Imprimer
+                Print
             </button>
             <form method="post" action="{% url 'export_yearly_report' year %}" class="inline">
                 {% csrf_token %}
                 <button type="submit"
                         class="inline-flex items-center px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors">
                     <i class="fas fa-file-excel mr-2"></i>
-                    Exporter Excel
+                    Export
                 </button>
             </form>
         </div>
@@ -50,7 +50,7 @@
                     <i class="fas fa-ticket-alt text-blue-600 dark:text-blue-300"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-muted-foreground">Total des incidents</p>
+                    <p class="text-sm font-medium text-muted-foreground">Total of incidents</p>
                     <p class="text-2xl font-bold">{{ total_incidents }}</p>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                     <i class="fas fa-{% if incident_growth >= 0 %}arrow-up{% else %}arrow-down{% endif %} mr-1"></i>
                     {{ incident_growth|abs_filter }}%
                 </span>
-                par rapport à l'année précédente
+                compared to previous year
             </div>
         </div>
 
@@ -70,7 +70,7 @@
                     <i class="fas fa-clock text-green-600 dark:text-green-300"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-muted-foreground">Temps moyen de résolution</p>
+                    <p class="text-sm font-medium text-muted-foreground">Resolution time average</p>
                     <p class="text-2xl font-bold">{{ avg_resolution_time }}</p>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                     <i class="fas fa-{% if resolution_time_improvement >= 0 %}arrow-down{% else %}arrow-up{% endif %} mr-1"></i>
                     {{ resolution_time_improvement|abs_filter }}%
                 </span>
-                d'amélioration
+                of improvement
             </div>
         </div>
 
@@ -90,7 +90,7 @@
                     <i class="fas fa-check-circle text-purple-600 dark:text-purple-300"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-muted-foreground">Taux de résolution</p>
+                    <p class="text-sm font-medium text-muted-foreground">Resolution rate</p>
                     <p class="text-2xl font-bold">{{ resolution_rate }}%</p>
                 </div>
             </div>
@@ -99,7 +99,7 @@
                     <i class="fas fa-{% if resolution_rate_growth >= 0 %}arrow-up{% else %}arrow-down{% endif %} mr-1"></i>
                     {{ resolution_rate_growth|abs_filter }}%
                 </span>
-                par rapport à l'année précédente
+                compared to previous year
             </div>
         </div>
 
@@ -110,7 +110,7 @@
                     <i class="fas fa-star text-yellow-600 dark:text-yellow-300"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-muted-foreground">Satisfaction client</p>
+                    <p class="text-sm font-medium text-muted-foreground">Client satisfaction</p>
                     <p class="text-2xl font-bold">{{ satisfaction_rate }}%</p>
                 </div>
             </div>
@@ -119,7 +119,7 @@
                     <i class="fas fa-{% if satisfaction_growth >= 0 %}arrow-up{% else %}arrow-down{% endif %} mr-1"></i>
                     {{ satisfaction_growth|abs_filter }}%
                 </span>
-                par rapport à l'année précédente
+                compared to previous year
             </div>
         </div>
     </div>
@@ -128,7 +128,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Répartition par mois -->
         <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
-            <h2 class="text-xl font-semibold mb-6">Répartition mensuelle des incidents</h2>
+            <h2 class="text-xl font-semibold mb-6">Incidents monthly repartition</h2>
             <div class="h-[300px]">
                 <canvas id="monthlyChart"></canvas>
             </div>
@@ -136,7 +136,7 @@
 
         <!-- Répartition par catégorie -->
         <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
-            <h2 class="text-xl font-semibold mb-6">Répartition par catégorie</h2>
+            <h2 class="text-xl font-semibold mb-6">Repartition by category</h2>
             <div class="h-[300px]">
                 <canvas id="categoryChart"></canvas>
             </div>
@@ -144,7 +144,7 @@
 
         <!-- Répartition par priorité -->
         <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
-            <h2 class="text-xl font-semibold mb-6">Répartition par priorité</h2>
+            <h2 class="text-xl font-semibold mb-6">Repartition by priority</h2>
             <div class="space-y-4">
                 {% for priority in priority_stats %}
                 <div>
@@ -163,14 +163,14 @@
 
         <!-- Performance par équipe -->
         <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
-            <h2 class="text-xl font-semibold mb-6">Performance par équipe</h2>
+            <h2 class="text-xl font-semibold mb-6">Performance by team</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-border">
                     <thead>
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Équipe</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Incidents traités</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Temps moyen</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Team</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Done incidents</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Average time</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Satisfaction</th>
                         </tr>
                     </thead>
@@ -198,11 +198,11 @@
 
     <!-- Tendances et recommandations -->
     <div class="mt-8 bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
-        <h2 class="text-xl font-semibold mb-6">Tendances et recommandations</h2>
+        <h2 class="text-xl font-semibold mb-6">Trends & recommandations</h2>
         
         <!-- Principales tendances -->
         <div class="mb-6">
-            <h3 class="text-lg font-medium mb-4">Principales tendances</h3>
+            <h3 class="text-lg font-medium mb-4">Principal trends</h3>
             <ul class="space-y-3">
                 {% for trend in trends %}
                 <li class="flex items-start">

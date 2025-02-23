@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Gestion des Incidents{% endblock %}</title>
+    <title>{% block title %}Incidents management{% endblock %}</title>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -26,7 +26,7 @@
                             <a href="{% url 'dashboard' %}" 
                                class="inline-flex items-center border-b-2 {% if request.resolver_match.url_name == 'dashboard' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
                                 <i class="fas fa-chart-line mr-2"></i>
-                                Tableau de bord
+                                Dashboard
                             </a>
                             
                             <a href="{% url 'incident_list' %}"
@@ -38,13 +38,13 @@
                             <a href="{% url 'incident_create' %}"
                                class="inline-flex items-center border-b-2 {% if request.resolver_match.url_name == 'incident_create' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
                                 <i class="fas fa-plus mr-2"></i>
-                                Nouvel Incident
+                                New Incident
                             </a>
                             
                             <a href="{% url 'yearly_report' %}"
                                class="inline-flex items-center border-b-2 {% if request.resolver_match.url_name == 'yearly_report' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
                                 <i class="fas fa-chart-bar mr-2"></i>
-                                Rapport Annuel
+                                Yearly report
                             </a>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
 
                         <!-- Notifications -->
                         <button type="button" class="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                            <span class="sr-only">Voir les notifications</span>
+                            <span class="sr-only">See notifications</span>
                             <i class="fas fa-bell"></i>
                         </button>
 
@@ -74,7 +74,7 @@
                                     {% csrf_token %}
                                     <button type="submit" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                         <i class="fas fa-sign-out-alt mr-2"></i>
-                                        Déconnexion
+                                        Logout
                                     </button>
                                 </form>
                             </div>
@@ -83,7 +83,7 @@
                         <a href="{% url 'login' %}" 
                            class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             <i class="fas fa-sign-in-alt mr-2"></i>
-                            Connexion
+                            Login
                         </a>
                         {% endif %}
                     </div>
@@ -93,7 +93,7 @@
                         <button type="button" 
                                 onclick="toggleMobileMenu()"
                                 class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                            <span class="sr-only">Ouvrir le menu</span>
+                            <span class="sr-only">Open menu</span>
                             <i class="fas fa-bars"></i>
                         </button>
                     </div>
@@ -106,7 +106,7 @@
                     <a href="{% url 'dashboard' %}" 
                        class="block border-l-4 {% if request.resolver_match.url_name == 'dashboard' %}border-indigo-500 bg-indigo-50 text-indigo-700{% else %}border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800{% endif %} py-2 pl-3 pr-4 text-base font-medium">
                         <i class="fas fa-chart-line mr-2"></i>
-                        Tableau de bord
+                        Dashboard
                     </a>
                     
                     <a href="{% url 'incident_list' %}"
@@ -118,13 +118,13 @@
                     <a href="{% url 'incident_create' %}"
                        class="block border-l-4 {% if request.resolver_match.url_name == 'incident_create' %}border-indigo-500 bg-indigo-50 text-indigo-700{% else %}border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800{% endif %} py-2 pl-3 pr-4 text-base font-medium">
                         <i class="fas fa-plus mr-2"></i>
-                        Nouvel Incident
+                        New Incident
                     </a>
                     
                     <a href="{% url 'yearly_report' %}"
                        class="block border-l-4 {% if request.resolver_match.url_name == 'yearly_report' %}border-indigo-500 bg-indigo-50 text-indigo-700{% else %}border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800{% endif %} py-2 pl-3 pr-4 text-base font-medium">
                         <i class="fas fa-chart-bar mr-2"></i>
-                        Rapport Annuel
+                        Yearly report
                     </a>
                 </div>
                 <div class="border-t border-gray-200 pb-3 pt-4">
@@ -140,7 +140,7 @@
                             {% csrf_token %}
                             <button type="submit" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                 <i class="fas fa-sign-out-alt mr-2"></i>
-                                Déconnexion
+                                Logout
                             </button>
                         </form>
                     </div>
@@ -149,7 +149,7 @@
                         <a href="{% url 'login' %}"
                            class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800">
                             <i class="fas fa-sign-in-alt mr-2"></i>
-                            Connexion
+                            Login
                         </a>
                     </div>
                     {% endif %}

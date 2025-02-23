@@ -11,9 +11,9 @@ class Severity(models.TextChoices):
 
 class Incident(models.Model):
     STATUS_CHOICES = [
-        ('nouveau', 'Nouveau'),
-        ('en_cours', 'En cours'),
-        ('résolu', 'Résolu'),
+        ('new', 'New'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
     ]
     
     title = models.CharField(max_length=200)
@@ -34,8 +34,8 @@ class Incident(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='nouveau',
-        verbose_name='Statut'
+        default='new',
+        verbose_name='Status'
     )
     
     def save(self, *args, **kwargs):
