@@ -1,4 +1,5 @@
 import subprocess
+from subprocess import Popen
 
 def tests():
     """Execute tests"""
@@ -36,12 +37,22 @@ def lint():
         print("❌ Des problèmes de lint ont été détectés.")
         return 1
 
-def dev():
-    """Run development server"""
-    return subprocess.call(["python", "manage.py", "runserver"])
-
 def migrate():
     """Apply migrations"""
-    subprocess.call(["python", "manage.py", "makemigrations"])
-    subprocess.call(["python", "manage.py", "migrate"])
-    return 0
+    subprocess.run("python manage.py makemigrations", shell=True)
+    subprocess.run("python manage.py migrate", shell=True)
+
+def collectstatic():
+    """Collect static files"""
+    subprocess.run("python manage.py collectstatic --noinput", shell=True)
+
+def dev():
+    """Run development server"""
+    # Start tailwind in background
+    subprocess.run("nvm use 22", shell=True)
+    npm_process = Popen("npm run dev", shell=True)
+    
+    # Run Django commands
+    migrate()
+    collectstatic()
+    return subprocess.call(["python", "manage.py", "runserver"])
