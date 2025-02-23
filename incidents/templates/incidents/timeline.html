@@ -1,43 +1,69 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Chronologie des incidents{% endblock %}
+{% block title %}Incident timeline #{{ incident.id }}{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Chronologie des incidents</h1>
-
-    <!-- Sélecteur d'année -->
-    <div class="mb-8">
-        <form method="get" class="flex gap-4 items-center">
-            <select name="year" class="form-select">
     <!-- En-tête -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <h1 class="text-3xl font-bold text-foreground">
-            Chronologie des incidents
+            Incident timeline #{{ incident.id }}
         </h1>
         <div class="flex gap-3">
-            <a href="{% url 'incident_list' %}" 
+            <a href="{% url 'incident_detail' incident.id %}" 
                class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>
-                Retour à la liste
+                Return to details
             </a>
         </div>
     </div>
 
-    <!-- Liste des incidents -->
-    <ul>
-    {% for inc in incidents %}
-      <li>
-        <a href="{% url 'incident_detail' inc.id %}">{{ inc.title }}</a>
-      </li>
-    {% endfor %}
-    </ul>
+    <!-- Résumé de l'incident -->
+    <div class="bg-card text-card-foreground rounded-lg border shadow-sm mb-8">
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <h3 class="text-sm font-medium text-muted-foreground">Title</h3>
+                    <p class="mt-1 text-sm">{{ incident.title }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-muted-foreground">Status</h3>
+                    <p class="mt-1">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                            {% if incident.status == 'new' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                            {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                            {% elif incident.status == 'resolved' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                            {% endif %}">
+                            {{ incident.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-muted-foreground">Priority</h3>
+                    <p class="mt-1">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                            {% if incident.priority == 'low' %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200
+                            {% elif incident.priority == 'medium' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                            {% elif incident.priority == 'high' %}bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
+                            {% elif incident.priority == 'critical' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                            {% endif %}">
+                            {{ incident.get_priority_display }}
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-muted-foreground">Assigned to</h3>
+                    <p class="mt-1 text-sm">{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username|default:"Unassigned" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Timeline -->
     <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
         <div class="p-6">
-            <h2 class="text-xl font-semibold mb-6">Historique des événements</h2>
+            <h2 class="text-xl font-semibold mb-6">Events history</h2>
             
             <div class="flow-root">
                 <ul role="list" class="-mb-8">
@@ -86,21 +112,21 @@
                                     </div>
                                     <div class="text-sm text-muted-foreground mb-2">
                                         {% if event.type == 'creation' %}
-                                            A créé l'incident
+                                            has created the incident
                                         {% elif event.type == 'status_change' %}
-                                            A changé le statut de <span class="font-medium">{{ event.old_value }}</span> à <span class="font-medium">{{ event.new_value }}</span>
+                                            Has changed status of <span class="font-medium">{{ event.old_value }}</span> à <span class="font-medium">{{ event.new_value }}</span>
                                         {% elif event.type == 'priority_change' %}
-                                            A modifié la priorité de <span class="font-medium">{{ event.old_value }}</span> à <span class="font-medium">{{ event.new_value }}</span>
+                                            Has changed priority to <span class="font-medium">{{ event.old_value }}</span> à <span class="font-medium">{{ event.new_value }}</span>
                                         {% elif event.type == 'assignment' %}
                                             {% if event.new_value %}
-                                            A assigné l'incident à <span class="font-medium">{{ event.new_value }}</span>
+                                            Has assigned incident to <span class="font-medium">{{ event.new_value }}</span>
                                             {% else %}
-                                            A retiré l'assignation de <span class="font-medium">{{ event.old_value }}</span>
+                                            Has removed incident of <span class="font-medium">{{ event.old_value }}</span>
                                             {% endif %}
                                         {% elif event.type == 'comment' %}
-                                            A ajouté un commentaire
+                                            Has added a comment
                                         {% elif event.type == 'attachment' %}
-                                            A ajouté une pièce jointe
+                                            Has added a file
                                         {% endif %}
                                     </div>
 
@@ -127,7 +153,7 @@
                     </li>
                     {% empty %}
                     <li class="text-center py-8 text-muted-foreground">
-                        Aucun événement dans l'historique.
+                        No event in history
                     </li>
                     {% endfor %}
                 </ul>

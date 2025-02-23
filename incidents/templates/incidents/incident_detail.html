@@ -14,12 +14,12 @@
             <a href="{% url 'incident_list' %}" 
                class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>
-                Retour
+                Back
             </a>
             <a href="{% url 'incident_update' incident.id %}" 
                class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
                 <i class="fas fa-edit mr-2"></i>
-                Modifier
+                Edit
             </a>
         </div>
     </div>
@@ -29,11 +29,11 @@
         <!-- Informations de l'incident -->
         <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
             <div class="p-6">
-                <h2 class="text-xl font-semibold mb-6">Informations de l'incident</h2>
+                <h2 class="text-xl font-semibold mb-6">Incident informations</h2>
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Statut -->
                     <div class="sm:col-span-2">
-                        <dt class="text-sm font-medium text-muted-foreground">Statut</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Status</dt>
                         <dd class="mt-1">
                             <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                                 {% if incident.status == 'nouveau' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
@@ -47,7 +47,7 @@
 
                     <!-- Priorité -->
                     <div class="sm:col-span-2">
-                        <dt class="text-sm font-medium text-muted-foreground">Priorité</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Priority</dt>
                         <dd class="mt-1">
                             <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                                 {% if incident.priority == 'basse' %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200
@@ -62,31 +62,31 @@
 
                     <!-- Catégorie -->
                     <div class="sm:col-span-2">
-                        <dt class="text-sm font-medium text-muted-foreground">Catégorie</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Category</dt>
                         <dd class="mt-1 text-sm">{{ incident.get_category_display }}</dd>
                     </div>
 
                     <!-- Créé par -->
                     <div>
-                        <dt class="text-sm font-medium text-muted-foreground">Créé par</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Created by</dt>
                         <dd class="mt-1 text-sm">{{ incident.created_by.get_full_name|default:incident.created_by.username }}</dd>
                     </div>
 
                     <!-- Assigné à -->
                     <div>
-                        <dt class="text-sm font-medium text-muted-foreground">Assigné à</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Assigned to</dt>
                         <dd class="mt-1 text-sm">{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username|default:"Non assigné" }}</dd>
                     </div>
 
                     <!-- Date de création -->
                     <div>
-                        <dt class="text-sm font-medium text-muted-foreground">Date de création</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Creation date</dt>
                         <dd class="mt-1 text-sm">{{ incident.created_at|date:"d/m/Y H:i" }}</dd>
                     </div>
 
                     <!-- Dernière mise à jour -->
                     <div>
-                        <dt class="text-sm font-medium text-muted-foreground">Dernière mise à jour</dt>
+                        <dt class="text-sm font-medium text-muted-foreground">Last update</dt>
                         <dd class="mt-1 text-sm">{{ incident.updated_at|date:"d/m/Y H:i" }}</dd>
                     </div>
                 </dl>
@@ -103,7 +103,7 @@
 
                 {% if incident.attachment %}
                 <div class="mt-6">
-                    <h3 class="text-lg font-medium mb-3">Pièce jointe</h3>
+                    <h3 class="text-lg font-medium mb-3">File</h3>
                     <a href="{{ incident.attachment.url }}" 
                        class="inline-flex items-center px-3 py-2 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                        target="_blank">
@@ -120,7 +120,7 @@
     <!-- Section des commentaires -->
     <div class="mt-8 bg-card text-card-foreground rounded-lg border shadow-sm">
         <div class="p-6">
-            <h2 class="text-xl font-semibold mb-6">Commentaires</h2>
+            <h2 class="text-xl font-semibold mb-6">Comments</h2>
 
             <!-- Liste des commentaires -->
             <div class="space-y-4 mb-8">
@@ -138,30 +138,30 @@
                 </div>
                 {% empty %}
                 <p class="text-muted-foreground text-sm italic text-center py-4">
-                    Aucun commentaire pour cet incident.
+                    No commentfor this incident.
                 </p>
                 {% endfor %}
             </div>
 
             <!-- Formulaire d'ajout de commentaire -->
             <div class="border-t border-border pt-6">
-                <h3 class="text-lg font-medium mb-4">Ajouter un commentaire</h3>
+                <h3 class="text-lg font-medium mb-4">Add a comment</h3>
                 <form method="post" action="{% url 'add_comment' incident.id %}" class="space-y-4">
                     {% csrf_token %}
                     <div>
-                        <label for="content" class="sr-only">Commentaire</label>
+                        <label for="content" class="sr-only">Comment</label>
                         <textarea id="content" 
                                   name="content" 
                                   rows="4"
                                   required
-                                  placeholder="Votre commentaire..."
+                                  placeholder="Your comment..."
                                   class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
                     </div>
                     <div class="flex justify-end">
                         <button type="submit"
                                 class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                             <i class="fas fa-paper-plane mr-2"></i>
-                            Envoyer
+                            Send
                         </button>
                     </div>
                 </form>

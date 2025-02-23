@@ -304,7 +304,7 @@ def export_yearly_report(request, year):
     ws.title = f"Rapport {year}"
     
     # En-têtes
-    headers = ['Mois', 'Nombre d\'incidents', 'Temps moyen de résolution']
+    headers = ['Month', 'Number of incidents', 'Resolution average time']
     ws.append(headers)
     
     # Données mensuelles
@@ -331,9 +331,9 @@ def dashboard(request):
     total_incidents = Incident.objects.count()
     context = {
         'total_incidents': total_incidents,
-        'open_incidents': Incident.objects.filter(status='nouveau').count(),
-        'in_progress_incidents': Incident.objects.filter(status='en_cours').count(),
-        'resolved_incidents': Incident.objects.filter(status='résolu').count(),
+        'open_incidents': Incident.objects.filter(status='new').count(),
+        'in_progress_incidents': Incident.objects.filter(status='in_progress').count(),
+        'resolved_incidents': Incident.objects.filter(status='resolved').count(),
         'recent_incidents': Incident.objects.order_by('-created_at')[:5],
         'categories': Incident.objects.values('severity').annotate(
             count=Count('id'),

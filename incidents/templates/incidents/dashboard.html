@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}Tableau de bord{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <h1 class="text-3xl font-bold tracking-tight">Tableau de bord</h1>
+    <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
     
-    <!-- Statistiques -->
+    <!-- Statistics -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Total des incidents -->
+        <!-- Total incidents -->
         <div class="bg-card overflow-hidden rounded-lg shadow">
             <div class="p-5">
                 <div class="flex items-center">
@@ -16,7 +16,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">Total des incidents</dt>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">Total Incidents</dt>
                             <dd class="text-3xl font-semibold">{{ total_incidents }}</dd>
                         </dl>
                     </div>
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Incidents ouverts -->
+        <!-- Open incidents -->
         <div class="bg-card overflow-hidden rounded-lg shadow">
             <div class="p-5">
                 <div class="flex items-center">
@@ -33,7 +33,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">Incidents ouverts</dt>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">Open Incidents</dt>
                             <dd class="text-3xl font-semibold">{{ open_incidents }}</dd>
                         </dl>
                     </div>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <!-- Incidents en cours -->
+        <!-- In Progress -->
         <div class="bg-card overflow-hidden rounded-lg shadow">
             <div class="p-5">
                 <div class="flex items-center">
@@ -50,7 +50,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">En cours</dt>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">In Progress</dt>
                             <dd class="text-3xl font-semibold">{{ in_progress_incidents }}</dd>
                         </dl>
                     </div>
@@ -58,7 +58,7 @@
             </div>
         </div>
 
-        <!-- Incidents résolus -->
+        <!-- Resolved -->
         <div class="bg-card overflow-hidden rounded-lg shadow">
             <div class="p-5">
                 <div class="flex items-center">
@@ -67,7 +67,7 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">Résolus</dt>
+                            <dt class="text-sm font-medium text-muted-foreground truncate">Resolved</dt>
                             <dd class="text-3xl font-semibold">{{ resolved_incidents }}</dd>
                         </dl>
                     </div>
@@ -76,12 +76,12 @@
         </div>
     </div>
 
-    <!-- Graphiques et listes -->
+    <!-- Charts and lists -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <!-- Incidents récents -->
+        <!-- Recent incidents -->
         <div class="bg-card rounded-lg shadow">
             <div class="p-6">
-                <h2 class="text-xl font-semibold mb-4">Incidents récents</h2>
+                <h2 class="text-xl font-semibold mb-4">Recent Incidents</h2>
                 <div class="flow-root">
                     <ul role="list" class="divide-y divide-border">
                         {% for incident in recent_incidents %}
@@ -113,16 +113,16 @@
                 </div>
                 <div class="mt-6">
                     <a href="{% url 'incident_list' %}" class="text-primary hover:text-primary/80">
-                        Voir tous les incidents →
+                        View all incidents →
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Distribution par catégorie -->
+        <!-- Category distribution -->
         <div class="bg-card rounded-lg shadow">
             <div class="p-6">
-                <h2 class="text-xl font-semibold mb-4">Distribution par catégorie</h2>
+                <h2 class="text-xl font-semibold mb-4">Category Distribution</h2>
                 <div class="space-y-4">
                     {% for category in categories %}
                     <div>
