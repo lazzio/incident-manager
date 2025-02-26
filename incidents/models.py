@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class Severity(models.TextChoices):
     CRITICAL = 'CRITICAL', _('Critical')
@@ -45,6 +46,13 @@ class Incident(models.Model):
         max_length=20,
         choices=Category.choices,
         default=Category.CATEGORIE
+    )
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_incidents'
     )
     
     def save(self, *args, **kwargs):

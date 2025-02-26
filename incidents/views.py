@@ -1,21 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db.models import Count
-from django.db.models.functions import TruncMonth, TruncYear
+from django.db.models.functions import TruncMonth
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Count, Avg, F, ExpressionWrapper, fields
 
-from .models import Incident, Severity, IncidentAttachment, IncidentLink, IncidentUpdate
+from .models import Incident, Severity
 from .forms import (
-    IncidentForm, IncidentAttachmentForm, IncidentLinkForm, 
-    IncidentUpdateForm, AttachmentFormSet, LinkFormSet
+    IncidentForm, IncidentUpdateForm, AttachmentFormSet, LinkFormSet
 )
 
 import datetime
-import json
 
 class IncidentListView(LoginRequiredMixin, ListView):
     model = Incident
@@ -23,10 +21,31 @@ class IncidentListView(LoginRequiredMixin, ListView):
     context_object_name = 'incidents'
     paginate_by = 10
 
+    def get_queryset(self):
+        queryset = Incident.objects.all()
+        # Récupération des paramètres de filtrage
+        search = self.request.GET.get('search')
+        status = self.request.GET.get('status')
+        severity = self.request.GET.get('severity')
+
+        # Application des filtres
+        if search:
+            queryset = queryset.filter(title__icontains=search)
+        
+        if status:
+            queryset = queryset.filter(status=status)
+            
+        if severity:
+            queryset = queryset.filter(severity=severity)
+
+        # Tri par date de création décroissante
+        print(queryset)
+        return queryset.order_by('-created_at')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['status_choices'] = Incident.STATUS_CHOICES
-        context['priority_choices'] = Severity.choices
+        context['severity_choices'] = Severity.choices
         return context
 
 
@@ -71,7 +90,7 @@ def create_incident(request):
         'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
-        'priority_choices': Severity.choices
+        'severity_choices': Severity.choices
     })
 
 

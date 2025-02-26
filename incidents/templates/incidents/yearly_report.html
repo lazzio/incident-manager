@@ -144,17 +144,17 @@
 
         <!-- Répartition par priorité -->
         <div class="bg-card text-card-foreground rounded-lg border shadow-sm p-6 print-break-inside-avoid">
-            <h2 class="text-xl font-semibold mb-6">Repartition by priority</h2>
+            <h2 class="text-xl font-semibold mb-6">Repartition by severity</h2>
             <div class="space-y-4">
-                {% for priority in priority_stats %}
+                {% for severity in priority_stats %}
                 <div>
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-medium">{{ priority.name }}</span>
-                        <span class="text-sm text-muted-foreground">{{ priority.count }} incidents ({{ priority.percentage }}%)</span>
+                        <span class="text-sm font-medium">{{ severity.name }}</span>
+                        <span class="text-sm text-muted-foreground">{{ severity.count }} incidents ({{ severity.percentage }}%)</span>
                     </div>
                     <div class="w-full bg-muted rounded-full h-2">
-                        <div class="h-2 rounded-full {% if priority.level == 'basse' %}bg-green-500{% elif priority.level == 'moyenne' %}bg-yellow-500{% elif priority.level == 'haute' %}bg-orange-500{% else %}bg-red-500{% endif %}"
-                             style="width: {{ priority.percentage }}%"></div>
+                        <div class="h-2 rounded-full {% if severity.level == 'basse' %}bg-green-500{% elif severity.level == 'moyenne' %}bg-yellow-500{% elif severity.level == 'haute' %}bg-orange-500{% else %}bg-red-500{% endif %}"
+                             style="width: {{ severity.percentage }}%"></div>
                     </div>
                 </div>
                 {% endfor %}
