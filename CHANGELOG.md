@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/lazzio/incident-manager/-/compare/v0.2.1...v0.2.2) (2025-02-26)
+
+### Bug Fixes
+
+* detail view add-comment ([0356582](https://github.com/lazzio/incident-manager/-/commit/03565822ee4099b79c3affed804e62473f764fa7))
+* remove priority notion ([add33f1](https://github.com/lazzio/incident-manager/-/commit/add33f1459115bb4a74558b1e947351276300250))
+
 ## [0.2.1](https://github.com/lazzio/incident-manager/-/compare/v0.2.0...v0.2.1) (2025-02-23)
 
 ### Bug Fixes
