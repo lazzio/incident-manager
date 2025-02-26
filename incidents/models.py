@@ -100,3 +100,16 @@ class IncidentUpdate(models.Model):
     
     class Meta:
         ordering = ['-timestamp']
+
+
+class Comment(models.Model):
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    def __str__(self):
+        return f"Comment on {self.incident.title} at {self.created_at}"
+    
+    class Meta:
+        ordering = ['-created_at']

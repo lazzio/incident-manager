@@ -140,11 +140,11 @@
                             {{ comment.created_at|date:"d/m/Y H:i" }}
                         </span>
                     </div>
-                    <div class="text-sm whitespace-pre-wrap">{{ comment.content }}</div>
+                    <div class="text-sm whitespace-pre-wrap">{{ comment.text }}</div>
                 </div>
                 {% empty %}
                 <p class="text-muted-foreground text-sm italic text-center py-4">
-                    No commentfor this incident.
+                    No comments for this incident.
                 </p>
                 {% endfor %}
             </div>
@@ -155,17 +155,13 @@
                 <form method="post" action="{% url 'add_comment' incident.id %}" class="space-y-4">
                     {% csrf_token %}
                     <div>
-                        <label for="content" class="sr-only">Comment</label>
-                        <textarea id="content" 
-                                  name="content" 
-                                  rows="4"
-                                  required
+                        <label for="text" class="sr-only">Comment</label>
+                        <textarea id="text" name="text" rows="4" required
                                   placeholder="Your comment..."
-                                  class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
+                                  class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea>
                     </div>
                     <div class="flex justify-end">
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                             <i class="fas fa-paper-plane mr-2"></i>
                             Send
                         </button>

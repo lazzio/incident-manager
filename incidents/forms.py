@@ -1,5 +1,5 @@
 from django import forms
-from .models import Incident, IncidentAttachment, IncidentLink, IncidentUpdate
+from .models import Incident, IncidentAttachment, IncidentLink, IncidentUpdate, Comment
 from django.forms import inlineformset_factory
 
 class IncidentForm(forms.ModelForm):
@@ -36,6 +36,15 @@ class IncidentUpdateForm(forms.ModelForm):
         fields = ['update_text']
         widgets = {
             'update_text': forms.Textarea(attrs={'rows': 3}),
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
         }
 
 
