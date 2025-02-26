@@ -8,6 +8,7 @@ urlpatterns = [
     path('incident/<int:pk>/edit/', views.update_incident, name='incident_update'),
     path('incident/<int:pk>/delete/', views.IncidentDeleteView.as_view(), name='incident_delete'),
     path('incident/<int:pk>/add-update/', views.add_incident_update, name='add_incident_update'),
+    path('incident/<int:pk>/add-comment/', views.add_comment, name='add_comment'),  # URL corrigée
     path('timeline/', views.IncidentTimelineView.as_view(), name='incident_timeline'),
     path('report/', views.yearly_report, name='yearly_report'),
     path('report/<int:year>/export/', views.export_yearly_report, name='export_yearly_report'),

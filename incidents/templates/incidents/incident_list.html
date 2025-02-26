@@ -35,12 +35,12 @@
                         </select>
                     </div>
                     <div>
-                        <label for="priority" class="block text-sm font-medium">Priority</label>
-                        <select name="priority" id="priority"
+                        <label for="severity" class="block text-sm font-medium">Severity</label>
+                        <select name="severity" id="severity"
                                 class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring">
                             <option value="">All</option>
-                            {% for value, label in priority_choices %}
-                            <option value="{{ value }}" {% if request.GET.priority == value %}selected{% endif %}>{{ label }}</option>
+                            {% for value, label in severity_choices %}
+                            <option value="{{ value }}" {% if request.GET.severity == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -65,7 +65,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Title</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Priority</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Severity</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Creation date</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                     </tr>
@@ -86,12 +86,12 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                {% if incident.priority == 'basse' %}bg-gray-100 text-gray-800
-                                {% elif incident.priority == 'moyenne' %}bg-blue-100 text-blue-800
-                                {% elif incident.priority == 'haute' %}bg-orange-100 text-orange-800
-                                {% elif incident.priority == 'critique' %}bg-red-100 text-red-800
+                                {% if incident.severity == 'basse' %}bg-gray-100 text-gray-800
+                                {% elif incident.severity == 'moyenne' %}bg-blue-100 text-blue-800
+                                {% elif incident.severity == 'haute' %}bg-orange-100 text-orange-800
+                                {% elif incident.severity == 'critique' %}bg-red-100 text-red-800
                                 {% endif %}">
-                                {{ incident.get_priority_display }}
+                                {{ incident.get_severity_display }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">

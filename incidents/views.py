@@ -1,21 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db.models import Count
-from django.db.models.functions import TruncMonth, TruncYear
+from django.db.models.functions import TruncMonth
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Count, Avg, F, ExpressionWrapper, fields
 
-from .models import Incident, Severity, IncidentAttachment, IncidentLink, IncidentUpdate
+from .models import Incident, Severity, Comment
 from .forms import (
-    IncidentForm, IncidentAttachmentForm, IncidentLinkForm, 
-    IncidentUpdateForm, AttachmentFormSet, LinkFormSet
+    IncidentForm, IncidentUpdateForm, AttachmentFormSet, LinkFormSet, CommentForm
 )
 
 import datetime
-import json
 
 class IncidentListView(LoginRequiredMixin, ListView):
     model = Incident
@@ -23,10 +21,31 @@ class IncidentListView(LoginRequiredMixin, ListView):
     context_object_name = 'incidents'
     paginate_by = 10
 
+    def get_queryset(self):
+        queryset = Incident.objects.all()
+        # Récupération des paramètres de filtrage
+        search = self.request.GET.get('search')
+        status = self.request.GET.get('status')
+        severity = self.request.GET.get('severity')
+
+        # Application des filtres
+        if search:
+            queryset = queryset.filter(title__icontains=search)
+        
+        if status:
+            queryset = queryset.filter(status=status)
+            
+        if severity:
+            queryset = queryset.filter(severity=severity)
+
+        # Tri par date de création décroissante
+        print(queryset)
+        return queryset.order_by('-created_at')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['status_choices'] = Incident.STATUS_CHOICES
-        context['priority_choices'] = Severity.choices
+        context['severity_choices'] = Severity.choices
         return context
 
 
@@ -39,6 +58,8 @@ class IncidentDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['updates'] = self.object.updates.all()
         context['update_form'] = IncidentUpdateForm()
+        context['comments'] = self.object.comments.all()
+        context['comment_form'] = CommentForm()
         return context
 
 
@@ -71,7 +92,7 @@ def create_incident(request):
         'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
-        'priority_choices': Severity.choices
+        'severity_choices': Severity.choices
     })
 
 
@@ -268,39 +289,26 @@ def incident_chart_data(request):
     
     return JsonResponse(data)
 
-
-# For AJAX chart data
 @login_required
-def incident_chart_data(request):
-    year = request.GET.get('year', datetime.datetime.now().year)
-    incidents = Incident.objects.filter(start_date__year=year)
+def add_comment(request, pk):
+    incident = get_object_or_404(Incident, pk=pk)
     
-    # Monthly data
-    monthly_data = list(incidents.annotate(
-        month=TruncMonth('start_date')
-    ).values('month').annotate(count=Count('id')).order_by('month'))
+    if request.method == 'POST':
+        # Vérifier si le paramètre text est directement dans POST
+        if 'text' in request.POST:
+            text = request.POST.get('text')
+            comment = Comment(incident=incident, text=text, created_by=request.user)
+            comment.save()
+        # Sinon utiliser le formulaire
+        else:
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.incident = incident
+                comment.created_by = request.user
+                comment.save()
     
-    # Convert to chart-friendly format
-    months = []
-    counts = []
-    
-    for item in monthly_data:
-        months.append(item['month'].strftime('%b'))
-        counts.append(item['count'])
-    
-    # Severity data
-    severity_data = list(incidents.values('severity').annotate(count=Count('id')))
-    severity_labels = [item['severity'] for item in severity_data]
-    severity_counts = [item['count'] for item in severity_data]
-    
-    data = {
-        'months': months,
-        'counts': counts,
-        'severity_labels': severity_labels,
-        'severity_counts': severity_counts,
-    }
-    
-    return JsonResponse(data)
+    return redirect('incident_detail', pk=pk)
 
 @login_required
 def export_yearly_report(request, year):

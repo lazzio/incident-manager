@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class Severity(models.TextChoices):
     CRITICAL = 'CRITICAL', _('Critical')
@@ -45,6 +46,13 @@ class Incident(models.Model):
         max_length=20,
         choices=Category.choices,
         default=Category.CATEGORIE
+    )
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_incidents'
     )
     
     def save(self, *args, **kwargs):
@@ -92,3 +100,16 @@ class IncidentUpdate(models.Model):
     
     class Meta:
         ordering = ['-timestamp']
+
+
+class Comment(models.Model):
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    def __str__(self):
+        return f"Comment on {self.incident.title} at {self.created_at}"
+    
+    class Meta:
+        ordering = ['-created_at']
