@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.conf import settings
+import os
 
 class Severity(models.TextChoices):
     CRITICAL = 'CRITICAL', _('Critical')
@@ -113,3 +114,43 @@ class Comment(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class IncidentFile(models.Model):
+    incident = models.ForeignKey('Incident', on_delete=models.CASCADE, related_name='files')
+    file = models.FileField(upload_to='incident_files/%Y/%m/')
+    filename = models.CharField(max_length=255, blank=True)
+    content_type = models.CharField(max_length=100, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, 
+                                   null=True, related_name='uploaded_files')
+
+    def __str__(self):
+        return f"File {self.filename} for incident #{self.incident.id}"
+    
+    def save(self, *args, **kwargs):
+        if not self.filename and self.file:
+            self.filename = os.path.basename(self.file.name)
+        super().save(*args, **kwargs)
+    
+    @property
+    def is_image(self):
+        image_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+        return self.content_type in image_types
+    
+    @property
+    def file_icon(self):
+        if self.is_image:
+            return 'fa-image'
+        elif 'pdf' in self.content_type:
+            return 'fa-file-pdf'
+        elif 'word' in self.content_type or 'office' in self.content_type:
+            return 'fa-file-word'
+        elif 'excel' in self.content_type or 'spreadsheet' in self.content_type:
+            return 'fa-file-excel'
+        elif 'zip' in self.content_type or 'compressed' in self.content_type:
+            return 'fa-file-archive'
+        elif 'text' in self.content_type:
+            return 'fa-file-alt'
+        else:
+            return 'fa-file'
