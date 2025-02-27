@@ -109,6 +109,14 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     
+    def save(self, *args, **kwargs):
+        # Call the original save method to save the comment
+        super().save(*args, **kwargs)
+        
+        # Update the incident's updated_at field
+        # Note: This will trigger the incident's save method as well
+        self.incident.save(update_fields=['updated_at'])
+        
     def __str__(self):
         return f"Comment on {self.incident.title} at {self.created_at}"
     

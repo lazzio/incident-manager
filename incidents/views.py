@@ -40,7 +40,6 @@ class IncidentListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(severity=severity)
 
         # Tri par date de création décroissante
-        print(queryset)
         return queryset.order_by('-created_at')
     
     def get_context_data(self, **kwargs):
