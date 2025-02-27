@@ -1,3 +1,9 @@
+## [0.4.0](https://github.com/lazzio/incident-manager/-/compare/v0.3.0...v0.4.0) (2025-02-27)
+
+### Features
+
+* modal with open-close image file preview ([#14](https://github.com/lazzio/incident-manager/-/issues/14)) ([e93095e](https://github.com/lazzio/incident-manager/-/commit/e93095e404f65ba2910aa2d7e72e13eadada1e71))
+
 ## [0.3.0](https://github.com/lazzio/incident-manager/-/compare/v0.2.2...v0.3.0) (2025-02-27)
 
 ### Features
