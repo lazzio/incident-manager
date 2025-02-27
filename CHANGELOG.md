@@ -1,3 +1,9 @@
+## [0.5.0](https://github.com/lazzio/incident-manager/-/compare/v0.4.0...v0.5.0) (2025-02-27)
+
+### Features
+
+* update updated date when a new comment is done ([#15](https://github.com/lazzio/incident-manager/-/issues/15)) ([dce3a82](https://github.com/lazzio/incident-manager/-/commit/dce3a8212e4861efa8eaa962d0faff0a63269bfb))
+
 ## [0.4.0](https://github.com/lazzio/incident-manager/-/compare/v0.3.0...v0.4.0) (2025-02-27)
 
 ### Features
