@@ -1,6 +1,6 @@
 {
   "name": "incident_management",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "main": "index.js",
   "private": true,
   "repository": "git@github.com:lazzio/incident-manager.git",

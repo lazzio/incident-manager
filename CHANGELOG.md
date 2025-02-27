@@ -1,3 +1,9 @@
+## [0.3.0](https://github.com/lazzio/incident-manager/-/compare/v0.2.2...v0.3.0) (2025-02-27)
+
+### Features
+
+* upload files and save incident form ([#13](https://github.com/lazzio/incident-manager/-/issues/13)) ([670ea0a](https://github.com/lazzio/incident-manager/-/commit/670ea0a6d8bd8c9fe7e72c5aada1f9e951e99c37))
+
 ## [0.2.2](https://github.com/lazzio/incident-manager/-/compare/v0.2.1...v0.2.2) (2025-02-26)
 
 ### Bug Fixes
