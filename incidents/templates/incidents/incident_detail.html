@@ -134,7 +134,8 @@
                 <div class="bg-muted/30 rounded-lg p-4 flex flex-col">
                     <!-- Prévisualisation si c'est une image -->
                     {% if file.is_image %}
-                    <div class="h-32 flex items-center justify-center bg-black/5 rounded-md mb-3 overflow-hidden">
+                    <div class="h-32 flex items-center justify-center bg-black/5 rounded-md mb-3 overflow-hidden cursor-pointer"
+                         onclick="openImageModal('{{ file.file.url }}', '{{ file.filename }}')">
                         <img src="{{ file.file.url }}" alt="{{ file.filename }}" 
                              class="h-full w-full object-contain">
                     </div>
@@ -153,13 +154,21 @@
                             <span>{{ file.uploaded_at|date:"d/m/Y H:i" }}</span>
                             <span>{{ file.uploaded_by.username }}</span>
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-3 flex gap-2">
                             <a href="{{ file.file.url }}" target="_blank"
                                class="inline-flex items-center px-3 py-1 rounded-md text-xs
                                       bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
                                 <i class="fas fa-download mr-1"></i>
                                 Download
                             </a>
+                            {% if file.is_image %}
+                            <button onclick="openImageModal('{{ file.file.url }}', '{{ file.filename }}')"
+                                    class="inline-flex items-center px-3 py-1 rounded-md text-xs
+                                           bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors">
+                                <i class="fas fa-eye mr-1"></i>
+                                Aperçu
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -222,4 +231,103 @@
         </div>
     </div>
 </div>
+
+<!-- Modal pour prévisualiser les images -->
+<div id="imageModal" class="fixed inset-0 bg-black/0 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
+    <div id="modalContainer" class="bg-card text-card-foreground rounded-lg shadow-lg max-w-4xl w-full mx-4 overflow-hidden transform scale-95 transition-all duration-300 ease-in-out">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 id="modalTitle" class="text-xl font-semibold truncate">Aperçu du fichier</h3>
+            <button id="closeModal" class="rounded-full p-1 hover:bg-muted transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-4">
+            <div id="modalContent" class="flex items-center justify-center">
+                <!-- Le contenu de l'image sera injecté ici -->
+            </div>
+        </div>
+        <div class="flex justify-end items-center p-4 border-t gap-2">
+            <a id="downloadLink" href="#" class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                <i class="fas fa-download mr-2"></i>
+                Télécharger
+            </a>
+            <button id="closeModalBtn" class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
+                Fermer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Ajouter le script JavaScript pour gérer la modale -->
+<script>
+    function openImageModal(imageUrl, filename) {
+        // Récupérer les éléments de la modale
+        const modal = document.getElementById('imageModal');
+        const modalContainer = document.getElementById('modalContainer');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const downloadLink = document.getElementById('downloadLink');
+        
+        // Mettre à jour le contenu de la modale
+        modalTitle.textContent = filename;
+        modalContent.innerHTML = `<img src="${imageUrl}" alt="${filename}" class="max-h-[70vh] max-w-full object-contain">`;
+        downloadLink.href = imageUrl;
+        
+        // Afficher la modale avec animation
+        modal.classList.remove('pointer-events-none');
+        
+        // Forcer un reflow pour que les transitions fonctionnent
+        void modal.offsetWidth;
+        
+        // Appliquer l'animation
+        modal.classList.add('opacity-100');
+        modal.classList.add('bg-black/50');
+        modalContainer.classList.remove('scale-95');
+        modalContainer.classList.add('scale-100');
+        
+        // Empêcher le défilement de la page
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById('imageModal');
+        const modalContainer = document.getElementById('modalContainer');
+        
+        // Masquer la modale avec animation
+        modal.classList.remove('opacity-100');
+        modal.classList.remove('bg-black/50');
+        modal.classList.add('opacity-0');
+        modalContainer.classList.remove('scale-100');
+        modalContainer.classList.add('scale-95');
+        
+        // Attendre la fin de l'animation avant de cacher complètement
+        setTimeout(() => {
+            modal.classList.add('pointer-events-none');
+            document.body.style.overflow = '';
+        }, 300);
+    }
+    
+    // Fermer la modale en cliquant sur le bouton de fermeture
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    
+    // Fermer la modale en cliquant sur le bouton Fermer
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    
+    // Fermer la modale en cliquant à l'extérieur de celle-ci
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+    
+    // Fermer la modale avec la touche Échap
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('imageModal').classList.contains('pointer-events-none')) {
+            closeModal();
+        }
+    });
+</script>
+
 {% endblock %}
