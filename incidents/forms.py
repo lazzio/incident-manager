@@ -1,21 +1,38 @@
 from django import forms
-from .models import Incident, IncidentAttachment, IncidentLink, IncidentUpdate, Comment
+from .models import Incident, IncidentAttachment, IncidentLink, IncidentUpdate, Comment, IncidentFile
 from django.forms import inlineformset_factory
+from django.utils import timezone
 
 class IncidentForm(forms.ModelForm):
+    files = forms.FileField(
+        required=False,
+        help_text='Vous pouvez sélectionner plusieurs fichiers.'
+    )
+    
     class Meta:
         model = Incident
         fields = [
             'title', 'category', 'status', 'severity',
-            'start_date', 'end_date', 'details', 'resolution_process', 'impact'
+            'start_date', 'end_date', 'details', 'resolution_process', 'impact', 'assigned_to'
         ]
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'details': forms.Textarea(attrs={'rows': 5}),
-            'resolution_process': forms.Textarea(attrs={'rows': 5}),
-            'impact': forms.Textarea(attrs={'rows': 5}),
+            'resolution_process': forms.Textarea(attrs={'rows': 3}),
+            'impact': forms.Textarea(attrs={'rows': 3}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Rendre la date de début obligatoire avec valeur par défaut
+        if not self.initial.get('start_date'):
+            self.initial['start_date'] = timezone.now().strftime('%Y-%m-%dT%H:%M')
+        
+        # Rendre certains champs non obligatoires dans le formulaire
+        # car nous fournirons des valeurs par défaut dans la vue
+        self.fields['resolution_process'].required = False
+        self.fields['impact'].required = False
 
 
 class IncidentAttachmentForm(forms.ModelForm):

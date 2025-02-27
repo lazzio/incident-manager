@@ -171,3 +171,6 @@ cython_debug/
 .pypirc
 
 node_modules/
+
+media/incident_files/*
+!media/incident_files/.gitkeep
