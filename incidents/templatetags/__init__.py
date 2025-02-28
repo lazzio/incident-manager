@@ -1,1 +1,1 @@
-# Fichier vide nécessaire pour que Python traite le répertoire comme un package
+# Empty file to make the directory a Python package

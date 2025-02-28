@@ -111,7 +111,37 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      fontFamily: {
+        sans: ['Quicksand', 'sans-serif'],
+      },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/forms"),
+    require("daisyui") // Ajout du plugin DaisyUI
+  ],
+  // Configuration de DaisyUI (facultatif)
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          "primary": "#99C7FF",
+          "secondary": "#FFE499",
+          "accent": "#CC99FF",
+          "neutral": "#F5F5F5",
+          "base-100": "#ffffff",
+          "info": "#3ABFF8",
+          "success": "#36D399",
+          "warning": "#FBBD23",
+          "error": "#F87272",
+        },
+      },
+    ],
+    darkTheme: "dark",
+    base: true,
+    styled: true,
+    utils: true,
+    logs: true,
+  },
 }

@@ -1,163 +1,121 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Incident timeline #{{ incident.id }}{% endblock %}
+{% block title %}Incident Timeline{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- En-tête -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h1 class="text-3xl font-bold text-foreground">
-            Incident timeline #{{ incident.id }}
-        </h1>
-        <div class="flex gap-3">
-            <a href="{% url 'incident_detail' incident.id %}" 
-               class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Return to details
-            </a>
+<div class="space-y-6">
+    <!-- En-tête avec breadcrumbs -->
+    <div>
+        <div class="text-sm breadcrumbs">
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Home</a></li>
+                <li>Timeline</li>
+            </ul>
         </div>
-    </div>
-
-    <!-- Résumé de l'incident -->
-    <div class="bg-card text-card-foreground rounded-lg border shadow-sm mb-8">
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                    <h3 class="text-sm font-medium text-muted-foreground">Title</h3>
-                    <p class="mt-1 text-sm">{{ incident.title }}</p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-medium text-muted-foreground">Status</h3>
-                    <p class="mt-1">
-                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                            {% if incident.status == 'new' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-                            {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                            {% elif incident.status == 'resolved' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                            {% endif %}">
-                            {{ incident.get_status_display }}
-                        </span>
-                    </p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-medium text-muted-foreground">Severity</h3>
-                    <p class="mt-1">
-                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                            {% if incident.severity == 'low' %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200
-                            {% elif incident.severity == 'medium' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-                            {% elif incident.severity == 'high' %}bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
-                            {% elif incident.severity == 'critical' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                            {% endif %}">
-                            {{ incident.get_severity_display }}
-                        </span>
-                    </p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-medium text-muted-foreground">Assigned to</h3>
-                    <p class="mt-1 text-sm">{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username|default:"Unassigned" }}</p>
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h1 class="text-3xl font-bold">Incident Timeline</h1>
+            <div class="flex gap-2">
+                <a href="{% url 'incident_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i>
+                    New incident
+                </a>
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        {{ selected_year }}
+                        <i class="fas fa-caret-down ml-2"></i>
+                    </label>
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                        {% for year in available_years %}
+                        <li><a href="?year={{ year }}" {% if year == selected_year %}class="active"{% endif %}>{{ year }}</a></li>
+                        {% empty %}
+                        <li><a class="disabled">No data available</a></li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <!-- Timeline -->
-    <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
-        <div class="p-6">
-            <h2 class="text-xl font-semibold mb-6">Events history</h2>
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i class="fas fa-clock mr-2"></i>
+                Timeline for {{ selected_year }}
+            </h2>
             
-            <div class="flow-root">
-                <ul role="list" class="-mb-8">
-                    {% for event in timeline %}
-                    <li>
-                        <div class="relative pb-8">
-                            {% if not forloop.last %}
-                            <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-border" aria-hidden="true"></span>
-                            {% endif %}
-                            <div class="relative flex space-x-3">
-                                <!-- Icône de l'événement -->
-                                <div>
-                                    <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-card
-                                        {% if event.type == 'creation' %}bg-green-500
-                                        {% elif event.type == 'status_change' %}bg-blue-500
-                                        {% elif event.type == 'priority_change' %}bg-orange-500
-                                        {% elif event.type == 'assignment' %}bg-purple-500
-                                        {% elif event.type == 'comment' %}bg-gray-500
-                                        {% elif event.type == 'attachment' %}bg-yellow-500
-                                        {% endif %}">
-                                        {% if event.type == 'creation' %}
-                                            <i class="fas fa-plus text-white text-sm"></i>
-                                        {% elif event.type == 'status_change' %}
-                                            <i class="fas fa-exchange-alt text-white text-sm"></i>
-                                        {% elif event.type == 'priority_change' %}
-                                            <i class="fas fa-exclamation text-white text-sm"></i>
-                                        {% elif event.type == 'assignment' %}
-                                            <i class="fas fa-user text-white text-sm"></i>
-                                        {% elif event.type == 'comment' %}
-                                            <i class="fas fa-comment text-white text-sm"></i>
-                                        {% elif event.type == 'attachment' %}
-                                            <i class="fas fa-paperclip text-white text-sm"></i>
-                                        {% endif %}
-                                    </span>
-                                </div>
-
-                                <!-- Contenu de l'événement -->
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <div class="text-sm font-medium text-foreground">
-                                            {{ event.user.get_full_name|default:event.user.username }}
-                                        </div>
-                                        <p class="text-sm text-muted-foreground">
-                                            {{ event.timestamp|date:"d/m/Y H:i" }}
-                                        </p>
-                                    </div>
-                                    <div class="text-sm text-muted-foreground mb-2">
-                                        {% if event.type == 'creation' %}
-                                            has created the incident
-                                        {% elif event.type == 'status_change' %}
-                                            Has changed status of <span class="font-medium">{{ event.old_value }}</span> à <span class="font-medium">{{ event.new_value }}</span>
-                                        {% elif event.type == 'priority_change' %}
-                                            Has changed severity to <span class="font-medium">{{ event.old_value }}</span> à <span class="font-medium">{{ event.new_value }}</span>
-                                        {% elif event.type == 'assignment' %}
-                                            {% if event.new_value %}
-                                            Has assigned incident to <span class="font-medium">{{ event.new_value }}</span>
-                                            {% else %}
-                                            Has removed incident of <span class="font-medium">{{ event.old_value }}</span>
-                                            {% endif %}
-                                        {% elif event.type == 'comment' %}
-                                            Has added a comment
-                                        {% elif event.type == 'attachment' %}
-                                            Has added a file
-                                        {% endif %}
-                                    </div>
-
-                                    {% if event.type == 'comment' and event.content %}
-                                    <div class="mt-2 text-sm bg-muted/30 rounded-md p-3 whitespace-pre-wrap">
-                                        {{ event.content }}
-                                    </div>
-                                    {% endif %}
-
-                                    {% if event.type == 'attachment' and event.file_url %}
-                                    <div class="mt-2">
-                                        <a href="{{ event.file_url }}" 
-                                           class="inline-flex items-center px-3 py-1 rounded-md text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                                           target="_blank">
-                                            <i class="fas fa-paperclip mr-2"></i>
-                                            {{ event.file_name }}
-                                            <i class="fas fa-external-link-alt ml-2"></i>
-                                        </a>
-                                    </div>
-                                    {% endif %}
-                                </div>
+            {% if incidents %}
+            <ul class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
+                {% for incident in incidents %}
+                <li>
+                    <div class="timeline-middle">
+                        {% if incident.severity == 'LOW' %}
+                        <div class="avatar placeholder">
+                            <div class="bg-neutral text-neutral-content w-8 rounded-full">
+                                <i class="fas fa-exclamation"></i>
                             </div>
                         </div>
-                    </li>
-                    {% empty %}
-                    <li class="text-center py-8 text-muted-foreground">
-                        No event in history
-                    </li>
-                    {% endfor %}
-                </ul>
+                        {% elif incident.severity == 'MEDIUM' %}
+                        <div class="avatar placeholder">
+                            <div class="bg-info text-info-content w-8 rounded-full">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                        </div>
+                        {% elif incident.severity == 'HIGH' %}
+                        <div class="avatar placeholder">
+                            <div class="bg-warning text-warning-content w-8 rounded-full">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                        </div>
+                        {% elif incident.severity == 'CRITICAL' %}
+                        <div class="avatar placeholder">
+                            <div class="bg-error text-error-content w-8 rounded-full">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-start md:text-end mb-10">
+                        <time class="font-mono">{{ incident.start_date|date:"j M Y, H:i" }}</time>
+                        <div class="text-lg font-black">{{ incident.title }}</div>
+                        <div class="text-sm">
+                            {% if incident.status == 'new' %}
+                                <span class="badge badge-info">New</span>
+                            {% elif incident.status == 'in_progress' %}
+                                <span class="badge badge-warning">In Progress</span>
+                            {% elif incident.status == 'resolved' %}
+                                <span class="badge badge-success">Resolved</span>
+                            {% endif %}
+                            
+                            {% if incident.end_date %}
+                            <span class="ml-2">Duration: {{ incident.duration }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr class="{% if incident.severity == 'LOW' %}bg-neutral{% elif incident.severity == 'MEDIUM' %}bg-info{% elif incident.severity == 'HIGH' %}bg-warning{% elif incident.severity == 'CRITICAL' %}bg-error{% endif %}"/>
+                    <div class="timeline-end mb-10">
+                        <div class="text-sm mb-2">{{ incident.details|truncatechars:150 }}</div>
+                        <div class="card-actions">
+                            <a href="{% url 'incident_detail' incident.id %}" class="btn btn-sm btn-outline">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="py-10 text-center">
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-calendar-xmark text-4xl text-base-content/30 mb-4"></i>
+                    <p class="text-base-content/50">No incidents found for {{ selected_year }}.</p>
+                    <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm mt-4">Create one now</a>
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
