@@ -353,12 +353,23 @@ def incident_chart_data(request):
     severity_labels = [item['severity'] for item in severity_data]
     severity_counts = [item['count'] for item in severity_data]
     
-    # Duration by severity
-    duration_by_severity = list(incidents.exclude(duration=None).values('severity').annotate(
-        avg_duration=Avg(
-            ExpressionWrapper(F('duration'), output_field=fields.DurationField()) / 3600000000  # Convert microseconds to hours
-        )
-    ).order_by('severity'))
+    # Duration by severity - Correction de l'erreur ici
+    duration_data = []
+    for severity in incidents.values_list('severity', flat=True).distinct():
+        avg_duration = incidents.filter(
+            severity=severity, 
+            duration__isnull=False
+        ).aggregate(
+            avg=Avg('duration')
+        )['avg']
+        
+        if avg_duration:
+            # Convertir la durée moyenne en heures (en secondes divisées par 3600)
+            hours = avg_duration.total_seconds() / 3600
+            duration_data.append({
+                'severity': severity,
+                'avg_duration': round(hours, 2)  # Arrondir à 2 décimales
+            })
     
     # Yearly trend data
     yearly_trend = []
@@ -374,7 +385,7 @@ def incident_chart_data(request):
         'counts': counts,
         'severity_labels': severity_labels,
         'severity_counts': severity_counts,
-        'duration_by_severity': duration_by_severity,
+        'duration_by_severity': duration_data,
         'yearly_trend': yearly_trend
     }
     

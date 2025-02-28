@@ -452,3 +452,201 @@
 </script>
 
 {% endblock %}
+
+{% block extra_js %}
+<script>
+  function copyShareUrl() {
+    const copyText = document.getElementById("shareUrl");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    
+    const copyBtn = document.getElementById("copyBtn");
+    const originalImg = copyBtn.innerHTML;
+    
+    // Change button to confirm copy
+    copyBtn.innerHTML = `<img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4" alt="Copied">`;
+    
+    // Show toast notification
+    toast.success("Lien copié dans le presse-papier !");
+    
+    // Reset button after 2 seconds
+    setTimeout(() => {
+      copyBtn.innerHTML = originalImg;
+    }, 2000);
+  }
+  
+  // Handle comment editing and deletion
+  document.querySelectorAll('.edit-comment').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const commentId = this.getAttribute('data-id');
+      
+      // Find the comment container
+      const commentContainer = this.closest('.bg-base-200');
+      const commentTextElement = commentContainer.querySelector('.prose');
+      const originalText = commentTextElement.textContent.trim();
+      
+      // Create edit form
+      const editForm = document.createElement('div');
+      editForm.className = 'mt-3';
+      editForm.innerHTML = `
+        <textarea class="textarea textarea-bordered w-full" rows="3">${originalText}</textarea>
+        <div class="flex justify-end gap-2 mt-2">
+          <button class="btn btn-sm btn-ghost cancel-edit">Annuler</button>
+          <button class="btn btn-sm btn-primary save-edit" data-id="${commentId}">
+            <img src="{% static 'img/iconsax/All/linear/save-2.svg' %}" class="w-4 h-4 mr-1" alt="Save">
+            Enregistrer
+          </button>
+        </div>
+      `;
+      
+      // Replace comment text with edit form
+      commentTextElement.style.display = 'none';
+      commentContainer.appendChild(editForm);
+      
+      // Handle cancel button
+      editForm.querySelector('.cancel-edit').addEventListener('click', function() {
+        commentTextElement.style.display = '';
+        editForm.remove();
+      });
+      
+      // Handle save button
+      editForm.querySelector('.save-edit').addEventListener('click', function() {
+        const newText = editForm.querySelector('textarea').value.trim();
+        
+        if (newText !== originalText) {
+          // Show loading state
+          this.classList.add('loading');
+          this.disabled = true;
+          
+          // Send update to server
+          fetch(`/incidents/comment/${commentId}/update/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: `text=${encodeURIComponent(newText)}`
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Update comment text
+              commentTextElement.innerHTML = newText.replace(/\n/g, '<br>');
+              commentTextElement.style.display = '';
+              editForm.remove();
+              
+              toast.success('Commentaire mis à jour avec succès');
+            } else {
+              toast.error('Erreur lors de la mise à jour du commentaire');
+            }
+          })
+          .catch(error => {
+            toast.error('Une erreur est survenue');
+            console.error('Error:', error);
+          });
+        } else {
+          // No changes, just cancel
+          commentTextElement.style.display = '';
+          editForm.remove();
+        }
+      });
+    });
+  });
+  
+  document.querySelectorAll('.delete-comment').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const commentId = this.getAttribute('data-id');
+      
+      if (confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')) {
+        // Send delete request to server
+        fetch(`/incidents/comment/${commentId}/delete/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Remove comment from DOM
+            this.closest('.bg-base-200').remove();
+            toast.success('Commentaire supprimé avec succès');
+          } else {
+            toast.error('Erreur lors de la suppression du commentaire');
+          }
+        })
+        .catch(error => {
+          toast.error('Une erreur est survenue');
+          console.error('Error:', error);
+        });
+      }
+    });
+  });
+  
+  // Handle the self-assignment button
+  document.querySelector('[href="#assign-to-me"]')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    this.classList.add('loading');
+    this.disabled = true;
+    
+    // Send assignment request to server
+    fetch(`/incidents/{{ incident.id }}/assign/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Reload page to show updated assignment
+        window.location.reload();
+      } else {
+        toast.error(data.message || 'Erreur lors de l\'assignation');
+        this.classList.remove('loading');
+        this.disabled = false;
+      }
+    })
+    .catch(error => {
+      toast.error('Une erreur est survenue');
+      console.error('Error:', error);
+      this.classList.remove('loading');
+      this.disabled = false;
+    });
+  });
+  
+  // Helper to get CSRF token from cookies
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  
+  // Show success message if redirected with query param
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('assignment_success') === 'true') {
+      toast.success('Incident assigné avec succès');
+      
+      // Remove query param from URL without reloading page
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  });
+</script>
+{% endblock %}

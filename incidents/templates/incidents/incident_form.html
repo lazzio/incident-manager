@@ -2,328 +2,519 @@
 {% load static %}
 
 {% block title %}
-    {% if incident %}Update incident{% else %}New incident{% endif %}
+{% if form.instance.id %}Modifier l'incident{% else %}Nouvel incident{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .form-section {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .form-section.collapsed {
+    height: 64px;
+    overflow: hidden;
+  }
+  
+  .form-section-header {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .form-section-header:hover {
+    background-color: hsla(var(--b2)/0.7);
+  }
+  
+  .rotate-icon {
+    transition: transform 0.3s ease;
+  }
+  
+  .collapsed .rotate-icon {
+    transform: rotate(-90deg);
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .file-preview {
+    transition: all 0.2s ease;
+  }
+  
+  .file-preview:hover {
+    transform: scale(1.05);
+  }
+  
+  .drag-area {
+    border: 2px dashed hsla(var(--bc)/0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .drag-area.active {
+    border-color: hsla(var(--p)/0.5);
+    background-color: hsla(var(--p)/0.1);
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <!-- En-tête -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-foreground">
-            {% if incident %}Update incident{% else %}New incident{% endif %}
-        </h1>
-        <a href="{% url 'incident_list' %}" 
-           class="inline-flex items-center px-4 py-2 rounded-md bg-muted text-muted-foreground hover:bg-muted/90 transition-colors">
-            <i class="fas fa-arrow-left mr-2"></i>
-            Back
-        </a>
+<div class="space-y-6 fade-in">
+  <!-- En-tête avec breadcrumbs -->
+  <div>
+    <div class="text-sm breadcrumbs">
+      <ul>
+        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li><a href="{% url 'incident_list' %}">Incidents</a></li>
+        <li>{% if form.instance.id %}Modifier l'incident #{{ form.instance.id }}{% else %}Nouvel incident{% endif %}</li>
+      </ul>
     </div>
-
-    <!-- Assurez-vous d'afficher les messages d'erreur et de succès en haut du formulaire -->
-    {% if messages %}
-    <div class="mb-6">
-        {% for message in messages %}
-        <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-destructive/10 text-destructive{% else %}bg-success/10 text-success{% endif %} text-sm">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <!-- Carte principale du formulaire -->
-    <div class="bg-card text-card-foreground rounded-lg border shadow-sm">
-        <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
-            {% csrf_token %}
-
-            <!-- Messages d'erreur généraux -->
-            {% if form.non_field_errors %}
-            <div class="p-4 mb-4 rounded-lg bg-destructive/10 text-destructive text-sm">
-                {{ form.non_field_errors }}
-            </div>
-            {% endif %}
-
-            <div class="grid gap-6 sm:grid-cols-2">
-                <!-- Titre -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.title.id_for_label }}" 
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Title <span class="text-destructive">*</span>
-                    </label>
-                    {% if form.title.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.title.errors }}
-                    </div>
-                    {% endif %}
-                    <input type="text"
-                           id="{{ form.title.id_for_label }}"
-                           name="{{ form.title.name }}"
-                           value="{{ form.title.value|default:'' }}"
-                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                           required>
-                </div>
-
-                <!-- Catégorie -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.category.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Category <span class="text-destructive">*</span>
-                    </label>
-                    {% if form.category.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.category.errors }}
-                    </div>
-                    {% endif %}
-                    <select id="{{ form.category.id_for_label }}"
-                            name="{{ form.category.name }}"
-                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            required>
-                        <option value="">Select a category</option>
-                        <option value="categorie" selected>categorie</option>
-                    </select>
-                </div>
-
-                <!-- Statut -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.status.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Status <span class="text-destructive">*</span>
-                    </label>
-                    {% if form.status.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.status.errors }}
-                    </div>
-                    {% endif %}
-                    <select id="{{ form.status.id_for_label }}"
-                            name="{{ form.status.name }}"
-                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            required>
-                            {% for value, label in status_choices %}
-                            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Priorité -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.severity.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Severity <span class="text-destructive">*</span>
-                    </label>
-                    {% if form.severity.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.severity.errors }}
-                    </div>
-                    {% endif %}
-                    <select id="{{ form.severity.id_for_label }}"
-                            name="{{ form.severity.name }}"
-                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            required>
-                            {% for value, label in severity_choices %}
-                            <option value="{{ value }}" {% if request.GET.severity == value %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Description -->
-                <div class="col-span-2">
-                    <label for="{{ form.details.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Description <span class="text-destructive">*</span>
-                    </label>
-                    {% if form.details.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.details.errors }}
-                    </div>
-                    {% endif %}
-                    <textarea id="{{ form.details.id_for_label }}"
-                              name="{{ form.details.name }}"
-                              rows="5"
-                              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              required>{{ form.details.value|default:'' }}</textarea>
-                </div>
-
-                <!-- Start date -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.start_date.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Start date <span class="text-destructive">*</span>
-                    </label>
-                    {% if form.start_date.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.start_date.errors }}
-                    </div>
-                    {% endif %}
-                    <input type="datetime-local"
-                           id="{{ form.start_date.id_for_label }}"
-                           name="{{ form.start_date.name }}"
-                           value="{% if form.start_date.value %}{{ form.start_date.value|date:'Y-m-d\TH:i' }}{% else %}{{ form.start_date.initial|date:'Y-m-d\TH:i' }}{% endif %}"
-                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                           required>
-                </div>
-
-                <!-- End date -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.end_date.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        End date
-                    </label>
-                    {% if form.end_date.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.end_date.errors }}
-                    </div>
-                    {% endif %}
-                    <input type="datetime-local"
-                           id="{{ form.end_date.id_for_label }}"
-                           name="{{ form.end_date.name }}"
-                           value="{{ form.end_date.value|date:'Y-m-d\TH:i'|default:'' }}"
-                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                </div>
-
-                <!-- Assigné à -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.assigned_to.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Assigned to
-                    </label>
-                    {% if form.assigned_to.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.assigned_to.errors }}
-                    </div>
-                    {% endif %}
-                    <select id="{{ form.assigned_to.id_for_label }}"
-                            name="{{ form.assigned_to.name }}"
-                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                        <option value="">Not assigned</option>
-                        {% for value, label in form.assigned_to.field.choices %}
-                        <option value="{{ value }}" {% if form.assigned_to.value == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Pièce jointe -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label for="{{ form.attachment.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        File
-                    </label>
-                    {% if form.attachment.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.attachment.errors }}
-                    </div>
-                    {% endif %}
-                    {% if form.instance.attachment %}
-                    <div class="text-sm text-muted-foreground mt-1 mb-2">
-                        Fichier actuel : 
-                        <a href="{{ form.instance.attachment.url }}" 
-                           class="text-primary hover:underline"
-                           target="_blank">
-                            {{ form.instance.attachment.name }}
-                        </a>
-                    </div>
-                    {% endif %}
-                    <input type="file"
-                           id="{{ form.attachment.id_for_label }}"
-                           name="{{ form.attachment.name }}"
-                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                </div>
-
-                <!-- Fichiers multiples -->
-                <div class="col-span-2">
-                    <label for="id_files" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Files
-                    </label>
-                    <div class="mt-2">
-                        <!-- Utilisation directe de l'élément input avec attribut multiple -->
-                        <input type="file" name="files" id="id_files" multiple 
-                               class="block w-full text-sm text-foreground
-                                      file:mr-4 file:py-2 file:px-4
-                                      file:rounded-md file:border-0
-                                      file:text-sm file:font-medium
-                                      file:bg-primary file:text-primary-foreground
-                                      hover:file:bg-primary/90">
-                        <p class="mt-1 text-xs text-muted-foreground">{{ form.files.help_text }}</p>
-                    </div>
-                    <div id="selected_files" class="mt-3 space-y-2 text-sm"></div>
-                </div>
-
-                <!-- Resolution process -->
-                <div class="col-span-2">
-                    <label for="{{ form.resolution_process.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Resolution process
-                    </label>
-                    {% if form.resolution_process.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.resolution_process.errors }}
-                    </div>
-                    {% endif %}
-                    <textarea id="{{ form.resolution_process.id_for_label }}"
-                              name="{{ form.resolution_process.name }}"
-                              rows="3"
-                              placeholder="Décrivez le processus de résolution..."
-                              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">{{ form.resolution_process.value|default:'' }}</textarea>
-                </div>
-
-                <!-- Impact -->
-                <div class="col-span-2">
-                    <label for="{{ form.impact.id_for_label }}"
-                           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Impact
-                    </label>
-                    {% if form.impact.errors %}
-                    <div class="text-sm text-destructive mt-1">
-                        {{ form.impact.errors }}
-                    </div>
-                    {% endif %}
-                    <textarea id="{{ form.impact.id_for_label }}"
-                              name="{{ form.impact.name }}"
-                              rows="3"
-                              placeholder="Décrivez l'impact de l'incident..."
-                              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">{{ form.impact.value|default:'' }}</textarea>
-                </div>
-            </div>
-
-            <!-- Boutons de soumission -->
-            <div class="flex justify-end space-x-4 pt-6">
-                <button type="button" 
-                        onclick="window.location.href='{% url 'incident_list' %}';"
-                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    <i class="fas fa-save mr-2"></i>
-                    {% if incident %}Update{% else %}Create{% endif %}
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-<script>
-document.getElementById('id_files').addEventListener('change', function(e) {
-    const fileList = e.target.files;
-    const fileDisplay = document.getElementById('selected_files');
-    fileDisplay.innerHTML = '';
     
-    if (fileList.length > 0) {
-        const heading = document.createElement('p');
-        heading.textContent = `${fileList.length} file(s) selected:`;
-        heading.className = 'font-medium';
-        fileDisplay.appendChild(heading);
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold">
+        {% if form.instance.id %}
+        Modifier l'incident #{{ form.instance.id }}
+        {% else %}
+        Créer un nouvel incident
+        {% endif %}
+      </h1>
+      
+      {% if form.instance.id %}
+      <div class="flex items-center gap-4">
+        <div>
+          <div class="text-sm text-muted-foreground">Créé le</div>
+          <div>{{ form.instance.created_at|date:"d/m/Y H:i" }}</div>
+        </div>
         
-        const list = document.createElement('ul');
-        list.className = 'list-disc pl-5 text-xs text-muted-foreground';
+        <div>
+          <div class="text-sm text-muted-foreground">Mis à jour le</div>
+          <div>{{ form.instance.updated_at|date:"d/m/Y H:i" }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <form method="post" enctype="multipart/form-data" class="space-y-6" id="incidentForm">
+    {% csrf_token %}
+    
+    <!-- Section: Informations générales -->
+    <div class="card bg-base-100 shadow-lg form-section">
+      <div class="card-body p-0">
+        <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="general">
+          <h2 class="text-xl font-bold flex items-center">
+            <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-6 h-6 mr-2" alt="Basic Info">
+            Informations générales
+          </h2>
+          <img src="{% static 'img/iconsax/All/linear/arrow-circle-down.svg' %}" class="w-6 h-6 rotate-icon" alt="Toggle">
+        </div>
         
-        for (let i = 0; i < fileList.length; i++) {
-            const item = document.createElement('li');
-            item.textContent = fileList[i].name;
-            list.appendChild(item);
+        <div class="p-6 space-y-4 form-section-content" id="general">
+          <!-- Titre et catégorie -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Titre de l'incident *</span>
+                </div>
+                <input type="text" name="title" value="{{ form.title.value|default:'' }}" 
+                       class="input input-bordered w-full {% if form.title.errors %}input-error{% endif %}"
+                       placeholder="Entrez un titre descriptif" required>
+                {% if form.title.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.title.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+            
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Catégorie *</span>
+                </div>
+                <select name="category" 
+                        class="select select-bordered w-full {% if form.category.errors %}select-error{% endif %}"
+                        required>
+                  <option value="" {% if not form.category.value %}selected{% endif %}>Sélectionnez une catégorie</option>
+                  {% for value, label in form.fields.category.choices %}
+                  <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                {% if form.category.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.category.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+          </div>
+          
+          <!-- Statut, sévérité et assignation -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Statut *</span>
+                </div>
+                <select name="status" 
+                        class="select select-bordered w-full {% if form.status.errors %}select-error{% endif %}"
+                        required>
+                  {% for value, label in form.fields.status.choices %}
+                  <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                {% if form.status.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.status.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+            
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Sévérité *</span>
+                </div>
+                <select name="severity" 
+                        class="select select-bordered w-full {% if form.severity.errors %}select-error{% endif %}"
+                        required>
+                  {% for value, label in form.fields.severity.choices %}
+                  <option value="{{ value }}" {% if form.severity.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                {% if form.severity.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.severity.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+            
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Assigné à</span>
+                </div>
+                <select name="assigned_to" class="select select-bordered w-full">
+                  <option value="">Non assigné</option>
+                  {% for user in users %}
+                  <option value="{{ user.id }}" {% if form.assigned_to.value == user.id %}selected{% endif %}>
+                    {{ user.get_full_name|default:user.username }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Dates -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Date de début *</span>
+                </div>
+                <input type="datetime-local" name="start_date" 
+                       value="{{ form.start_date.value|date:'Y-m-d\TH:i'|default:'' }}" 
+                       class="input input-bordered w-full {% if form.start_date.errors %}input-error{% endif %}"
+                       required>
+                {% if form.start_date.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.start_date.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+            
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Date de fin</span>
+                  <span class="label-text-alt">Optionnel pour les incidents en cours</span>
+                </div>
+                <input type="datetime-local" name="end_date" 
+                       value="{{ form.end_date.value|date:'Y-m-d\TH:i'|default:'' }}" 
+                       class="input input-bordered w-full {% if form.end_date.errors %}input-error{% endif %}">
+                {% if form.end_date.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.end_date.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+          </div>
+          
+          <!-- Détails -->
+          <div>
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Détails de l'incident *</span>
+              </div>
+              <textarea name="details" rows="5" 
+                     class="textarea textarea-bordered w-full {% if form.details.errors %}textarea-error{% endif %}"
+                     placeholder="Décrivez l'incident en détail..." required>{{ form.details.value|default:'' }}</textarea>
+              {% if form.details.errors %}
+              <div class="label">
+                <span class="label-text-alt text-error">{{ form.details.errors }}</span>
+              </div>
+              {% endif %}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section: Résolution et impact -->
+    <div class="card bg-base-100 shadow-lg form-section">
+      <div class="card-body p-0">
+        <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="resolution">
+          <h2 class="text-xl font-bold flex items-center">
+            <img src="{% static 'img/iconsax/All/linear/task-square.svg' %}" class="w-6 h-6 mr-2" alt="Resolution">
+            Résolution et impact
+          </h2>
+          <img src="{% static 'img/iconsax/All/linear/arrow-circle-down.svg' %}" class="w-6 h-6 rotate-icon" alt="Toggle">
+        </div>
+        
+        <div class="p-6 space-y-4 form-section-content" id="resolution">
+          <!-- Process de résolution -->
+          <div>
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Processus de résolution</span>
+                <span class="label-text-alt">Comment l'incident a été ou sera résolu</span>
+              </div>
+              <textarea name="resolution_process" rows="3"
+                     class="textarea textarea-bordered w-full"
+                     placeholder="Décrivez les étapes prises pour résoudre l'incident...">{{ form.resolution_process.value|default:'' }}</textarea>
+            </label>
+          </div>
+          
+          <!-- Impact -->
+          <div>
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Impact</span>
+                <span class="label-text-alt">Impact de l'incident sur les utilisateurs ou le système</span>
+              </div>
+              <textarea name="impact" rows="3"
+                     class="textarea textarea-bordered w-full"
+                     placeholder="Décrivez l'impact de cet incident...">{{ form.impact.value|default:'' }}</textarea>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section: Fichiers attachés -->
+    <div class="card bg-base-100 shadow-lg form-section">
+      <div class="card-body p-0">
+        <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="attachments">
+          <h2 class="text-xl font-bold flex items-center">
+            <img src="{% static 'img/iconsax/All/linear/document-upload.svg' %}" class="w-6 h-6 mr-2" alt="Attachments">
+            Fichiers attachés
+          </h2>
+          <img src="{% static 'img/iconsax/All/linear/arrow-circle-down.svg' %}" class="w-6 h-6 rotate-icon" alt="Toggle">
+        </div>
+        
+        <div class="p-6 space-y-4 form-section-content" id="attachments">
+          <!-- Zone d'upload des fichiers -->
+          <div class="drag-area flex flex-col items-center justify-center p-8 rounded-lg text-center" id="dropZone">
+            <img src="{% static 'img/iconsax/All/linear/document-upload.svg' %}" class="w-12 h-12 mb-4 text-muted-foreground" alt="Upload">
+            <h3 class="text-lg font-semibold">Glissez et déposez des fichiers ici</h3>
+            <p class="text-sm text-muted-foreground mb-4">ou</p>
+            <label class="btn btn-primary">
+              <img src="{% static 'img/iconsax/All/linear/folder-add.svg' %}" class="w-5 h-5 mr-2" alt="Browse">
+              Parcourir les fichiers
+              <input type="file" name="files" multiple class="hidden" id="fileInput">
+            </label>
+            <p class="text-xs text-muted-foreground mt-4">Formats acceptés: PDF, PNG, JPG, DOCX, etc.</p>
+          </div>
+          
+          <!-- Prévisualisations des fichiers -->
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4" id="filePreviewsContainer">
+            {% if form.instance.id %}
+              {% for file in form.instance.files.all %}
+              <div class="file-preview card bg-base-200">
+                <div class="card-body p-3">
+                  <div class="flex justify-between items-start gap-1">
+                    <h3 class="card-title text-xs truncate flex-1" title="{{ file.filename }}">
+                      {{ file.filename }}
+                    </h3>
+                    <button type="button" class="btn btn-xs btn-ghost btn-square text-error" data-delete="{{ file.id }}">
+                      <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4" alt="Delete">
+                    </button>
+                  </div>
+                  {% if file.is_image %}
+                  <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md overflow-hidden">
+                    <img src="{{ file.file.url }}" alt="{{ file.filename }}" class="h-full object-contain">
+                  </div>
+                  {% else %}
+                  <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md">
+                    <img src="{% static 'img/iconsax/All/linear/document.svg' %}" class="w-8 h-8 opacity-50" alt="File">
+                  </div>
+                  {% endif %}
+                  <div class="text-xs opacity-70 mt-1">{{ file.file.size|filesizeformat }}</div>
+                </div>
+              </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          
+          <input type="hidden" name="delete_files" id="deleteFiles" value="">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Boutons d'action -->
+    <div class="flex flex-wrap justify-end gap-2 sticky bottom-0 py-4 px-6 bg-base-100 border-t border-base-300 shadow-lg">
+      {% if form.instance.id %}
+      <a href="{% url 'incident_detail' form.instance.id %}" class="btn btn-ghost">Annuler</a>
+      {% else %}
+      <a href="{% url 'incident_list' %}" class="btn btn-ghost">Annuler</a>
+      {% endif %}
+      <button type="submit" class="btn btn-primary">
+        <img src="{% static 'img/iconsax/All/linear/save-2.svg' %}" class="w-5 h-5 mr-2" alt="Save">
+        {% if form.instance.id %}Mettre à jour{% else %}Créer l'incident{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Section toggling
+    document.querySelectorAll('.form-section-header').forEach(header => {
+      header.addEventListener('click', function() {
+        const section = this.closest('.form-section');
+        section.classList.toggle('collapsed');
+      });
+    });
+    
+    // File upload preview
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const previewsContainer = document.getElementById('filePreviewsContainer');
+    const deleteFilesInput = document.getElementById('deleteFiles');
+    let filesToDelete = [];
+    
+    // Handle drag and drop events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+      dropZone.classList.add('active');
+    }
+    
+    function unhighlight() {
+      dropZone.classList.remove('active');
+    }
+    
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }
+    
+    // Handle file input change
+    fileInput.addEventListener('change', function() {
+      handleFiles(this.files);
+    });
+    
+    function handleFiles(files) {
+      if (!files.length) return;
+      
+      [...files].forEach(file => {
+        addFilePreview(file);
+      });
+    }
+    
+    function addFilePreview(file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const preview = document.createElement('div');
+        preview.className = 'file-preview card bg-base-200';
+        
+        let fileIcon = `<div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md">
+                           <img src="{% static 'img/iconsax/All/linear/document.svg' %}" class="w-8 h-8 opacity-50" alt="File">
+                         </div>`;
+        
+        if (file.type.startsWith('image/')) {
+          fileIcon = `<div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md overflow-hidden">
+                         <img src="${e.target.result}" alt="${file.name}" class="h-full object-contain">
+                       </div>`;
         }
         
-        fileDisplay.appendChild(list);
+        preview.innerHTML = `
+          <div class="card-body p-3">
+            <div class="flex justify-between items-start gap-1">
+              <h3 class="card-title text-xs truncate flex-1" title="${file.name}">
+                ${file.name}
+              </h3>
+              <button type="button" class="btn btn-xs btn-ghost btn-square text-error">
+                <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4" alt="Delete">
+              </button>
+            </div>
+            ${fileIcon}
+            <div class="text-xs opacity-70 mt-1">${formatFileSize(file.size)}</div>
+          </div>
+        `;
+        
+        previewsContainer.appendChild(preview);
+        
+        // Handle delete button
+        const deleteBtn = preview.querySelector('button');
+        deleteBtn.addEventListener('click', function() {
+          preview.remove();
+        });
+      };
+      
+      reader.readAsDataURL(file);
     }
-});
+    
+    // Handle existing file deletion
+    document.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const fileId = this.getAttribute('data-delete');
+        filesToDelete.push(fileId);
+        deleteFilesInput.value = filesToDelete.join(',');
+        this.closest('.file-preview').remove();
+      });
+    });
+    
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+  });
 </script>
 {% endblock %}

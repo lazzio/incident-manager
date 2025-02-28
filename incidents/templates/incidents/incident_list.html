@@ -1,186 +1,810 @@
 {% extends 'base.html' %}
-{% block title %}Liste des Incidents{% endblock %}
+{% load static %}
+{% block title %}Incidents{% endblock %}
+
+{% block extra_head %}
+<style>
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .filter-pill {
+    transition: all 0.3s ease;
+  }
+  
+  .filter-pill:hover {
+    background-color: rgba(var(--primary), 0.2);
+  }
+  
+  .incident-row {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .incident-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  
+  .view-switcher button.active {
+    background-color: rgba(var(--primary), 0.1);
+    color: hsl(var(--primary));
+  }
+  
+  .badge-status, .badge-severity {
+    transition: all 0.3s ease;
+  }
+
+  .incident-card {
+    transition: all 0.3s ease;
+    height: 100%;
+  }
+  
+  .incident-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Skeleton loading animation */
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  
+  .skeleton-pulse {
+    animation: pulse 1.5s infinite;
+    background-color: hsl(var(--muted));
+    border-radius: 0.25rem;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <div class="sm:flex sm:items-center sm:justify-between">
-        <h1 class="text-3xl font-bold tracking-tight">Incidents list</h1>
-        <div class="mt-4 sm:mt-0">
-            <a href="{% url 'incident_create' %}" 
-               class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90">
-                <i class="fas fa-plus mr-2"></i>
-                New incident
-            </a>
-        </div>
+<div class="space-y-6 fade-in">
+  <!-- En-tête et recherche -->
+  <div class="flex flex-col lg:flex-row justify-between gap-4 items-start">
+    <div>
+      <div class="text-sm breadcrumbs">
+        <ul>
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li>Incidents</li>
+        </ul>
+      </div>
+      <h1 class="text-3xl font-bold">Incidents</h1>
+      <p class="text-muted-foreground mt-1">Gérez et suivez tous les incidents du système</p>
     </div>
+    
+    <div class="flex items-center gap-3">
+      <div class="view-switcher join">
+        <button class="join-item btn btn-sm active" id="tableViewBtn">
+          <img src="{% static 'img/iconsax/All/linear/task-square.svg' %}" class="w-4 h-4" alt="Table View">
+        </button>
+        <button class="join-item btn btn-sm" id="cardViewBtn">
+          <img src="{% static 'img/iconsax/All/linear/element-3.svg' %}" class="w-4 h-4" alt="Card View">
+        </button>
+      </div>
 
-    <!-- Filtres -->
-    <div class="bg-card rounded-lg shadow">
-        <div class="p-6">
-            <form method="get" class="space-y-4">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div>
-                        <label for="search" class="block text-sm font-medium">Reasearch</label>
-                        <input type="text" name="search" id="search" value="{{ request.GET.search }}"
-                               class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+      <div class="dropdown dropdown-end">
+        <button class="btn btn-outline btn-sm">
+          <img src="{% static 'img/iconsax/All/linear/export.svg' %}" class="w-4 h-4 mr-2" alt="Export">
+          Exporter
+        </button>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-2">
+          <li><a href="?export=csv">Export CSV</a></li>
+          <li><a href="?export=pdf">Export PDF</a></li>
+          <li><a href="?export=excel">Export Excel</a></li>
+        </ul>
+      </div>
+
+      <a href="{% url 'incident_create' %}" class="btn btn-primary">
+        <img src="{% static 'img/iconsax/All/linear/add.svg' %}" class="w-4 h-4 mr-2" alt="Add">
+        Nouvel incident
+      </a>
+    </div>
+  </div>
+
+  <!-- Barre de recherche et filtres -->
+  <div class="card bg-base-100 shadow-lg">
+    <div class="card-body p-4">
+      <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+        <!-- Recherche -->
+        <div class="relative flex-grow">
+          <form method="get" class="w-full">
+            <div class="relative">
+              <img src="{% static 'img/iconsax/All/linear/search-normal.svg' %}" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" alt="Search">
+              <input type="text" 
+                     name="search" 
+                     value="{{ request.GET.search }}" 
+                     placeholder="Rechercher un incident par titre, ID ou détails..."
+                     class="input input-bordered pl-10 w-full"
+                     autocomplete="off">
+              {% if request.GET.search %}
+              <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2" onclick="clearSearch()">
+                <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-5 h-5" alt="Clear">
+              </button>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+
+        <!-- Boutons de filtres -->
+        <div class="flex items-center gap-2 lg:w-auto w-full">
+          <div class="dropdown dropdown-end">
+            <button class="btn btn-outline">
+              <img src="{% static 'img/iconsax/All/linear/filter.svg' %}" class="w-5 h-5 mr-2" alt="Filter">
+              Filtres
+              {% if has_active_filters %}
+              <div class="badge badge-primary ml-2">{{ active_filters_count }}</div>
+              {% endif %}
+            </button>
+            <div tabindex="0" class="dropdown-content z-[1] card card-compact w-80 p-0 shadow-lg bg-base-100 mt-2">
+              <div class="card-body">
+                <h3 class="font-medium text-base">Filtres avancés</h3>
+                <form method="get" id="filterForm" class="space-y-4 pt-2">
+                  {% if request.GET.search %}
+                  <input type="hidden" name="search" value="{{ request.GET.search }}">
+                  {% endif %}
+                  
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text">Statut</span>
+                    </label>
+                    <div class="flex flex-wrap gap-1">
+                      {% for value, label in status_choices %}
+                      <label class="label cursor-pointer justify-start gap-2">
+                        <input type="checkbox" name="status" value="{{ value }}" 
+                               class="checkbox checkbox-sm" 
+                               {% if value in selected_status %}checked{% endif %}>
+                        <span>{{ label }}</span>
+                      </label>
+                      {% endfor %}
                     </div>
-                    <div>
-                        <label for="status" class="block text-sm font-medium">Status</label>
-                        <select name="status" id="status"
-                                class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring">
-                            <option value="">All</option>
-                            {% for value, label in status_choices %}
-                            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
+                  </div>
+                  
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text">Sévérité</span>
+                    </label>
+                    <div class="flex flex-wrap gap-1">
+                      {% for value, label in severity_choices %}
+                      <label class="label cursor-pointer justify-start gap-2">
+                        <input type="checkbox" name="severity" value="{{ value }}" 
+                               class="checkbox checkbox-sm"
+                               {% if value in selected_severity %}checked{% endif %}>
+                        <span>{{ label }}</span>
+                      </label>
+                      {% endfor %}
                     </div>
-                    <div>
-                        <label for="severity" class="block text-sm font-medium">Severity</label>
-                        <select name="severity" id="severity"
-                                class="mt-1 block w-full rounded-md border-border bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring">
-                            <option value="">All</option>
-                            {% for value, label in severity_choices %}
-                            <option value="{{ value }}" {% if request.GET.severity == value %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
+                  </div>
+                  
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text">Période</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="label">
+                          <span class="label-text text-xs">Du</span>
+                        </label>
+                        <input type="date" name="date_from" value="{{ request.GET.date_from }}" class="input input-bordered w-full input-sm">
+                      </div>
+                      <div>
+                        <label class="label">
+                          <span class="label-text text-xs">Au</span>
+                        </label>
+                        <input type="date" name="date_to" value="{{ request.GET.date_to }}" class="input input-bordered w-full input-sm">
+                      </div>
                     </div>
-                </div>
-                <div class="flex justify-end">
-                    <button type="submit" 
-                            class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90">
-                        <i class="fas fa-search mr-2"></i>
-                        Filter
+                  </div>
+                  
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text">Assigné à</span>
+                    </label>
+                    <select name="assigned_to" class="select select-bordered w-full">
+                      <option value="">Tous</option>
+                      {% for user in users %}
+                      <option value="{{ user.id }}" {% if request.GET.assigned_to == user.id|stringformat:"i" %}selected{% endif %}>
+                        {{ user.get_full_name|default:user.username }}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  
+                  <div class="flex justify-between pt-2">
+                    <button type="button" onclick="clearFilters()" class="btn btn-sm btn-ghost">
+                      Réinitialiser
                     </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Liste des incidents -->
-    <div class="bg-card rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-border">
-                <thead class="bg-muted">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Title</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Severity</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Creation date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-border">
-                    {% for incident in incidents %}
-                    <tr class="hover:bg-muted/50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ incident.id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ incident.title }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                {% if incident.status == 'nouveau' %}bg-blue-100 text-blue-800
-                                {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800
-                                {% elif incident.status == 'résolu' %}bg-green-100 text-green-800
-                                {% endif %}">
-                                {{ incident.get_status_display }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                {% if incident.severity == 'basse' %}bg-gray-100 text-gray-800
-                                {% elif incident.severity == 'moyenne' %}bg-blue-100 text-blue-800
-                                {% elif incident.severity == 'haute' %}bg-orange-100 text-orange-800
-                                {% elif incident.severity == 'critique' %}bg-red-100 text-red-800
-                                {% endif %}">
-                                {{ incident.get_severity_display }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                            {{ incident.created_at|date:"d/m/Y H:i" }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                            <div class="flex space-x-3">
-                                <a href="{% url 'incident_detail' incident.id %}" class="text-primary hover:text-primary/80">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{% url 'incident_update' incident.id %}" class="text-yellow-600 hover:text-yellow-700">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'incident_delete' incident.id %}" class="text-destructive hover:text-destructive/80">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground text-center">
-                            No incident found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        {% if incidents.has_other_pages %}
-        <div class="bg-card px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
-            <div class="flex-1 flex justify-between sm:hidden">
-                {% if incidents.has_previous %}
-                <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-                   class="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
-                    Previous
-                </a>
-                {% endif %}
-                {% if incidents.has_next %}
-                <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
-                    Next
-                </a>
-                {% endif %}
+                    <button type="submit" class="btn btn-sm btn-primary">
+                      Appliquer les filtres
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-muted-foreground">
-                        Display of <span class="font-medium">{{ incidents.start_index }}</span> to
-                        <span class="font-medium">{{ incidents.end_index }}</span> on
-                        <span class="font-medium">{{ incidents.paginator.count }}</span> results
-                    </p>
-                </div>
-                <div>
-                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        {% if incidents.has_previous %}
-                        <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
-                            <span class="sr-only">Previous</span>
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                        {% endif %}
+          </div>
 
-                        {% for i in incidents.paginator.page_range %}
-                            {% if incidents.number == i %}
-                            <span class="relative inline-flex items-center px-4 py-2 border border-primary bg-primary text-sm font-medium text-primary-foreground">
-                                {{ i }}
-                            </span>
-                            {% else %}
-                            <a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-                               class="relative inline-flex items-center px-4 py-2 border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
-                                {{ i }}
-                            </a>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if incidents.has_next %}
-                        <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
-                            <span class="sr-only">Next</span>
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                        {% endif %}
-                    </nav>
-                </div>
-            </div>
+          <button class="btn btn-sm" id="refreshBtn">
+            <img src="{% static 'img/iconsax/All/linear/refresh.svg' %}" class="w-4 h-4" alt="Refresh">
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filtres actifs -->
+      {% if has_active_filters %}
+      <div class="flex flex-wrap gap-2 mt-4 items-center">
+        <span class="text-sm text-muted-foreground">Filtres actifs:</span>
+        {% if request.GET.search %}
+        <div class="filter-pill badge gap-1">
+          <span>Recherche: "{{ request.GET.search }}"</span>
+          <button onclick="removeFilter('search')" class="ml-1">
+            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+          </button>
         </div>
         {% endif %}
+        
+        {% for status in selected_status %}
+        <div class="filter-pill badge badge-info gap-1">
+          <span>Statut: {{ status }}</span>
+          <button onclick="removeFilterValue('status', '{{ status }}')" class="ml-1">
+            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+          </button>
+        </div>
+        {% endfor %}
+        
+        {% for severity in selected_severity %}
+        <div class="filter-pill badge badge-warning gap-1">
+          <span>Sévérité: {{ severity }}</span>
+          <button onclick="removeFilterValue('severity', '{{ severity }}')" class="ml-1">
+            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+          </button>
+        </div>
+        {% endfor %}
+        
+        {% if request.GET.date_from or request.GET.date_to %}
+        <div class="filter-pill badge badge-secondary gap-1">
+          <span>Période: {% if request.GET.date_from %}Du {{ request.GET.date_from }}{% endif %} {% if request.GET.date_to %}au {{ request.GET.date_to }}{% endif %}</span>
+          <button onclick="removeDateFilters()" class="ml-1">
+            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+          </button>
+        </div>
+        {% endif %}
+        
+        {% if request.GET.assigned_to %}
+        <div class="filter-pill badge badge-neutral gap-1">
+          <span>Assigné: {{ assigned_user_name }}</span>
+          <button onclick="removeFilter('assigned_to')" class="ml-1">
+            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+          </button>
+        </div>
+        {% endif %}
+        
+        <button onclick="clearFilters()" class="btn btn-xs btn-ghost">
+          Effacer tous les filtres
+        </button>
+      </div>
+      {% endif %}
     </div>
+  </div>
+
+  <!-- Liste des incidents - Modes d'affichage -->
+  <div class="view-container">
+    <!-- Vue Tableau (par défaut) -->
+    <div id="tableView" class="fade-in">
+      <div class="card bg-base-100 shadow-lg overflow-hidden">
+        <div class="card-body p-0">
+          <div class="overflow-x-auto">
+            <table class="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th class="cursor-pointer" onclick="sortBy('id')">
+                    <div class="flex items-center gap-1">
+                      ID
+                      <img src="{% static 'img/iconsax/All/linear/arrow-down-2.svg' %}" class="w-3 h-3 {% if sort_by == 'id' %}opacity-100{% else %}opacity-30{% endif %}" alt="Sort">
+                    </div>
+                  </th>
+                  <th class="cursor-pointer" onclick="sortBy('title')">
+                    <div class="flex items-center gap-1">
+                      Titre
+                      <img src="{% static 'img/iconsax/All/linear/arrow-down-2.svg' %}" class="w-3 h-3 {% if sort_by == 'title' %}opacity-100{% else %}opacity-30{% endif %}" alt="Sort">
+                    </div>
+                  </th>
+                  <th>Statut</th>
+                  <th>Sévérité</th>
+                  <th class="cursor-pointer" onclick="sortBy('created_at')">
+                    <div class="flex items-center gap-1">
+                      Date de création
+                      <img src="{% static 'img/iconsax/All/linear/arrow-down-2.svg' %}" class="w-3 h-3 {% if sort_by == 'created_at' %}opacity-100{% else %}opacity-30{% endif %}" alt="Sort">
+                    </div>
+                  </th>
+                  <th>Assigné à</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for incident in incidents %}
+                <tr class="incident-row">
+                  <td class="font-mono">{{ incident.id }}</td>
+                  <td>
+                    <div class="max-w-xs sm:max-w-md break-words">
+                      <a href="{% url 'incident_detail' incident.id %}" class="link link-hover link-primary font-medium">
+                        {{ incident.title }}
+                      </a>
+                    </div>
+                  </td>
+                  <td>
+                    {% if incident.status == 'new' %}
+                    <div class="badge badge-info gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
+                      Nouveau
+                    </div>
+                    {% elif incident.status == 'in_progress' %}
+                    <div class="badge badge-warning gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
+                      En cours
+                    </div>
+                    {% elif incident.status == 'resolved' %}
+                    <div class="badge badge-success gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
+                      Résolu
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if incident.severity == 'LOW' %}
+                    <div class="badge badge-ghost gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/arrow-down.svg' %}" class="w-3 h-3" alt="Low">
+                      Basse
+                    </div>
+                    {% elif incident.severity == 'MEDIUM' %}
+                    <div class="badge badge-info gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/minus.svg' %}" class="w-3 h-3" alt="Medium">
+                      Moyenne
+                    </div>
+                    {% elif incident.severity == 'HIGH' %}
+                    <div class="badge badge-warning gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/arrow-up.svg' %}" class="w-3 h-3" alt="High">
+                      Haute
+                    </div>
+                    {% elif incident.severity == 'CRITICAL' %}
+                    <div class="badge badge-error gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/danger.svg' %}" class="w-3 h-3" alt="Critical">
+                      Critique
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="flex items-center gap-1">
+                      <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-4 h-4 text-muted-foreground" alt="Date">
+                      <span>{{ incident.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    {% if incident.assigned_to %}
+                    <div class="flex items-center gap-2">
+                      <div class="avatar placeholder">
+                        <div class="bg-primary text-primary-content rounded-full w-8">
+                          <span>{{ incident.assigned_to.username|slice:":1"|upper }}</span>
+                        </div>
+                      </div>
+                      <span>{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}</span>
+                    </div>
+                    {% else %}
+                    <span class="text-muted-foreground">Non assigné</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="flex gap-1">
+                      <a href="{% url 'incident_detail' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Voir les détails">
+                        <img src="{% static 'img/iconsax/All/linear/eye.svg' %}" class="w-4 h-4" alt="View">
+                      </a>
+                      <a href="{% url 'incident_update' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Modifier">
+                        <img src="{% static 'img/iconsax/All/linear/edit-2.svg' %}" class="w-4 h-4" alt="Edit">
+                      </a>
+                      <div class="dropdown dropdown-left dropdown-hover">
+                        <div tabindex="0" class="btn btn-square btn-sm btn-ghost m-1">
+                          <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-4 h-4" alt="More">
+                        </div>
+                        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                          {% if incident.status != 'resolved' %}
+                          <li>
+                            <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
+                              <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4 mr-2" alt="Resolve">
+                              <span>Marquer comme résolu</span>
+                            </a>
+                          </li>
+                          {% endif %}
+                          <li>
+                            <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
+                              <img src="{% static 'img/iconsax/All/linear/profile-add.svg' %}" class="w-4 h-4 mr-2" alt="Assign">
+                              <span>M'assigner</span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
+                              <img src="{% static 'img/iconsax/All/linear/message-add.svg' %}" class="w-4 h-4 mr-2" alt="Comment">
+                              <span>Commenter</span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
+                              <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
+                              <span>Supprimer</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center py-10">
+                    <div class="flex flex-col items-center">
+                      <img src="{% static 'img/iconsax/All/bulk/document-text.svg' %}" class="w-16 h-16 text-base-content/20 mb-4" alt="No incidents">
+                      <h3 class="font-bold text-lg">Aucun incident trouvé</h3>
+                      <p class="text-muted-foreground mb-4">Aucun incident ne correspond aux critères de recherche actuels.</p>
+                      {% if has_active_filters %}
+                      <button onclick="clearFilters()" class="btn btn-primary btn-sm">Effacer les filtres</button>
+                      {% else %}
+                      <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">Créer un incident</a>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Vue Cartes (alternative) -->
+    <div id="cardView" class="fade-in hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {% for incident in incidents %}
+        <div class="incident-card card bg-base-100 shadow-lg">
+          <div class="card-body p-4">
+            <div class="flex justify-between items-start mb-2">
+              <div class="badge font-mono">ID #{{ incident.id }}</div>
+              <div>
+                {% if incident.status == 'new' %}
+                <div class="badge badge-info gap-1">
+                  <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
+                  Nouveau
+                </div>
+                {% elif incident.status == 'in_progress' %}
+                <div class="badge badge-warning gap-1">
+                  <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
+                  En cours
+                </div>
+                {% elif incident.status == 'resolved' %}
+                <div class="badge badge-success gap-1">
+                  <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
+                  Résolu
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            
+            <h2 class="card-title text-base line-clamp-2">
+              <a href="{% url 'incident_detail' incident.id %}" class="hover:underline">{{ incident.title }}</a>
+            </h2>
+            
+            <div class="flex flex-col gap-2 mt-2 text-sm">
+              <!-- Sévérité -->
+              <div class="flex items-center gap-2">
+                <div class="icon-wrapper opacity-70">
+                  <img src="{% static 'img/iconsax/All/linear/chart-21.svg' %}" class="w-4 h-4" alt="Severity">
+                </div>
+                <div>
+                  <span class="text-muted-foreground">Sévérité:</span>
+                  {% if incident.severity == 'LOW' %}
+                  <span class="font-medium">Basse</span>
+                  {% elif incident.severity == 'MEDIUM' %}
+                  <span class="font-medium">Moyenne</span>
+                  {% elif incident.severity == 'HIGH' %}
+                  <span class="font-medium text-warning">Haute</span>
+                  {% elif incident.severity == 'CRITICAL' %}
+                  <span class="font-medium text-error">Critique</span>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <!-- Date de création -->
+              <div class="flex items-center gap-2">
+                <div class="icon-wrapper opacity-70">
+                  <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-4 h-4" alt="Date">
+                </div>
+                <span class="text-muted-foreground">{{ incident.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+              
+              <!-- Assigné à -->
+              <div class="flex items-center gap-2">
+                <div class="icon-wrapper opacity-70">
+                  <img src="{% static 'img/iconsax/All/linear/profile-circle.svg' %}" class="w-4 h-4" alt="Assigned">
+                </div>
+                <div>
+                  <span class="text-muted-foreground">Assigné:</span>
+                  {% if incident.assigned_to %}
+                  <span>{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}</span>
+                  {% else %}
+                  <span class="text-muted-foreground">Non assigné</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="divider my-1"></div>
+            
+            <div class="card-actions justify-end">
+              <a href="{% url 'incident_detail' incident.id %}" class="btn btn-xs btn-ghost">Voir</a>
+              <a href="{% url 'incident_update' incident.id %}" class="btn btn-xs btn-ghost">Modifier</a>
+              <div class="dropdown dropdown-top dropdown-end">
+                <div tabindex="0" class="btn btn-xs btn-ghost">
+                  <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-3 h-3" alt="More">
+                </div>
+                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                  {% if incident.status != 'resolved' %}
+                  <li>
+                    <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
+                      <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4 mr-2" alt="Resolve">
+                      <span>Marquer comme résolu</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  <li>
+                    <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
+                      <img src="{% static 'img/iconsax/All/linear/profile-add.svg' %}" class="w-4 h-4 mr-2" alt="Assign">
+                      <span>M'assigner</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
+                      <img src="{% static 'img/iconsax/All/linear/message-add.svg' %}" class="w-4 h-4 mr-2" alt="Comment">
+                      <span>Commenter</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
+                      <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
+                      <span>Supprimer</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-10">
+          <div class="flex flex-col items-center">
+            <img src="{% static 'img/iconsax/All/bulk/document-text.svg' %}" class="w-16 h-16 text-base-content/20 mb-4" alt="No incidents">
+            <h3 class="font-bold text-lg">Aucun incident trouvé</h3>
+            <p class="text-muted-foreground mb-4">Aucun incident ne correspond aux critères de recherche actuels.</p>
+            {% if has_active_filters %}
+            <button onclick="clearFilters()" class="btn btn-primary btn-sm">Effacer les filtres</button>
+            {% else %}
+            <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">Créer un incident</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if incidents.has_other_pages %}
+  <div class="bg-card px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
+    <div class="flex-1 flex justify-between sm:hidden">
+      {% if incidents.has_previous %}
+      <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+         class="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
+        Previous
+      </a>
+      {% endif %}
+      {% if incidents.has_next %}
+      <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+         class="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
+        Next
+      </a>
+      {% endif %}
+    </div>
+    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm text-muted-foreground">
+          Display of <span class="font-medium">{{ incidents.start_index }}</span> to
+          <span class="font-medium">{{ incidents.end_index }}</span> on
+          <span class="font-medium">{{ incidents.paginator.count }}</span> results
+        </p>
+      </div>
+      <div>
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          {% if incidents.has_previous %}
+          <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+             class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
+            <span class="sr-only">Previous</span>
+            <i class="fas fa-chevron-left"></i>
+          </a>
+          {% endif %}
+
+          {% for i in incidents.paginator.page_range %}
+              {% if incidents.number == i %}
+              <span class="relative inline-flex items-center px-4 py-2 border border-primary bg-primary text-sm font-medium text-primary-foreground">
+                  {{ i }}
+              </span>
+              {% else %}
+              <a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                 class="relative inline-flex items-center px-4 py-2 border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
+                  {{ i }}
+              </a>
+              {% endif %}
+          {% endfor %}
+
+          {% if incidents.has_next %}
+          <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+             class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
+            <span class="sr-only">Next</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // View switching functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const tableViewBtn = document.getElementById('tableViewBtn');
+    const cardViewBtn = document.getElementById('cardViewBtn');
+    const tableView = document.getElementById('tableView');
+    const cardView = document.getElementById('cardView');
+    
+    // Switch to table view
+    tableViewBtn.addEventListener('click', function() {
+      tableView.classList.remove('hidden');
+      cardView.classList.add('hidden');
+      tableViewBtn.classList.add('active');
+      cardViewBtn.classList.remove('active');
+      localStorage.setItem('incidentViewPreference', 'table');
+    });
+    
+    // Switch to card view
+    cardViewBtn.addEventListener('click', function() {
+      cardView.classList.remove('hidden');
+      tableView.classList.add('hidden');
+      cardViewBtn.classList.add('active');
+      tableViewBtn.classList.remove('active');
+      localStorage.setItem('incidentViewPreference', 'card');
+    });
+    
+    // Load saved preference
+    const savedView = localStorage.getItem('incidentViewPreference');
+    if (savedView === 'card') {
+      cardViewBtn.click();
+    }
+    
+    // Setup refresh button
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', function() {
+        // Add loading spinner
+        this.classList.add('loading');
+        // Reload the page
+        window.location.reload();
+      });
+    }
+  });
+  
+  // Filter functions
+  function clearSearch() {
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete('search');
+    window.location.href = window.location.pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  }
+  
+  function clearFilters() {
+    // Keep the view parameter if it exists, but remove all others
+    const searchParams = new URLSearchParams(window.location.search);
+    const view = searchParams.get('view');
+    window.location.href = window.location.pathname + (view ? '?view=' + view : '');
+  }
+  
+  function removeFilter(filterName) {
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete(filterName);
+    window.location.href = window.location.pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  }
+  
+  function removeFilterValue(filterName, value) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const values = searchParams.getAll(filterName);
+    
+    // Remove all current values for this filter
+    searchParams.delete(filterName);
+    
+    // Add back all values except the one being removed
+    values.forEach(val => {
+      if (val !== value) {
+        searchParams.append(filterName, val);
+      }
+    });
+    
+    window.location.href = window.location.pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  }
+  
+  function removeDateFilters() {
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete('date_from');
+    searchParams.delete('date_to');
+    window.location.href = window.location.pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  }
+  
+  function sortBy(field) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const currentSort = searchParams.get('sort');
+    
+    // Toggle sort direction or set to ascending if it's a new field
+    if (currentSort === field) {
+      searchParams.set('sort', '-' + field); // Descending
+    } else if (currentSort === '-' + field) {
+      searchParams.delete('sort'); // Remove sorting
+    } else {
+      searchParams.set('sort', field); // Ascending
+    }
+    
+    window.location.href = window.location.pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  }
+  
+  function assignToMe(incidentId) {
+    // This function would typically make an AJAX call to assign the incident to the current user
+    // For demonstration, we'll just show a loading indicator and redirect to a hypothetical API endpoint
+    
+    // Show loading indicator
+    const loadingToast = document.createElement('div');
+    loadingToast.className = 'toast toast-top toast-center';
+    loadingToast.innerHTML = `
+      <div class="alert alert-info">
+        <span class="loading loading-spinner"></span>
+        <span>Assigning incident to you...</span>
+      </div>
+    `;
+    document.body.appendChild(loadingToast);
+    
+    // In a real application, you would make an AJAX request here
+    // For this demo, we'll simulate the request with a timeout
+    setTimeout(() => {
+      // Redirect to the incident detail page with a success message
+      window.location.href = `/incident/${incidentId}/?assignment_success=true`;
+    }, 1000);
+    
+    return false; // Prevent default link behavior
+  }
+</script>
 {% endblock %}
