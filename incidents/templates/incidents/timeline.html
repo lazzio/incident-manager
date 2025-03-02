@@ -508,19 +508,6 @@
       </div>
     </div>
     {% endif %}
-    
-    <!-- Zoom controls -->
-    <div class="zoom-controls">
-      <button class="btn btn-circle btn-sm btn-primary" id="zoomIn">
-        <img src="{% static 'img/iconsax/All/linear/zoom-in.svg' %}" class="w-5 h-5" alt="Zoom In">
-      </button>
-      <button class="btn btn-circle btn-sm" id="zoomOut">
-        <img src="{% static 'img/iconsax/All/linear/zoom-out.svg' %}" class="w-5 h-5" alt="Zoom Out">
-      </button>
-      <button class="btn btn-circle btn-sm" id="zoomReset">
-        <img src="{% static 'img/iconsax/All/linear/refresh.svg' %}" class="w-5 h-5" alt="Reset">
-      </button>
-    </div>
   </div>
 </div>
 {% endblock %}
@@ -586,38 +573,7 @@
           timeline.classList.remove('compact-view');
         }
       });
-    });
-    
-    // Zoom functionality
-    let currentZoom = 1;
-    const timeline = document.getElementById('timeline-content');
-    const zoomIn = document.getElementById('zoomIn');
-    const zoomOut = document.getElementById('zoomOut');
-    const zoomReset = document.getElementById('zoomReset');
-    
-    zoomIn.addEventListener('click', function() {
-      if (currentZoom < 1.5) {
-        currentZoom += 0.1;
-        applyZoom();
-      }
-    });
-    
-    zoomOut.addEventListener('click', function() {
-      if (currentZoom > 0.7) {
-        currentZoom -= 0.1;
-        applyZoom();
-      }
-    });
-    
-    zoomReset.addEventListener('click', function() {
-      currentZoom = 1;
-      applyZoom();
-    });
-    
-    function applyZoom() {
-      timeline.style.transform = `scale(${currentZoom})`;
-      timeline.style.transformOrigin = 'left top';
-    }
+    });    
   });
 </script>
 {% endblock %}
