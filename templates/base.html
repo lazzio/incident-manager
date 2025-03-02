@@ -21,11 +21,15 @@
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
+            font-weight: 100;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        
+
         /* Base styles */
         .drawer-side {
-            transition: width 0.3s ease;
+            transition: width 0.3s ease, transform 0.3s ease;
             overflow: visible !important;
         }
         
@@ -33,7 +37,7 @@
         .sidebar-toggle-btn {
             position: absolute;
             right: -20px;
-            top: 70px;
+            top: 5.5rem;
             z-index: 9999;
             width: 36px;
             height: 36px;
@@ -46,10 +50,6 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             border: 2px solid hsl(var(--pc));
-        }
-        
-        .sidebar-toggle-btn:hover {
-            transform: scale(1.1);
         }
         
         /* Icons in toggle button */
@@ -97,7 +97,7 @@
         
         /* New Incident button special styling */
         .create-incident-btn {
-            margin: 0.5rem 0;
+            margin-bottom: 0.5rem;
             width: 100%;
             transition: all 0.3s ease;
         }
@@ -107,75 +107,10 @@
             border-radius: 50% !important;
         }
         
-        /* Tooltips for collapsed state */
-        .drawer-side.collapsed .menu li a {
-            position: relative;
-        }
-        
-        .drawer-side.collapsed .menu li a::after {
-            /* content: attr(data-tooltip);
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: hsl(var(--n));
-            color: hsl(var(--nc));
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            white-space: nowrap; */
-            opacity: 0;
-            visibility: hidden;
-            /* transition: opacity 0.2s;
-            pointer-events: none;
-            z-index: 100; */
-            margin-left: 8px;
-        }
-        
-        .drawer-side.collapsed .menu li a:hover::after {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        /* Tooltip for create button */
-        .drawer-side.collapsed .create-btn-container {
-            position: relative;
-        }
-        
-        .drawer-side.collapsed .create-btn-container::after {
-            content: "Nouvel incident";
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: hsl(var(--n));
-            color: hsl(var(--nc));
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            z-index: 100;
-            margin-left: 8px;
-        }
-        
-        .drawer-side.collapsed .create-btn-container:hover::after {
-            opacity: 1;
-            visibility: visible;
-        }
-        
         /* Content transition */
         .drawer-content {
             transition: margin-left 0.3s ease;
-        }
-        
-        @media (min-width: 1024px) {
-            .drawer-side.collapsed ~ .drawer-content {
-                margin-left: 80px;
-            }
+            flex-grow: 1;
         }
         
         /* Animation */
@@ -188,160 +123,232 @@
         .sidebar-toggle-btn-initial {
             animation: pulse 2s ease-in-out 3;
         }
+        
+        /* Full-width components */
+        .global-footer,
+        .global-navbar {
+            width: 100%;
+            flex-shrink: 0; /* Prevent footer from shrinking */
+        }
+        
+        /* Layout structure */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Full viewport height */
+            width: 100%;
+        }
+        
+        /* Main area that contains the drawer */
+        .main-area {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            width: 100%;
+        }
+        
+        /* Responsive layout for sidebar */
+        @media (max-width: 1023px) {
+            .drawer {
+                flex-direction: column;
+            }
+            
+            .drawer-side {
+                position: static;
+                width: 100% !important;
+                height: auto;
+                margin-bottom: 0;
+                order: 2; /* Put sidebar after content on mobile */
+            }
+            
+            .drawer-side > div {
+                width: 100% !important;
+            }
+            
+            .drawer-side .menu {
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .drawer-side .menu li {
+                margin: 0 8px;
+            }
+            
+            .sidebar-toggle-btn {
+                display: none;
+            }
+            
+            .create-btn-container {
+                text-align: center;
+                margin: 1rem 0;
+            }
+            
+            .create-incident-btn {
+                max-width: 200px;
+                margin: 0 auto;
+            }
+            
+            .menu-title, .divider {
+                display: none !important;
+            }
+            
+            .drawer-content {
+                order: 1; /* Put content before sidebar on mobile */
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .drawer {
+                flex-direction: row;
+                flex-grow: 1;
+            }
+            
+            .drawer-side.collapsed ~ .drawer-content {
+                margin-left: 80px;
+            }
+        }
     </style>
     
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-base-200">
-    <div class="drawer lg:drawer-open">
-        <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex flex-col">
-            <!-- Navbar -->
-            <div class="navbar bg-base-100 shadow-lg z-10">
-                <div class="navbar-start">
-                    <label for="my-drawer" class="btn btn-square btn-ghost lg:hidden">
-                        <i class="fas fa-bars"></i>
-                    </label>
-                    <a href="{% url 'dashboard' %}" class="btn btn-ghost normal-case text-xl">
-                        <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
-                        Incident Manager
-                    </a>
-                </div>
-                <div class="navbar-center hidden lg:flex">
-                    <ul class="menu menu-horizontal px-1">
-                        <li><a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
-                        <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}">Incidents</a></li>
-                        <li><a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}">Timeline</a></li>
-                        <li><a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}">Reports</a></li>
-                    </ul>
-                </div>
-                <div class="navbar-end">
-                    <div class="dropdown dropdown-end">
-                        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-                            <div class="avatar placeholder">
-                                <div class="bg-primary text-primary-content rounded-full w-10">
-                                    <span>{{ request.user.username|slice:":1"|upper }}</span>
-                                </div>
-                            </div>
-                        </label>
-                        <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                            <li><a href="#"><i class="fas fa-user mr-2"></i> Profile</a></li>
-                            <li><a href="#"><i class="fas fa-cog mr-2"></i> Settings</a></li>
-                            <li><a href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a></li>
-                        </ul>
-                    </div>
-                </div>
+<body>
+    <!-- Entire page container -->
+    <div class="page-container bg-base-200">
+        <!-- Navbar - full width -->
+        <nav class="navbar bg-base-100 shadow-lg z-10 global-navbar">
+            <div class="navbar-start">
+                <label for="my-drawer" class="btn btn-square btn-ghost lg:hidden">
+                    <i class="fas fa-bars"></i>
+                </label>
+                <a href="{% url 'dashboard' %}" class="btn btn-ghost normal-case text-xl">
+                    <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
+                    Incident Manager
+                </a>
             </div>
-            
-            <!-- Main content -->
-            <main class="flex-grow p-4 md:p-6 overflow-y-auto">
-                {% if messages %}
-                <div class="toast toast-top toast-end mb-4 z-50">
-                    {% for message in messages %}
-                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} shadow-lg">
-                        <div>
-                            {% if message.tags == 'success' %}
-                            <i class="fas fa-check-circle"></i>
-                            {% elif message.tags == 'error' %}
-                            <i class="fas fa-exclamation-circle"></i>
-                            {% elif message.tags == 'warning' %}
-                            <i class="fas fa-exclamation-triangle"></i>
-                            {% else %}
-                            <i class="fas fa-info-circle"></i>
-                            {% endif %}
-                            <span>{{ message }}</span>
-                        </div>
-                        <button class="btn btn-sm btn-ghost" onclick="this.parentNode.remove()">×</button>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                
-                {% block content %}{% endblock %}
-            </main>
-            
-            <!-- Footer -->
-            <footer class="footer footer-center p-4 bg-base-300 text-base-content">
-                <div>
-                    <p>Copyright © {{ current_year }} - Incident Management System</p>
-                </div>
-            </footer>
-        </div>
-        
-        <!-- Sidebar -->
-        <aside class="drawer-side" id="sidebarElement">
-            <label for="my-drawer" class="drawer-overlay"></label>
-            
-            <!-- Toggle button -->
-            <div class="sidebar-toggle-btn sidebar-toggle-btn-initial" id="sidebarToggleBtn">
-                <i class="fas fa-angle-left icon-collapse"></i>
-                <i class="fas fa-angle-right icon-expand"></i>
-            </div>
-            
-            <div class="w-80 h-full bg-base-200 text-base-content p-4 flex flex-col">
-                <!-- Logo -->
-                <div class="flex items-center p-2 mb-4">
-                    <i class="fas fa-exclamation-triangle text-warning text-2xl mr-4"></i>
-                    <h2 class="text-xl font-bold sidebar-text">Incident Manager</h2>
-                </div>
-                
-                <!-- Main navigation -->
-                <ul class="menu bg-base-200 rounded-box flex-1">
-                    <li>
-                        <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}" data-tooltip="Dashboard">
-                            <i class="fas fa-tachometer-alt mr-2"></i>
-                            <span class="sidebar-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}" data-tooltip="Incidents">
-                            <i class="fas fa-list-alt mr-2"></i>
-                            <span class="sidebar-text">Incidents</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}" data-tooltip="Timeline">
-                            <i class="fas fa-clock mr-2"></i>
-                            <span class="sidebar-text">Timeline</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}" data-tooltip="Reports">
-                            <i class="fas fa-chart-bar mr-2"></i>
-                            <span class="sidebar-text">Reports</span>
-                        </a>
-                    </li>
-                    
-                    <li class="menu-title sidebar-text mt-4">
-                        <span>Actions</span>
-                    </li>
-                    <div class="divider my-0 sidebar-text"></div>
+            <div class="navbar-center hidden lg:flex">
+                <ul class="menu menu-horizontal px-1">
+                    <li><a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
+                    <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}">Incidents</a></li>
+                    <li><a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}">Timeline</a></li>
+                    <li><a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}">Reports</a></li>
                 </ul>
-                
-                <!-- Action button -->
-                <div class="create-btn-container">
-                    <a href="{% url 'incident_create' %}" class="btn btn-primary create-incident-btn">
-                        <i class="fas fa-plus mr-2"></i>
-                        <span class="sidebar-text">Nouvel incident</span>
-                    </a>
-                </div>
-                
-                <!-- User info -->
-                <div class="mt-4 pt-4 border-t border-base-300">
-                    <div class="flex items-center p-2">
-                        <div class="avatar placeholder mr-3">
+            </div>
+            <div class="navbar-end">
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                        <div class="avatar placeholder">
                             <div class="bg-primary text-primary-content rounded-full w-10">
                                 <span>{{ request.user.username|slice:":1"|upper }}</span>
                             </div>
                         </div>
-                        <div class="sidebar-text">
-                            <p class="font-medium">{{ request.user.get_full_name|default:request.user.username }}</p>
-                            <a href="{% url 'admin:logout' %}" class="text-xs text-base-content/70 hover:text-primary">Logout</a>
-                        </div>
-                    </div>
+                    </label>
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                        <li><a href="#"><i class="fas fa-user mr-2"></i> Profile</a></li>
+                        <li><a href="#"><i class="fas fa-cog mr-2"></i> Settings</a></li>
+                        <li><a href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a></li>
+                    </ul>
                 </div>
             </div>
-        </aside>
+        </nav>
+
+        <!-- Main area containing drawer and content -->
+        <div class="main-area">
+            <div class="drawer lg:drawer-open">
+                <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+                
+                <!-- Content section -->
+                <div class="drawer-content flex flex-col">
+                    <!-- Main content -->
+                    <main class="flex-grow p-4 md:p-6 overflow-y-auto">
+                        {% if messages %}
+                        <div class="toast toast-top toast-end mb-4 z-50">
+                            {% for message in messages %}
+                            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} shadow-lg">
+                                <div>
+                                    {% if message.tags == 'success' %}
+                                    <i class="fas fa-check-circle"></i>
+                                    {% elif message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {% else %}
+                                    <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                    <span>{{ message }}</span>
+                                </div>
+                                <button class="btn btn-sm btn-ghost" onclick="this.parentNode.remove()">×</button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% block content %}{% endblock %}
+                    </main>
+                </div>
+                
+                <!-- Sidebar -->
+                <aside class="drawer-side" id="sidebarElement">
+                    <label for="my-drawer" class="drawer-overlay"></label>
+                    
+                    <!-- Toggle button -->
+                    <div class="sidebar-toggle-btn sidebar-toggle-btn-initial" id="sidebarToggleBtn">
+                        <i class="fas fa-angle-left icon-collapse"></i>
+                        <i class="fas fa-angle-right icon-expand"></i>
+                    </div>
+                    
+                    <div class="w-80 h-full bg-base-200 text-base-content p-4 flex flex-col">
+                        <!-- Main navigation -->
+                        <ul class="menu bg-base-200 rounded-box flex-1">
+                            <li>
+                                <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}" data-tooltip="Dashboard">
+                                    <i class="fas fa-tachometer-alt mr-2"></i>
+                                    <span class="sidebar-text">Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}" data-tooltip="Incidents">
+                                    <i class="fas fa-list-alt mr-2"></i>
+                                    <span class="sidebar-text">Incidents</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}" data-tooltip="Timeline">
+                                    <i class="fas fa-clock mr-2"></i>
+                                    <span class="sidebar-text">Timeline</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}" data-tooltip="Reports">
+                                    <i class="fas fa-chart-bar mr-2"></i>
+                                    <span class="sidebar-text">Reports</span>
+                                </a>
+                            </li>
+                            
+                            <li class="menu-title sidebar-text mt-4">
+                                <!-- <span>Add comment/description/name of the section</span> -->
+                            </li>
+                            <div class="divider my-0 sidebar-text"></div>
+                        </ul>
+                        
+                        <!-- Action button -->
+                        <div class="create-btn-container">
+                            <a href="{% url 'incident_create' %}" class="btn btn-primary create-incident-btn">
+                                <i class="fas fa-plus mr-2"></i>
+                                <span class="sidebar-text">Nouvel incident</span>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        
+        <!-- Footer - full width -->
+        <footer class="footer footer-center p-4 bg-base-300 text-base-content global-footer">
+            <div>
+                <p>Copyright © {{ current_year }} - Incident Management System</p>
+            </div>
+        </footer>
     </div>
 
     {% block extra_js %}{% endblock %}
@@ -364,34 +371,57 @@
             const sidebarElement = document.getElementById('sidebarElement');
             const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
             
-            // Load saved state
-            const sidebarState = localStorage.getItem('sidebarState');
-            if (sidebarState === 'collapsed') {
-                sidebarElement.classList.add('collapsed');
-            }
-            
-            // Toggle sidebar
-            sidebarToggleBtn.addEventListener('click', function() {
-                sidebarElement.classList.toggle('collapsed');
-                
-                if (sidebarElement.classList.contains('collapsed')) {
-                    localStorage.setItem('sidebarState', 'collapsed');
-                } else {
-                    localStorage.setItem('sidebarState', 'expanded');
-                }
-                
-                this.classList.remove('sidebar-toggle-btn-initial');
-            });
-            
-            // Auto-collapse on mobile
-            function checkMobileView() {
-                if (window.innerWidth < 768 && !sidebarElement.classList.contains('collapsed')) {
+            // Only enable sidebar toggle on large screens
+            if (window.innerWidth >= 1024) {
+                // Load saved state
+                const sidebarState = localStorage.getItem('sidebarState');
+                if (sidebarState === 'collapsed') {
                     sidebarElement.classList.add('collapsed');
                 }
+                
+                // Toggle sidebar
+                sidebarToggleBtn.addEventListener('click', function() {
+                    sidebarElement.classList.toggle('collapsed');
+                    
+                    if (sidebarElement.classList.contains('collapsed')) {
+                        localStorage.setItem('sidebarState', 'collapsed');
+                    } else {
+                        localStorage.setItem('sidebarState', 'expanded');
+                    }
+                    
+                    this.classList.remove('sidebar-toggle-btn-initial');
+                });
+            } else {
+                // Hide toggle button on small screens
+                if (sidebarToggleBtn) {
+                    sidebarToggleBtn.style.display = 'none';
+                }
             }
             
-            checkMobileView();
-            window.addEventListener('resize', checkMobileView);
+            // Responsive handling
+            function handleResponsive() {
+                if (window.innerWidth < 1024) {
+                    // On mobile, no need for collapse/expand
+                    sidebarElement.classList.remove('collapsed');
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.style.display = 'none';
+                    }
+                } else {
+                    // On desktop, check saved state
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.style.display = 'flex';
+                    }
+                    const sidebarState = localStorage.getItem('sidebarState');
+                    if (sidebarState === 'collapsed') {
+                        sidebarElement.classList.add('collapsed');
+                    } else {
+                        sidebarElement.classList.remove('collapsed');
+                    }
+                }
+            }
+            
+            handleResponsive();
+            window.addEventListener('resize', handleResponsive);
         });
     </script>
 </body>

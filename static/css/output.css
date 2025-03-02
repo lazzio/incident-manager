@@ -4433,14 +4433,6 @@ html:has(.drawer-toggle:checked) {
   margin-right: 0.5rem;
 }
 
-.mr-3 {
-  margin-right: 0.75rem;
-}
-
-.mr-4 {
-  margin-right: 1rem;
-}
-
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -4677,6 +4669,10 @@ html:has(.drawer-toggle:checked) {
 
 .flex-shrink-0 {
   flex-shrink: 0;
+}
+
+.flex-shrink {
+  flex-shrink: 1;
 }
 
 .flex-grow {
@@ -5233,10 +5229,6 @@ html:has(.drawer-toggle:checked) {
   color: var(--fallback-bc,oklch(var(--bc)/0.2));
 }
 
-.text-base-content\/70 {
-  color: var(--fallback-bc,oklch(var(--bc)/0.7));
-}
-
 .text-card-foreground {
   color: hsl(var(--card-foreground));
 }
@@ -5575,11 +5567,6 @@ html:has(.drawer-toggle:checked) {
 .hover\:text-accent-foreground:hover {
   --tw-text-opacity: 1;
   color: rgb(92 46 153 / var(--tw-text-opacity, 1));
-}
-
-.hover\:text-primary:hover {
-  --tw-text-opacity: 1;
-  color: rgb(153 199 255 / var(--tw-text-opacity, 1));
 }
 
 .hover\:underline:hover {
