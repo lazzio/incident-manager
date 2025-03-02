@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Monthly Chart
             const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
             new Chart(monthlyCtx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: data.months,
                     datasets: [{
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const resolutionCtx = document.getElementById('resolutionChart').getContext('2d');
             new Chart(resolutionCtx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: resolutionLabels,
                     datasets: [{
