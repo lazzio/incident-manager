@@ -1,5 +1,5 @@
 from django import forms
-from .models import Incident, IncidentAttachment, IncidentLink, IncidentUpdate, Comment, IncidentFile
+from .models import Incident, IncidentLink, IncidentUpdate, Comment, IncidentFile
 from django.forms import inlineformset_factory
 from django.utils import timezone
 
@@ -35,10 +35,10 @@ class IncidentForm(forms.ModelForm):
         self.fields['impact'].required = False
 
 
-class IncidentAttachmentForm(forms.ModelForm):
-    class Meta:
-        model = IncidentAttachment
-        fields = ['file', 'description']
+# class IncidentAttachmentForm(forms.ModelForm):
+#     class Meta:
+#         model = IncidentAttachment
+#         fields = ['file', 'description']
 
 
 class IncidentLinkForm(forms.ModelForm):
@@ -66,9 +66,9 @@ class CommentForm(forms.ModelForm):
 
 
 # Create formsets for inline forms
-AttachmentFormSet = inlineformset_factory(
-    Incident, IncidentAttachment, form=IncidentAttachmentForm, extra=1, can_delete=True
-)
+# AttachmentFormSet = inlineformset_factory(
+#     Incident, IncidentAttachment, form=IncidentAttachmentForm, extra=1, can_delete=True
+# )
 
 LinkFormSet = inlineformset_factory(
     Incident, IncidentLink, form=IncidentLinkForm, extra=1, can_delete=True

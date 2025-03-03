@@ -11,7 +11,7 @@ from django.contrib import messages  # Ajout de l'import pour les messages
 
 from .models import Incident, Severity, Comment, IncidentFile  # Ajout de l'import pour IncidentFile
 from .forms import (
-    IncidentForm, IncidentUpdateForm, AttachmentFormSet, LinkFormSet, CommentForm
+    IncidentForm, IncidentUpdateForm, LinkFormSet, CommentForm
 )
 
 import datetime
@@ -68,7 +68,7 @@ class IncidentDetailView(LoginRequiredMixin, DetailView):
 def create_incident(request):
     if request.method == 'POST':
         form = IncidentForm(request.POST)
-        attachment_formset = AttachmentFormSet(request.POST, request.FILES, prefix='attachments')
+        # attachment_formset = AttachmentFormSet(request.POST, request.FILES, prefix='attachments')
         link_formset = LinkFormSet(request.POST, prefix='links')
         files = request.FILES.getlist('files')
         
@@ -152,12 +152,12 @@ def create_incident(request):
                 messages.error(request, f"Une erreur s'est produite lors de la création de l'incident: {str(e)}")
     else:
         form = IncidentForm()
-        attachment_formset = AttachmentFormSet(prefix='attachments')
+        # attachment_formset = AttachmentFormSet(prefix='attachments')
         link_formset = LinkFormSet(prefix='links')
     
     return render(request, 'incidents/incident_form.html', {
         'form': form,
-        'attachment_formset': attachment_formset,
+        # 'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
         'severity_choices': Severity.choices
@@ -170,7 +170,7 @@ def update_incident(request, pk):
     
     if request.method == 'POST':
         form = IncidentForm(request.POST, instance=incident)
-        attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=incident, prefix='attachments')
+        # attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=incident, prefix='attachments')
         link_formset = LinkFormSet(request.POST, instance=incident, prefix='links')
         # S'assurer que getlist est utilisé pour récupérer tous les fichiers
         files = request.FILES.getlist('files')
@@ -203,7 +203,7 @@ def update_incident(request, pk):
             return redirect('incident_detail', pk=incident.pk)
     else:
         form = IncidentForm(instance=incident)
-        attachment_formset = AttachmentFormSet(instance=incident, prefix='attachments')
+        # attachment_formset = AttachmentFormSet(instance=incident, prefix='attachments')
         link_formset = LinkFormSet(instance=incident, prefix='links')
     
     return render(request, 'incidents/incident_form.html', {
