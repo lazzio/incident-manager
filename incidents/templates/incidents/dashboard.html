@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const activityData = {
         labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
         datasets: [{
-            label: 'Nouveaux',
+            label: ' Nouveaux',
             data: [3, 5, 2, 7, 4, 1, 2],
             borderColor: '#3abff8',
             backgroundColor: 'rgba(58, 191, 248, 0.2)',
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fill: true,
             tension: 0.4
         }, {
-            label: 'Résolus',
+            label: ' Résolus',
             data: [2, 4, 3, 5, 6, 2, 1],
             borderColor: '#36d399',
             backgroundColor: 'rgba(54, 211, 153, 0.2)', 
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Données simulées pour le graphique de sévérité
     const severityData = {
-        labels: ['Critique', 'Haute', 'Moyenne', 'Basse'],
+        labels: [' Critique', ' Haute', ' Moyenne', ' Basse'],
         datasets: [{
             data: [
                 {% for category in categories %}

@@ -312,7 +312,6 @@
     <div id="tableView" class="fade-in">
       <div class="card bg-base-100 shadow-lg overflow-hidden">
         <div class="card-body p-0">
-          <div class="overflow-x-auto">
             <table class="table table-zebra w-full">
               <thead>
                 <tr>
@@ -474,7 +473,7 @@
                 {% endfor %}
               </tbody>
             </table>
-          </div>
+
         </div>
       </div>
     </div>
@@ -614,66 +613,37 @@
     </div>
   </div>
 
-  <!-- Pagination -->
-  {% if incidents.has_other_pages %}
-  <div class="bg-card px-4 py-3 flex items-center justify-between border-t border-border sm:px-6">
-    <div class="flex-1 flex justify-between sm:hidden">
-      {% if incidents.has_previous %}
-      <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-         class="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
-        Previous
-      </a>
+<!-- Pagination -->
+<div class="flex justify-center mt-8">
+  <div class="join">
+      {% if page_obj.has_previous %}
+          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page=1" class="join-item btn">«</a>
+          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ page_obj.previous_page_number }}" class="join-item btn">‹</a>
+      {% else %}
+          <button class="join-item btn btn-disabled">«</button>
+          <button class="join-item btn btn-disabled">‹</button>
       {% endif %}
-      {% if incidents.has_next %}
-      <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-         class="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-primary bg-card hover:bg-muted">
-        Next
-      </a>
+      
+      {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+              <button class="join-item btn btn-active">{{ num }}</button>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ num }}" class="join-item btn">{{ num }}</a>
+          {% endif %}
+      {% endfor %}
+      
+      {% if page_obj.has_next %}
+          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ page_obj.next_page_number }}" class="join-item btn">›</a>
+          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="join-item btn">»</a>
+      {% else %}
+          <button class="join-item btn btn-disabled">›</button>
+          <button class="join-item btn btn-disabled">»</button>
       {% endif %}
-    </div>
-    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-      <div>
-        <p class="text-sm text-muted-foreground">
-          Display of <span class="font-medium">{{ incidents.start_index }}</span> to
-          <span class="font-medium">{{ incidents.end_index }}</span> on
-          <span class="font-medium">{{ incidents.paginator.count }}</span> results
-        </p>
-      </div>
-      <div>
-        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-          {% if incidents.has_previous %}
-          <a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-             class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
-            <span class="sr-only">Previous</span>
-            <i class="fas fa-chevron-left"></i>
-          </a>
-          {% endif %}
-
-          {% for i in incidents.paginator.page_range %}
-              {% if incidents.number == i %}
-              <span class="relative inline-flex items-center px-4 py-2 border border-primary bg-primary text-sm font-medium text-primary-foreground">
-                  {{ i }}
-              </span>
-              {% else %}
-              <a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-                 class="relative inline-flex items-center px-4 py-2 border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
-                  {{ i }}
-              </a>
-              {% endif %}
-          {% endfor %}
-
-          {% if incidents.has_next %}
-          <a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
-             class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted">
-            <span class="sr-only">Next</span>
-            <i class="fas fa-chevron-right"></i>
-          </a>
-          {% endif %}
-        </nav>
-      </div>
-    </div>
   </div>
-  {% endif %}
+</div>
+
+<div class="text-center text-sm text-gray-500 mt-2">
+  Affichage de {{ page_obj.start_index }} à {{ page_obj.end_index }} sur {{ page_obj.paginator.count }} incidents
 </div>
 {% endblock %}
 

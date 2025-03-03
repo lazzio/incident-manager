@@ -71,14 +71,14 @@ class Incident(models.Model):
         ordering = ['-start_date']
 
 
-class IncidentAttachment(models.Model):
-    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='attachments')
-    file = models.FileField(upload_to='incident_attachments/')
-    description = models.CharField(max_length=255, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+# class IncidentAttachment(models.Model):
+#     incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='attachments')
+#     file = models.FileField(upload_to='incident_attachments/')
+#     description = models.CharField(max_length=255, blank=True)
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
     
-    def __str__(self):
-        return f"Attachment for {self.incident.title}"
+#     def __str__(self):
+#         return f"Attachment for {self.incident.title}"
 
 
 class IncidentLink(models.Model):
