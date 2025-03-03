@@ -68,7 +68,6 @@ class IncidentDetailView(LoginRequiredMixin, DetailView):
 def create_incident(request):
     if request.method == 'POST':
         form = IncidentForm(request.POST)
-        # attachment_formset = AttachmentFormSet(request.POST, request.FILES, prefix='attachments')
         link_formset = LinkFormSet(request.POST, prefix='links')
         files = request.FILES.getlist('files')
         
@@ -79,7 +78,7 @@ def create_incident(request):
                 print(f"Field {field} errors: {errors}")
             messages.error(request, "Le formulaire contient des erreurs. Veuillez les corriger.")
             
-        if form.is_valid(): # and attachment_formset.is_valid() and link_formset.is_valid():
+        if form.is_valid() and link_formset.is_valid():
             try:
                 # Utilisation d'une transaction explicite
                 from django.db import transaction
@@ -106,10 +105,6 @@ def create_incident(request):
                     print("Saving incident with data:", vars(incident))
                     incident.save()
                     print(f"Incident saved with ID: {incident.id}")
-                    
-                    # Traiter les formsets après avoir créé l'incident
-                    attachment_formset.instance = incident
-                    attachment_formset.save()
                     
                     link_formset.instance = incident
                     link_formset.save()
@@ -152,12 +147,10 @@ def create_incident(request):
                 messages.error(request, f"Une erreur s'est produite lors de la création de l'incident: {str(e)}")
     else:
         form = IncidentForm()
-        # attachment_formset = AttachmentFormSet(prefix='attachments')
         link_formset = LinkFormSet(prefix='links')
     
     return render(request, 'incidents/incident_form.html', {
         'form': form,
-        # 'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
         'severity_choices': Severity.choices
@@ -170,14 +163,12 @@ def update_incident(request, pk):
     
     if request.method == 'POST':
         form = IncidentForm(request.POST, instance=incident)
-        # attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=incident, prefix='attachments')
         link_formset = LinkFormSet(request.POST, instance=incident, prefix='links')
         # S'assurer que getlist est utilisé pour récupérer tous les fichiers
         files = request.FILES.getlist('files')
         
-        if form.is_valid(): #and attachment_formset.is_valid() and link_formset.is_valid():
+        if form.is_valid() and link_formset.is_valid():
             form.save()
-            attachment_formset.save()
             link_formset.save()
             
             # Traitement des fichiers multiples avec gestion des erreurs
@@ -203,12 +194,10 @@ def update_incident(request, pk):
             return redirect('incident_detail', pk=incident.pk)
     else:
         form = IncidentForm(instance=incident)
-        # attachment_formset = AttachmentFormSet(instance=incident, prefix='attachments')
         link_formset = LinkFormSet(instance=incident, prefix='links')
     
     return render(request, 'incidents/incident_form.html', {
         'form': form,
-        'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
         'severity_choices': Severity.choices
