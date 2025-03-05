@@ -10,7 +10,7 @@ from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('incidents.urls')),  # Inclut les URLs de l'application incidents
+    path('', include('incidents.urls')),
     
     # URLs d'authentification
     path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
