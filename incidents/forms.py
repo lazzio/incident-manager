@@ -1,13 +1,23 @@
 from django import forms
-from .models import Incident, IncidentLink, IncidentUpdate, Comment, IncidentFile
+from .models import Incident, IncidentLink, IncidentUpdate, Comment
 from django.forms import inlineformset_factory
 from django.utils import timezone
 
+"""
+Django forms for the incident management system.
+This module defines forms used for creating, editing and interacting with incidents
+in the incident management system. It includes forms for the main incident data,
+related links, updates, comments, and file uploads.
+Forms:
+    IncidentForm: Main form for incident creation and editing with file upload capability.
+    IncidentLinkForm: Form for adding reference links to incidents.
+    IncidentUpdateForm: Form for adding status updates to an existing incident.
+    CommentForm: Form for adding comments to incidents.
+FormSets:
+    LinkFormSet: Inline formset for managing multiple links attached to an incident.
+"""
+
 class IncidentForm(forms.ModelForm):
-    files = forms.FileField(
-        required=False,
-        help_text='Vous pouvez sélectionner plusieurs fichiers.'
-    )
     
     class Meta:
         model = Incident
@@ -25,20 +35,33 @@ class IncidentForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Rendre la date de début obligatoire avec valeur par défaut
-        if not self.initial.get('start_date'):
-            self.initial['start_date'] = timezone.now().strftime('%Y-%m-%dT%H:%M')
+        # Set initial values or customize form
+        if not self.instance.pk:  # New incident
+            self.fields['status'].initial = 'new'  # Changed from 'OPEN' to match STATUS_CHOICES
+            self.fields['start_date'].initial = timezone.now()
         
-        # Rendre certains champs non obligatoires dans le formulaire
-        # car nous fournirons des valeurs par défaut dans la vue
+        # Make certain fields not required in the form
+        # as we will provide default values in the view
+        self.fields['end_date'].required = False
         self.fields['resolution_process'].required = False
         self.fields['impact'].required = False
-
-
-# class IncidentAttachmentForm(forms.ModelForm):
-#     class Meta:
-#         model = IncidentAttachment
-#         fields = ['file', 'description']
+        self.fields['assigned_to'].required = False
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        # Add any validation logic here
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        
+        if end_date and start_date and end_date < start_date:
+            self.add_error('end_date', "La date de fin ne peut pas être antérieure à la date de début.")
+        
+        status = cleaned_data.get('status')
+        if status == 'resolved' and not end_date:  # Changed from 'CLOSED' to match STATUS_CHOICES
+            self.add_error('end_date', "Une date de fin est requise pour les incidents clôturés.")
+            
+        return cleaned_data
 
 
 class IncidentLinkForm(forms.ModelForm):
@@ -66,10 +89,6 @@ class CommentForm(forms.ModelForm):
 
 
 # Create formsets for inline forms
-# AttachmentFormSet = inlineformset_factory(
-#     Incident, IncidentAttachment, form=IncidentAttachmentForm, extra=1, can_delete=True
-# )
-
 LinkFormSet = inlineformset_factory(
     Incident, IncidentLink, form=IncidentLinkForm, extra=1, can_delete=True
 )

@@ -99,6 +99,48 @@
     </div>
   </div>
   
+  <!-- Display form errors at the top of the form -->
+  {% if form.errors %}
+  <div class="alert alert-error shadow-lg">
+    <div>
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <div>
+        <h3 class="font-bold">Erreurs dans le formulaire</h3>
+        <ul class="mt-2 list-disc pl-5">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  
+  <!-- Display Django messages -->
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %} shadow-lg">
+      <div>
+        {% if message.tags == 'error' %}
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        {% elif message.tags == 'success' %}
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        {% endif %}
+        <span>{{ message }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  
   <form method="post" enctype="multipart/form-data" class="space-y-6" id="incidentForm">
     {% csrf_token %}
     
@@ -371,6 +413,65 @@
       </div>
     </div>
     
+    <!-- Handling links formset properly -->
+    {{ link_formset.management_form }}
+    {% for link_form in link_formset %}
+      <div class="link-form card bg-base-100 shadow-lg form-section">
+        <div class="card-body p-4">
+          <h3 class="text-lg font-semibold">Lien #{{ forloop.counter }}</h3>
+          
+          {{ link_form.id }}
+          {% if link_form.instance.pk %}{{ link_form.DELETE }}{% endif %}
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">URL</span>
+                </div>
+                {{ link_form.url }}
+                {% if link_form.url.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ link_form.url.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+            <div>
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text font-medium">Titre</span>
+                </div>
+                {{ link_form.title }}
+                {% if link_form.title.errors %}
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ link_form.title.errors }}</span>
+                </div>
+                {% endif %}
+              </label>
+            </div>
+          </div>
+          
+          {% if link_form.instance.pk %}
+          <div class="flex justify-end">
+            <label class="cursor-pointer label">
+              <span class="label-text mr-2">Supprimer ce lien</span> 
+              <input type="checkbox" name="{{ link_form.DELETE.html_name }}" class="checkbox checkbox-error" />
+            </label>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+    
+    <!-- Add button for links -->
+    <div class="text-center">
+      <button type="button" id="add-link" class="btn btn-outline">
+        <img src="{% static 'img/iconsax/All/linear/add.svg' %}" class="w-5 h-5 mr-2" alt="Add Link">
+        Ajouter un lien
+      </button>
+    </div>
+    
     <!-- Boutons d'action -->
     <div class="flex flex-wrap justify-end gap-2 sticky bottom-0 py-4 px-6 bg-base-100 border-t border-base-300 shadow-lg">
       {% if form.instance.id %}
@@ -378,7 +479,7 @@
       {% else %}
       <a href="{% url 'incident_list' %}" class="btn btn-ghost">Annuler</a>
       {% endif %}
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary" id="submitBtn">
         <img src="{% static 'img/iconsax/All/linear/save-2.svg' %}" class="w-5 h-5 mr-2" alt="Save">
         {% if form.instance.id %}Mettre à jour{% else %}Créer l'incident{% endif %}
       </button>
@@ -515,6 +616,66 @@
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
+    
+    // Link formset management
+    const addLinkButton = document.getElementById('add-link');
+    const linkForms = document.querySelectorAll('.link-form');
+    let totalForms = document.querySelector('[name="links-TOTAL_FORMS"]');
+    
+    if (addLinkButton) {
+      addLinkButton.addEventListener('click', function() {
+        const formCount = parseInt(totalForms.value);
+        
+        // Clone the first form
+        const newForm = linkForms[0].cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replaceAll(/links-0/g, `links-${formCount}`);
+        
+        // Clear its values
+        const inputs = newForm.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+          if (input.type !== 'hidden' || !input.name.includes('id')) {
+            input.value = '';
+          }
+        });
+        
+        // Update the header
+        const header = newForm.querySelector('h3');
+        if (header) {
+          header.textContent = `Lien #${formCount + 1}`;
+        }
+        
+        // Insert it before the add button
+        addLinkButton.parentNode.insertBefore(newForm, addLinkButton);
+        
+        // Increment the form count
+        totalForms.value = formCount + 1;
+      });
+    }
+    
+    // Form submission with debugging
+    document.getElementById('incidentForm').addEventListener('submit', function(e) {
+      console.log('Form submission triggered');
+      
+      // Double check files are included in the form data
+      const fileInput = document.getElementById('fileInput');
+      if (fileInput && fileInput.files.length > 0) {
+        console.log(`${fileInput.files.length} files selected for upload`);
+      }
+      
+      // Don't prevent the default submission
+      // We want the form to submit normally
+    });
+    
+    // Prevent accidental navigation away from the form
+    window.addEventListener('beforeunload', function(e) {
+      const form = document.getElementById('incidentForm');
+      const formChanged = false; // You could add logic to check if the form has changed
+      
+      if (formChanged) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
   });
 </script>
 {% endblock %}
