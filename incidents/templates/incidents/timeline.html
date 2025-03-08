@@ -229,9 +229,9 @@
     <div class="flex flex-wrap gap-2">
       <div class="dropdown dropdown-end">
         <button class="btn btn-outline">
-          <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-5 h-5 mr-2" alt="Year">
+          <span class="material-symbols-rounded w-5 h-5 mr-2">calendar_month</span>
           {{ selected_year }}
-          <img src="{% static 'img/iconsax/All/linear/arrow-down-1.svg' %}" class="w-4 h-4 ml-2" alt="Down">
+          <span class="material-symbols-rounded w-4 h-4 ml-2">arrow_downward</span>
         </button>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 max-h-60 overflow-y-auto">
           {% for year in available_years %}
@@ -243,7 +243,7 @@
       </div>
       
       <a href="{% url 'incident_create' %}" class="btn btn-primary">
-        <img src="{% static 'img/iconsax/All/linear/add.svg' %}" class="w-5 h-5 mr-2" alt="Add">
+        <span class="material-symbols-rounded w-5 h-5 mr-2">add_circle</span>
         Nouvel incident
       </a>
     </div>
@@ -253,7 +253,7 @@
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body p-4">
       <h3 class="font-semibold flex items-center">
-        <img src="{% static 'img/iconsax/All/linear/filter.svg' %}" class="w-5 h-5 mr-2" alt="Filter">
+        <span class="material-symbols-rounded w-5 h-5 mr-2">add_circle</span>
         Filtres et période
       </h3>
       
@@ -271,7 +271,7 @@
         <div class="flex flex-wrap gap-2">
           <div class="dropdown">
             <label tabindex="0" class="btn btn-sm btn-outline">
-              <img src="{% static 'img/iconsax/All/linear/status-up.svg' %}" class="w-4 h-4 mr-2" alt="Severity">
+              <span class="material-symbols-rounded w-4 h-4 mr-2">trending_up</span>
               Sévérité
             </label>
             <div tabindex="0" class="dropdown-content z-[1] card card-compact w-64 p-0 shadow-lg bg-base-100 mt-1">
@@ -293,7 +293,7 @@
           
           <div class="dropdown">
             <label tabindex="0" class="btn btn-sm btn-outline">
-              <img src="{% static 'img/iconsax/All/linear/tag.svg' %}" class="w-4 h-4 mr-2" alt="Status">
+              <span class="material-symbols-rounded w-4 h-4 mr-2">label</span>
               Statut
             </label>
             <div tabindex="0" class="dropdown-content z-[1] card card-compact w-64 p-0 shadow-lg bg-base-100 mt-1">
@@ -317,10 +317,10 @@
         <!-- Vue -->
         <div class="join">
           <button class="join-item btn btn-sm active" data-view="detailed">
-            <img src="{% static 'img/iconsax/All/linear/text-block.svg' %}" class="w-4 h-4" alt="Detailed">
+            <span class="material-symbols-rounded w-4 h-4">open_in_new</span>
           </button>
           <button class="join-item btn btn-sm" data-view="compact">
-            <img src="{% static 'img/iconsax/All/linear/align-vertically.svg' %}" class="w-4 h-4" alt="Compact">
+            <span class="material-symbols-rounded w-4 h-4">more_vert</span>
           </button>
         </div>
       </div>
@@ -353,7 +353,7 @@
             {% elif incident.severity == 'HIGH' %}bg-warning text-warning-content
             {% elif incident.severity == 'MEDIUM' %}bg-info text-info-content
             {% else %}bg-base-300 text-base-content{% endif %}">
-            <img src="{% static 'img/iconsax/All/bold/timer-pause.svg' %}" class="w-3.5 h-3.5" alt="Incident">
+            <span class="material-symbols-rounded w-3.5 h-3.5 mr-2.5 mb-2">timer</span>
           </div>
           
           <!-- Connector line -->
@@ -371,14 +371,14 @@
               </div>
               
               <!-- Time -->
-              <div class="text-sm text-muted-foreground flex items-center gap-1 mb-1">
-                <img src="{% static 'img/iconsax/All/linear/clock.svg' %}" class="w-3.5 h-3.5" alt="Time">
-                {{ incident.start_date|date:"H:i" }}
+              <div class="text-sm text-muted-foreground flex items-center mb-1">
+                <span class="material-symbols-rounded w-3.5 h-3.5 flex-shrink-0 mr-4 mb-2">watch_vibration</span>
+                <span> {{ incident.start_date|date:"H:i" }}</span>
                 
                 {% if incident.end_date %}
                 <span class="mx-1">-</span>
-                <img src="{% static 'img/iconsax/All/linear/timer-1.svg' %}" class="w-3.5 h-3.5 ml-2" alt="Duration">
-                <span>{{ incident.duration }}</span>
+                <span class="material-symbols-rounded w-3.5 h-3.5 flex-shrink-0 mr-3 mb-2">timelapse</span>
+                <span> {{ incident.duration }}</span>
                 {% endif %}
               </div>
               
