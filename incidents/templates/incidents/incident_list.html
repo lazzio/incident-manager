@@ -414,39 +414,39 @@
                   <td>
                     <div class="flex gap-1">
                       <a href="{% url 'incident_detail' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Voir les détails">
-                        <img src="{% static 'img/iconsax/All/linear/eye.svg' %}" class="w-4 h-4" alt="View">
+                        <span class="material-symbols-rounded">visibility</span>
                       </a>
                       <a href="{% url 'incident_update' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Modifier">
-                        <img src="{% static 'img/iconsax/All/linear/edit-2.svg' %}" class="w-4 h-4" alt="Edit">
+                        <span class="material-symbols-rounded">edit</span>
                       </a>
                       <div class="dropdown dropdown-left dropdown-hover">
                         <div tabindex="0" class="btn btn-square btn-sm btn-ghost m-1">
-                          <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-4 h-4" alt="More">
+                          <span class="material-symbols-rounded">more_horiz</span>
                         </div>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                           {% if incident.status != 'resolved' %}
                           <li>
                             <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
-                              <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4 mr-2" alt="Resolve">
+                              <span class="material-symbols-rounded mr-1">task_alt</span>
                               <span>Marquer comme résolu</span>
                             </a>
                           </li>
                           {% endif %}
                           <li>
                             <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
-                              <img src="{% static 'img/iconsax/All/linear/profile-add.svg' %}" class="w-4 h-4 mr-2" alt="Assign">
+                              <span class="material-symbols-rounded mr-1">person_add</span>
                               <span>M'assigner</span>
                             </a>
                           </li>
                           <li>
                             <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
-                              <img src="{% static 'img/iconsax/All/linear/message-add.svg' %}" class="w-4 h-4 mr-2" alt="Comment">
+                              <span class="material-symbols-rounded mr-1">comment</span>
                               <span>Commenter</span>
                             </a>
                           </li>
                           <li>
                             <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
-                              <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
+                              <span class="material-symbols-rounded mr-1">delete</span>
                               <span>Supprimer</span>
                             </a>
                           </li>
@@ -489,17 +489,17 @@
               <div>
                 {% if incident.status == 'new' %}
                 <div class="badge badge-info gap-1">
-                  <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
+                  <span class="material-symbols-rounded text-xs scale-75">description</span>
                   Nouveau
                 </div>
                 {% elif incident.status == 'in_progress' %}
                 <div class="badge badge-warning gap-1">
-                  <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
+                  <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
                   En cours
                 </div>
                 {% elif incident.status == 'resolved' %}
                 <div class="badge badge-success gap-1">
-                  <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
+                  <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
                   Résolu
                 </div>
                 {% endif %}
@@ -533,7 +533,7 @@
               <!-- Date de création -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-4 h-4" alt="Date">
+                  <span class="material-symbols-rounded mr-2">calendar_month</span>
                 </div>
                 <span class="text-muted-foreground">{{ incident.created_at|date:"d/m/Y H:i" }}</span>
               </div>
@@ -561,13 +561,13 @@
               <a href="{% url 'incident_update' incident.id %}" class="btn btn-xs btn-ghost">Modifier</a>
               <div class="dropdown dropdown-top dropdown-end">
                 <div tabindex="0" class="btn btn-xs btn-ghost">
-                  <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-3 h-3" alt="More">
+                  <span class="material-symbols-rounded w-4 h-4">more_vert</span>
                 </div>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   {% if incident.status != 'resolved' %}
                   <li>
                     <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
-                      <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4 mr-2" alt="Resolve">
+                      <span class="material-symbols-rounded mr-1">task_alt</span>
                       <span>Marquer comme résolu</span>
                     </a>
                   </li>
@@ -580,13 +580,13 @@
                   </li>
                   <li>
                     <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
-                      <img src="{% static 'img/iconsax/All/linear/message-add.svg' %}" class="w-4 h-4 mr-2" alt="Comment">
+                      <span class="material-symbols-rounded mr-1">comment</span>
                       <span>Commenter</span>
                     </a>
                   </li>
                   <li>
                     <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
-                      <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
+                      <span class="material-symbols-rounded text-xs scale-75">delete</span>
                       <span>Supprimer</span>
                     </a>
                   </li>

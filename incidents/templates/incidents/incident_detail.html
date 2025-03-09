@@ -469,7 +469,7 @@
     const originalImg = copyBtn.innerHTML;
     
     // Change button to confirm copy
-    copyBtn.innerHTML = `<img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4" alt="Copied">`;
+    copyBtn.innerHTML = `<span class="material-symbols-rounded">check</span>`;
     
     // Show toast notification
     toast.success("Lien copié dans le presse-papier !");
@@ -499,7 +499,7 @@
         <div class="flex justify-end gap-2 mt-2">
           <button class="btn btn-sm btn-ghost cancel-edit">Annuler</button>
           <button class="btn btn-sm btn-primary save-edit" data-id="${commentId}">
-            <img src="{% static 'img/iconsax/All/linear/save-2.svg' %}" class="w-4 h-4 mr-1" alt="Save">
+            <span class="material-symbols-rounded mr-1">save</span>
             Enregistrer
           </button>
         </div>
