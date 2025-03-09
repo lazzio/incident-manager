@@ -236,7 +236,7 @@
             <div class="navbar-center hidden lg:flex">
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
-                    <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}">Incidents</a></li>
+                    <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/incidents/' %}active{% endif %}">Incidents</a></li>
                     <li><a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}">Timeline</a></li>
                     <li><a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}">Reports</a></li>
                 </ul>
@@ -335,7 +335,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}" data-tooltip="Incidents">
+                                <a href="{% url 'incident_list' %}" class="{% if request.path == '/incidents/' %}active{% endif %}" data-tooltip="Incidents">
                                     <span class="material-symbols-rounded mr-2">
                                         list
                                     </span>

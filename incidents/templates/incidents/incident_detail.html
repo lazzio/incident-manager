@@ -46,38 +46,38 @@
     <div class="flex flex-wrap gap-2">
         {% if incident.status == 'new' %}
             <div class="badge badge-lg badge-info gap-1">
-                <span class="material-symbols-rounded">cake</span> New
+                <span class="material-symbols-rounded text-xs scale-75">cake</span> New
             </div>
         {% elif incident.status == 'in_progress' %}
             <div class="badge badge-lg badge-warning gap-1">
-                <span class="material-symbols-rounded">progress_activity</span> In Progress
+                <span class="material-symbols-rounded text-xs scale-75">progress_activity</span> In Progress
             </div>
         {% elif incident.status == 'resolved' %}
             <div class="badge badge-lg badge-success gap-1">
-                <span class="material-symbols-rounded">check</span> Resolved
+                <span class="material-symbols-rounded text-xs scale-75">check</span> Resolved
             </div>
         {% endif %}
         
         {% if incident.severity == 'LOW' %}
             <div class="badge badge-lg badge-ghost gap-1">
-                <span class="material-symbols-rounded">south</span> Low Severity
+                <span class="material-symbols-rounded text-xs scale-75">south</span> Low Severity
             </div>
         {% elif incident.severity == 'MEDIUM' %}
             <div class="badge badge-lg badge-info gap-1">
-                <span class="material-symbols-rounded">remove</span> Medium Severity
+                <span class="material-symbols-rounded text-xs scale-75">remove</span> Medium Severity
             </div>
         {% elif incident.severity == 'HIGH' %}
             <div class="badge badge-lg badge-warning gap-1">
-                <span class="material-symbols-rounded">north</span> High Severity
+                <span class="material-symbols-rounded text-xs scale-75">north</span> High Severity
             </div>
         {% elif incident.severity == 'CRITICAL' %}
             <div class="badge badge-lg badge-error gap-1">
-                <span class="material-symbols-rounded">skull</span> Critical Severity
+                <span class="material-symbols-rounded text-xs scale-75">skull</span> Critical Severity
             </div>
         {% endif %}
         
         <div class="badge badge-lg badge-outline gap-1">
-            <span class="material-symbols-rounded">today</span> {{ incident.start_date|date:"d/m/Y H:i" }}
+            <span class="material-symbols-rounded text-xs scale-75">today</span> {{ incident.start_date|date:"d/m/Y H:i" }}
         </div>
     </div>
 
@@ -88,7 +88,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">description</span>
+                        <span class="material-symbols-rounded mr-1">description</span>
                         Description
                     </h2>
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
@@ -101,7 +101,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">construction</span>
+                        <span class="material-symbols-rounded mr-1">construction</span>
                         Resolution Process
                     </h2>
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
@@ -114,7 +114,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">balance</span>
+                        <span class="material-symbols-rounded mr-1">balance</span>
                         Impact
                     </h2>
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
@@ -127,7 +127,7 @@
             <div id="files" class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">attach_file</span>
+                        <span class="material-symbols-rounded mr-1">attach_file</span>
                         Files
                     </h2>
                     
@@ -173,7 +173,7 @@
                         </div>
                         {% empty %}
                         <div class="col-span-full py-8 flex flex-col items-center">
-                            <span class="material-symbols-rounded text-4xl opacity-30 mb-4">upload_file</span>
+                            <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">upload_file</span>
                             <p class="opacity-50">No files attached to this incident.</p>
                         </div>
                         {% endfor %}
@@ -185,7 +185,7 @@
             <div id="comments" class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">comment</span>
+                        <span class="material-symbols-rounded mr-1">comment</span>
                         Comments
                         <span class="badge">{{ comments|length }}</span>
                     </h2>
@@ -206,7 +206,7 @@
                         </div>
                         {% empty %}
                         <div class="flex flex-col items-center py-8">
-                            <span class="material-symbols-rounded text-4xl opacity-30 mb-4">comment</span>
+                            <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">comment</span>
                             <p class="opacity-50">No comments yet. Be the first to comment on this incident.</p>
                         </div>
                         {% endfor %}
@@ -239,7 +239,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">info</span>
+                        <span class="material-symbols-rounded mr-1">info</span>
                         General Information
                     </h2>
                     
@@ -311,7 +311,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">pie_chart</span>
+                        <span class="material-symbols-rounded mr-1">pie_chart</span>
                         Statistics
                     </h2>
                     
@@ -338,17 +338,17 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">bolt</span>
+                        <span class="material-symbols-rounded mr-1">bolt</span>
                         Actions
                     </h2>
                     
                     <div class="space-y-2 mt-2">
                         <a href="{% url 'incident_update' incident.id %}" class="btn btn-primary w-full">
-                            <span class="material-symbols-rounded mr-2">edit_note</span>
+                            <span class="material-symbols-rounded mr-1">edit_note</span>
                             Edit incident
                         </a>
                         <a href="{% url 'incident_delete' incident.id %}" class="btn btn-error w-full">
-                            <span class="material-symbols-rounded mr-2">delete</span>
+                            <span class="material-symbols-rounded mr-1">delete</span>
                             Delete incident
                         </a>
                     </div>
