@@ -143,13 +143,13 @@ class IncidentFile(models.Model):
     
     @property
     def is_image(self):
-        image_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+        image_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp']
         return self.content_type in image_types
     
     @property
     def file_icon(self):
         if self.is_image:
-            return 'fa-image'
+            return 'fa-file-image'
         elif 'pdf' in self.content_type:
             return 'fa-file-pdf'
         elif 'word' in self.content_type or 'office' in self.content_type:
@@ -157,7 +157,7 @@ class IncidentFile(models.Model):
         elif 'excel' in self.content_type or 'spreadsheet' in self.content_type:
             return 'fa-file-excel'
         elif 'zip' in self.content_type or 'compressed' in self.content_type:
-            return 'fa-file-archive'
+            return 'fa-file-zipper'
         elif 'text' in self.content_type:
             return 'fa-file-alt'
         else:
