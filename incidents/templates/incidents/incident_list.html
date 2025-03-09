@@ -514,7 +514,7 @@
               <!-- Sévérité -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <img src="{% static 'img/iconsax/All/linear/chart-21.svg' %}" class="w-4 h-4" alt="Severity">
+                  <span class="material-symbols-rounded">gpp_maybe</span>
                 </div>
                 <div>
                   <span class="text-muted-foreground">Sévérité:</span>
@@ -533,7 +533,7 @@
               <!-- Date de création -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <span class="material-symbols-rounded mr-2">calendar_month</span>
+                  <span class="material-symbols-rounded">calendar_month</span>
                 </div>
                 <span class="text-muted-foreground">{{ incident.created_at|date:"d/m/Y H:i" }}</span>
               </div>
@@ -541,7 +541,7 @@
               <!-- Assigné à -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <img src="{% static 'img/iconsax/All/linear/profile-circle.svg' %}" class="w-4 h-4" alt="Assigned">
+                  <span class="material-symbols-rounded">account_circle</span>
                 </div>
                 <div>
                   <span class="text-muted-foreground">Assigné:</span>
@@ -561,7 +561,7 @@
               <a href="{% url 'incident_update' incident.id %}" class="btn btn-xs btn-ghost">Modifier</a>
               <div class="dropdown dropdown-top dropdown-end">
                 <div tabindex="0" class="btn btn-xs btn-ghost">
-                  <span class="material-symbols-rounded w-4 h-4">more_vert</span>
+                  <span class="material-symbols-rounded scale-75">more_vert</span>
                 </div>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   {% if incident.status != 'resolved' %}
@@ -574,7 +574,7 @@
                   {% endif %}
                   <li>
                     <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
-                      <img src="{% static 'img/iconsax/All/linear/profile-add.svg' %}" class="w-4 h-4 mr-2" alt="Assign">
+                      <span class="material-symbols-rounded mr-1">person_add</span>
                       <span>M'assigner</span>
                     </a>
                   </li>

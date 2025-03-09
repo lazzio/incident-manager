@@ -23,7 +23,7 @@
   --tw-ring-inset:  ;
   --tw-ring-offset-width: 0px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(153 199 255 / 0.5);
+  --tw-ring-color: rgb(148 166 229 / 0.5);
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
@@ -77,7 +77,7 @@
   --tw-ring-inset:  ;
   --tw-ring-offset-width: 0px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(153 199 255 / 0.5);
+  --tw-ring-color: rgb(148 166 229 / 0.5);
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
@@ -820,14 +820,14 @@ html {
 }
 
 :root {
-  --p: 81.757% 0.093325 253.731865;
+  --p: 73.5057% 0.093865 271.67482;
   --b2: 93% 0 0;
   --b3: 86% 0 0;
   --bc: 20% 0 0;
-  --pc: 16.3514% 0.018665 253.731865;
-  --sc: 18.4884% 0.01964 90.46378;
-  --ac: 15.3834% 0.030037 306.19179;
-  --nc: 19.403% 0 0;
+  --pc: 14.7011% 0.018773 271.67482;
+  --sc: 17.8308% 0.007947 8.187758;
+  --ac: 16.858% 0.022009 74.601858;
+  --nc: 15.1702% 0.024286 20.293662;
   --inc: 15.1705% 0.027481 231.6166;
   --suc: 15.4663% 0.030576 163.102898;
   --wac: 16.6604% 0.032836 83.424292;
@@ -840,9 +840,9 @@ html {
   --border-btn: 1px;
   --tab-border: 1px;
   --tab-radius: 0.5rem;
-  --s: 92.4422% 0.098201 90.46378;
-  --a: 76.917% 0.150185 306.19179;
-  --n: 97.0151% 0 0;
+  --s: 89.1541% 0.039734 8.187758;
+  --a: 84.2902% 0.110044 74.601858;
+  --n: 75.851% 0.121428 20.293662;
   --b1: 100% 0 0;
   --in: 75.8525% 0.137405 231.6166;
   --su: 77.3316% 0.152882 163.102898;
@@ -5110,11 +5110,11 @@ html:has(.drawer-toggle:checked) {
 
 .bg-primary {
   --tw-bg-opacity: 1;
-  background-color: rgb(153 199 255 / var(--tw-bg-opacity, 1));
+  background-color: rgb(148 166 229 / var(--tw-bg-opacity, 1));
 }
 
 .bg-primary\/10 {
-  background-color: rgb(153 199 255 / 0.1);
+  background-color: rgb(148 166 229 / 0.1);
 }
 
 .bg-success\/10 {
@@ -5377,7 +5377,7 @@ html:has(.drawer-toggle:checked) {
 
 .text-primary {
   --tw-text-opacity: 1;
-  color: rgb(153 199 255 / var(--tw-text-opacity, 1));
+  color: rgb(148 166 229 / var(--tw-text-opacity, 1));
 }
 
 .text-primary-content {
@@ -5620,7 +5620,7 @@ html:has(.drawer-toggle:checked) {
 }
 
 .hover\:text-primary\/80:hover {
-  color: rgb(153 199 255 / 0.8);
+  color: rgb(148 166 229 / 0.8);
 }
 
 .hover\:underline:hover {
@@ -5635,7 +5635,7 @@ html:has(.drawer-toggle:checked) {
 
 .focus\:border-primary:focus {
   --tw-border-opacity: 1;
-  border-color: rgb(153 199 255 / var(--tw-border-opacity, 1));
+  border-color: rgb(148 166 229 / var(--tw-border-opacity, 1));
 }
 
 .focus\:ring-2:focus {
@@ -5645,7 +5645,7 @@ html:has(.drawer-toggle:checked) {
 }
 
 .focus\:ring-primary\/20:focus {
-  --tw-ring-color: rgb(153 199 255 / 0.2);
+  --tw-ring-color: rgb(148 166 229 / 0.2);
 }
 
 .focus-visible\:outline-2:focus-visible {
