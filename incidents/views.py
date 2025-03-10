@@ -150,8 +150,6 @@ def create_incident(request):
             except Exception as e:
                 # Capturer et afficher les erreurs de sauvegarde
                 print(f"Error saving incident: {type(e).__name__}: {str(e)}")
-                import traceback
-                traceback.print_exc()
                 messages.error(request, f"Une erreur s'est produite lors de la création de l'incident: {str(e)}")
     else:
         form = IncidentForm()

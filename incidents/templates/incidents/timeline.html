@@ -58,9 +58,9 @@
   
   .timeline-dot {
     position: absolute;
-    left: 0;
-    width: 24px;
-    height: 24px;
+    left: -0.5rem;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     transform: translateX(-12px);
     z-index: 10;
@@ -229,9 +229,9 @@
     <div class="flex flex-wrap gap-2">
       <div class="dropdown dropdown-end">
         <button class="btn btn-outline">
-          <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-5 h-5 mr-2" alt="Year">
+          <span class="material-symbols-rounded mr-2">calendar_month</span>
           {{ selected_year }}
-          <img src="{% static 'img/iconsax/All/linear/arrow-down-1.svg' %}" class="w-4 h-4 ml-2" alt="Down">
+          <span class="material-symbols-rounded ml-2">arrow_downward</span>
         </button>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 max-h-60 overflow-y-auto">
           {% for year in available_years %}
@@ -243,7 +243,7 @@
       </div>
       
       <a href="{% url 'incident_create' %}" class="btn btn-primary">
-        <img src="{% static 'img/iconsax/All/linear/add.svg' %}" class="w-5 h-5 mr-2" alt="Add">
+        <span class="material-symbols-rounded mr-1">library_add</span>
         Nouvel incident
       </a>
     </div>
@@ -253,7 +253,7 @@
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body p-4">
       <h3 class="font-semibold flex items-center">
-        <img src="{% static 'img/iconsax/All/linear/filter.svg' %}" class="w-5 h-5 mr-2" alt="Filter">
+        <span class="material-symbols-rounded mr-2">add_circle</span>
         Filtres et période
       </h3>
       
@@ -271,7 +271,7 @@
         <div class="flex flex-wrap gap-2">
           <div class="dropdown">
             <label tabindex="0" class="btn btn-sm btn-outline">
-              <img src="{% static 'img/iconsax/All/linear/status-up.svg' %}" class="w-4 h-4 mr-2" alt="Severity">
+              <span class="material-symbols-rounded mr-1">trending_up</span>
               Sévérité
             </label>
             <div tabindex="0" class="dropdown-content z-[1] card card-compact w-64 p-0 shadow-lg bg-base-100 mt-1">
@@ -293,7 +293,7 @@
           
           <div class="dropdown">
             <label tabindex="0" class="btn btn-sm btn-outline">
-              <img src="{% static 'img/iconsax/All/linear/tag.svg' %}" class="w-4 h-4 mr-2" alt="Status">
+              <span class="material-symbols-rounded mr-1">label</span>
               Statut
             </label>
             <div tabindex="0" class="dropdown-content z-[1] card card-compact w-64 p-0 shadow-lg bg-base-100 mt-1">
@@ -317,10 +317,10 @@
         <!-- Vue -->
         <div class="join">
           <button class="join-item btn btn-sm active" data-view="detailed">
-            <img src="{% static 'img/iconsax/All/linear/text-block.svg' %}" class="w-4 h-4" alt="Detailed">
+            <span class="material-symbols-rounded w-4 h-4">open_in_new</span>
           </button>
           <button class="join-item btn btn-sm" data-view="compact">
-            <img src="{% static 'img/iconsax/All/linear/align-vertically.svg' %}" class="w-4 h-4" alt="Compact">
+            <span class="material-symbols-rounded w-4 h-4">more_vert</span>
           </button>
         </div>
       </div>
@@ -353,7 +353,7 @@
             {% elif incident.severity == 'HIGH' %}bg-warning text-warning-content
             {% elif incident.severity == 'MEDIUM' %}bg-info text-info-content
             {% else %}bg-base-300 text-base-content{% endif %}">
-            <img src="{% static 'img/iconsax/All/bold/timer-pause.svg' %}" class="w-3.5 h-3.5" alt="Incident">
+            <span class="material-symbols-rounded">timer</span>
           </div>
           
           <!-- Connector line -->
@@ -371,14 +371,14 @@
               </div>
               
               <!-- Time -->
-              <div class="text-sm text-muted-foreground flex items-center gap-1 mb-1">
-                <img src="{% static 'img/iconsax/All/linear/clock.svg' %}" class="w-3.5 h-3.5" alt="Time">
-                {{ incident.start_date|date:"H:i" }}
+              <div class="text-sm text-muted-foreground flex items-center mb-1">
+                <span class="material-symbols-rounded flex-shrink-0 mr-1">watch_vibration</span>
+                <span> {{ incident.start_date|date:"H:i" }}</span>
                 
                 {% if incident.end_date %}
                 <span class="mx-1">-</span>
-                <img src="{% static 'img/iconsax/All/linear/timer-1.svg' %}" class="w-3.5 h-3.5 ml-2" alt="Duration">
-                <span>{{ incident.duration }}</span>
+                <span class="material-symbols-rounded flex-shrink-0 mr-1">timelapse</span>
+                <span> {{ incident.duration }}</span>
                 {% endif %}
               </div>
               
@@ -390,17 +390,17 @@
                 <div class="flex gap-2">
                   {% if incident.status == 'new' %}
                   <div class="badge badge-info gap-1">
-                    <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
+                    <span class="material-symbols-rounded text-xs scale-75">description</span>
                     Nouveau
                   </div>
                   {% elif incident.status == 'in_progress' %}
                   <div class="badge badge-warning gap-1">
-                    <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
+                    <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
                     En cours
                   </div>
                   {% elif incident.status == 'resolved' %}
                   <div class="badge badge-success gap-1">
-                    <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
+                    <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
                     Résolu
                   </div>
                   {% endif %}
@@ -410,7 +410,7 @@
                     {% elif incident.severity == 'HIGH' %}badge-warning
                     {% elif incident.severity == 'MEDIUM' %}badge-info
                     {% else %}badge-ghost{% endif %} gap-1">
-                    <img src="{% static 'img/iconsax/All/linear/danger.svg' %}" class="w-3 h-3" alt="Severity">
+                    <span class="material-symbols-rounded text-xs scale-75">warning</span>
                     {{ incident.get_severity_display }}
                   </div>
                 </div>
@@ -444,14 +444,14 @@
                   
                   {% if incident.comments.count %}
                   <div class="badge badge-ghost gap-1">
-                    <img src="{% static 'img/iconsax/All/linear/message.svg' %}" class="w-3.5 h-3.5" alt="Comments">
+                    <span class="material-symbols-rounded text-xs scale-75">comment</span>
                     {{ incident.comments.count }}
                   </div>
                   {% endif %}
                   
                   {% if incident.files.count %}
                   <div class="badge badge-ghost gap-1">
-                    <img src="{% static 'img/iconsax/All/linear/document.svg' %}" class="w-3.5 h-3.5" alt="Files">
+                    <span class="material-symbols-rounded text-xs scale-75">attach_file</span>
                     {{ incident.files.count }}
                   </div>
                   {% endif %}
@@ -459,23 +459,23 @@
                 
                 <div class="flex gap-2">
                   <a href="{% url 'incident_detail' incident.id %}" class="btn btn-sm btn-ghost">
-                    <img src="{% static 'img/iconsax/All/linear/eye.svg' %}" class="w-4 h-4 mr-1" alt="View">
+                    <span class="material-symbols-rounded">visibility</span>
                     Détails
                   </a>
                   <div class="dropdown dropdown-left dropdown-hover">
                     <div tabindex="0" class="btn btn-sm btn-ghost">
-                      <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-4 h-4" alt="More">
+                      <span class="material-symbols-rounded">more_horiz</span>
                     </div>
                     <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                       <li>
                         <a href="{% url 'incident_update' incident.id %}">
-                          <img src="{% static 'img/iconsax/All/linear/edit-2.svg' %}" class="w-4 h-4" alt="Edit">
+                          <span class="material-symbols-rounded">edit</span>
                           Modifier
                         </a>
                       </li>
                       <li>
                         <a href="{% url 'incident_detail' incident.id %}#comments">
-                          <img src="{% static 'img/iconsax/All/linear/message-text.svg' %}" class="w-4 h-4" alt="Comment">
+                          <span class="material-symbols-rounded">comment</span>
                           Commenter
                         </a>
                       </li>
@@ -498,11 +498,11 @@
       <p class="text-muted-foreground mb-4">Aucun incident n'a été enregistré pour cette période.</p>
       <div class="flex gap-3">
         <button class="btn btn-outline btn-sm" onclick="window.history.back()">
-          <img src="{% static 'img/iconsax/All/linear/arrow-left.svg' %}" class="w-4 h-4 mr-2" alt="Back">
+          <span class="material-symbols-rounded mr-1">arrow_left_alt</span>
           Retour
         </button>
         <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">
-          <img src="{% static 'img/iconsax/All/linear/add.svg' %}" class="w-4 h-4 mr-2" alt="Add">
+          <span class="material-symbols-rounded mr-1">library_add</span>
           Créer un incident
         </a>
       </div>

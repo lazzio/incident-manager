@@ -96,16 +96,16 @@
     <div class="flex items-center gap-3">
       <div class="view-switcher join">
         <button class="join-item btn btn-sm active" id="tableViewBtn">
-          <img src="{% static 'img/iconsax/All/linear/task-square.svg' %}" class="w-4 h-4" alt="Table View">
+          <span class="material-symbols-rounded font-thin">table_rows</span>
         </button>
         <button class="join-item btn btn-sm" id="cardViewBtn">
-          <img src="{% static 'img/iconsax/All/linear/element-3.svg' %}" class="w-4 h-4" alt="Card View">
+          <span class="material-symbols-rounded font-thin">grid_view</span>
         </button>
       </div>
 
       <div class="dropdown dropdown-end">
         <button class="btn btn-outline btn-sm">
-          <img src="{% static 'img/iconsax/All/linear/export.svg' %}" class="w-4 h-4 mr-2" alt="Export">
+          <span class="material-symbols-rounded mr-1">file_export</span>
           Exporter
         </button>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-2">
@@ -116,7 +116,7 @@
       </div>
 
       <a href="{% url 'incident_create' %}" class="btn btn-primary">
-        <img src="{% static 'img/iconsax/All/linear/add.svg' %}" class="w-4 h-4 mr-2" alt="Add">
+        <span class="material-symbols-rounded mr-1">library_add</span>
         Nouvel incident
       </a>
     </div>
@@ -130,7 +130,7 @@
         <div class="relative flex-grow">
           <form method="get" class="w-full">
             <div class="relative">
-              <img src="{% static 'img/iconsax/All/linear/search-normal.svg' %}" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" alt="Search">
+              <span class="material-symbols-rounded absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">search</span>
               <input type="text" 
                      name="search" 
                      value="{{ request.GET.search }}" 
@@ -139,7 +139,7 @@
                      autocomplete="off">
               {% if request.GET.search %}
               <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2" onclick="clearSearch()">
-                <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-5 h-5" alt="Clear">
+                <span class="material-symbols-rounded">restart_alt</span>
               </button>
               {% endif %}
             </div>
@@ -150,7 +150,7 @@
         <div class="flex items-center gap-2 lg:w-auto w-full">
           <div class="dropdown dropdown-end">
             <button class="btn btn-outline">
-              <img src="{% static 'img/iconsax/All/linear/filter.svg' %}" class="w-5 h-5 mr-2" alt="Filter">
+              <span class="material-symbols-rounded mr-1">filter_alt</span>
               Filtres
               {% if has_active_filters %}
               <div class="badge badge-primary ml-2">{{ active_filters_count }}</div>
@@ -244,7 +244,7 @@
           </div>
 
           <button class="btn btn-sm" id="refreshBtn">
-            <img src="{% static 'img/iconsax/All/linear/refresh.svg' %}" class="w-4 h-4" alt="Refresh">
+            <span class="material-symbols-rounded">refresh</span>
           </button>
         </div>
       </div>
@@ -257,7 +257,7 @@
         <div class="filter-pill badge gap-1">
           <span>Recherche: "{{ request.GET.search }}"</span>
           <button onclick="removeFilter('search')" class="ml-1">
-            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+            <span class="material-symbols-rounded">cancel</span>
           </button>
         </div>
         {% endif %}
@@ -266,7 +266,7 @@
         <div class="filter-pill badge badge-info gap-1">
           <span>Statut: {{ status }}</span>
           <button onclick="removeFilterValue('status', '{{ status }}')" class="ml-1">
-            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+            <span class="material-symbols-rounded">cancel</span>
           </button>
         </div>
         {% endfor %}
@@ -275,7 +275,7 @@
         <div class="filter-pill badge badge-warning gap-1">
           <span>Sévérité: {{ severity }}</span>
           <button onclick="removeFilterValue('severity', '{{ severity }}')" class="ml-1">
-            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+            <span class="material-symbols-rounded">cancel</span>
           </button>
         </div>
         {% endfor %}
@@ -284,7 +284,7 @@
         <div class="filter-pill badge badge-secondary gap-1">
           <span>Période: {% if request.GET.date_from %}Du {{ request.GET.date_from }}{% endif %} {% if request.GET.date_to %}au {{ request.GET.date_to }}{% endif %}</span>
           <button onclick="removeDateFilters()" class="ml-1">
-            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+            <span class="material-symbols-rounded">cancel</span>
           </button>
         </div>
         {% endif %}
@@ -293,7 +293,7 @@
         <div class="filter-pill badge badge-neutral gap-1">
           <span>Assigné: {{ assigned_user_name }}</span>
           <button onclick="removeFilter('assigned_to')" class="ml-1">
-            <img src="{% static 'img/iconsax/All/linear/close-circle.svg' %}" class="w-3 h-3" alt="Remove">
+            <span class="material-symbols-rounded">cancel</span>
           </button>
         </div>
         {% endif %}
@@ -318,13 +318,13 @@
                   <th class="cursor-pointer" onclick="sortBy('id')">
                     <div class="flex items-center gap-1">
                       ID
-                      <img src="{% static 'img/iconsax/All/linear/arrow-down-2.svg' %}" class="w-3 h-3 {% if sort_by == 'id' %}opacity-100{% else %}opacity-30{% endif %}" alt="Sort">
+                      <span class="material-symbols-rounded text-xs {% if sort_by == 'id' %}opacity-100{% else %}opacity-30{% endif %}">arrow_downward_alt</span>
                     </div>
                   </th>
                   <th class="cursor-pointer" onclick="sortBy('title')">
                     <div class="flex items-center gap-1">
                       Titre
-                      <img src="{% static 'img/iconsax/All/linear/arrow-down-2.svg' %}" class="w-3 h-3 {% if sort_by == 'title' %}opacity-100{% else %}opacity-30{% endif %}" alt="Sort">
+                      <span class="material-symbols-rounded text-xs {% if sort_by == 'title' %}opacity-100{% else %}opacity-30{% endif %}">arrow_downward_alt</span>
                     </div>
                   </th>
                   <th>Statut</th>
@@ -332,7 +332,7 @@
                   <th class="cursor-pointer" onclick="sortBy('created_at')">
                     <div class="flex items-center gap-1">
                       Date de création
-                      <img src="{% static 'img/iconsax/All/linear/arrow-down-2.svg' %}" class="w-3 h-3 {% if sort_by == 'created_at' %}opacity-100{% else %}opacity-30{% endif %}" alt="Sort">
+                      <span class="material-symbols-rounded text-xs {% if sort_by == 'created_at' %}opacity-100{% else %}opacity-30{% endif %}">arrow_downward_alt</span>
                     </div>
                   </th>
                   <th>Assigné à</th>
@@ -353,17 +353,17 @@
                   <td>
                     {% if incident.status == 'new' %}
                     <div class="badge badge-info gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
+                      <span class="material-symbols-rounded text-xs scale-75">description</span>
                       Nouveau
                     </div>
                     {% elif incident.status == 'in_progress' %}
                     <div class="badge badge-warning gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
+                      <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
                       En cours
                     </div>
                     {% elif incident.status == 'resolved' %}
                     <div class="badge badge-success gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
+                      <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
                       Résolu
                     </div>
                     {% endif %}
@@ -371,29 +371,29 @@
                   <td>
                     {% if incident.severity == 'LOW' %}
                     <div class="badge badge-ghost gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/arrow-down.svg' %}" class="w-3 h-3" alt="Low">
+                      <span class="material-symbols-rounded text-xs scale-75">south</span>
                       Basse
                     </div>
                     {% elif incident.severity == 'MEDIUM' %}
                     <div class="badge badge-info gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/minus.svg' %}" class="w-3 h-3" alt="Medium">
+                      <span class="material-symbols-rounded text-xs scale-75">remove</span>
                       Moyenne
                     </div>
                     {% elif incident.severity == 'HIGH' %}
                     <div class="badge badge-warning gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/arrow-up.svg' %}" class="w-3 h-3" alt="High">
+                      <span class="material-symbols-rounded text-xs scale-75">north</span>
                       Haute
                     </div>
                     {% elif incident.severity == 'CRITICAL' %}
                     <div class="badge badge-error gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/danger.svg' %}" class="w-3 h-3" alt="Critical">
+                      <span class="material-symbols-rounded text-xs scale-75">skull</span>
                       Critique
                     </div>
                     {% endif %}
                   </td>
                   <td>
                     <div class="flex items-center gap-1">
-                      <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-4 h-4 text-muted-foreground" alt="Date">
+                      <span class="material-symbols-rounded text-muted-foreground">calendar_month</span>
                       <span>{{ incident.created_at|date:"d/m/Y H:i" }}</span>
                     </div>
                   </td>
@@ -414,39 +414,39 @@
                   <td>
                     <div class="flex gap-1">
                       <a href="{% url 'incident_detail' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Voir les détails">
-                        <img src="{% static 'img/iconsax/All/linear/eye.svg' %}" class="w-4 h-4" alt="View">
+                        <span class="material-symbols-rounded">visibility</span>
                       </a>
                       <a href="{% url 'incident_update' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Modifier">
-                        <img src="{% static 'img/iconsax/All/linear/edit-2.svg' %}" class="w-4 h-4" alt="Edit">
+                        <span class="material-symbols-rounded">edit</span>
                       </a>
                       <div class="dropdown dropdown-left dropdown-hover">
                         <div tabindex="0" class="btn btn-square btn-sm btn-ghost m-1">
-                          <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-4 h-4" alt="More">
+                          <span class="material-symbols-rounded">more_horiz</span>
                         </div>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                           {% if incident.status != 'resolved' %}
                           <li>
                             <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
-                              <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4 mr-2" alt="Resolve">
+                              <span class="material-symbols-rounded mr-1">task_alt</span>
                               <span>Marquer comme résolu</span>
                             </a>
                           </li>
                           {% endif %}
                           <li>
                             <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
-                              <img src="{% static 'img/iconsax/All/linear/profile-add.svg' %}" class="w-4 h-4 mr-2" alt="Assign">
+                              <span class="material-symbols-rounded mr-1">person_add</span>
                               <span>M'assigner</span>
                             </a>
                           </li>
                           <li>
                             <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
-                              <img src="{% static 'img/iconsax/All/linear/message-add.svg' %}" class="w-4 h-4 mr-2" alt="Comment">
+                              <span class="material-symbols-rounded mr-1">comment</span>
                               <span>Commenter</span>
                             </a>
                           </li>
                           <li>
                             <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
-                              <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
+                              <span class="material-symbols-rounded mr-1">delete</span>
                               <span>Supprimer</span>
                             </a>
                           </li>
@@ -489,17 +489,17 @@
               <div>
                 {% if incident.status == 'new' %}
                 <div class="badge badge-info gap-1">
-                  <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
+                  <span class="material-symbols-rounded text-xs scale-75">description</span>
                   Nouveau
                 </div>
                 {% elif incident.status == 'in_progress' %}
                 <div class="badge badge-warning gap-1">
-                  <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
+                  <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
                   En cours
                 </div>
                 {% elif incident.status == 'resolved' %}
                 <div class="badge badge-success gap-1">
-                  <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
+                  <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
                   Résolu
                 </div>
                 {% endif %}
@@ -514,7 +514,7 @@
               <!-- Sévérité -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <img src="{% static 'img/iconsax/All/linear/chart-21.svg' %}" class="w-4 h-4" alt="Severity">
+                  <span class="material-symbols-rounded">gpp_maybe</span>
                 </div>
                 <div>
                   <span class="text-muted-foreground">Sévérité:</span>
@@ -533,7 +533,7 @@
               <!-- Date de création -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <img src="{% static 'img/iconsax/All/linear/calendar.svg' %}" class="w-4 h-4" alt="Date">
+                  <span class="material-symbols-rounded">calendar_month</span>
                 </div>
                 <span class="text-muted-foreground">{{ incident.created_at|date:"d/m/Y H:i" }}</span>
               </div>
@@ -541,7 +541,7 @@
               <!-- Assigné à -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
-                  <img src="{% static 'img/iconsax/All/linear/profile-circle.svg' %}" class="w-4 h-4" alt="Assigned">
+                  <span class="material-symbols-rounded">account_circle</span>
                 </div>
                 <div>
                   <span class="text-muted-foreground">Assigné:</span>
@@ -561,32 +561,32 @@
               <a href="{% url 'incident_update' incident.id %}" class="btn btn-xs btn-ghost">Modifier</a>
               <div class="dropdown dropdown-top dropdown-end">
                 <div tabindex="0" class="btn btn-xs btn-ghost">
-                  <img src="{% static 'img/iconsax/All/linear/more.svg' %}" class="w-3 h-3" alt="More">
+                  <span class="material-symbols-rounded scale-75">more_vert</span>
                 </div>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   {% if incident.status != 'resolved' %}
                   <li>
                     <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
-                      <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4 mr-2" alt="Resolve">
+                      <span class="material-symbols-rounded mr-1">task_alt</span>
                       <span>Marquer comme résolu</span>
                     </a>
                   </li>
                   {% endif %}
                   <li>
                     <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
-                      <img src="{% static 'img/iconsax/All/linear/profile-add.svg' %}" class="w-4 h-4 mr-2" alt="Assign">
+                      <span class="material-symbols-rounded mr-1">person_add</span>
                       <span>M'assigner</span>
                     </a>
                   </li>
                   <li>
                     <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
-                      <img src="{% static 'img/iconsax/All/linear/message-add.svg' %}" class="w-4 h-4 mr-2" alt="Comment">
+                      <span class="material-symbols-rounded mr-1">comment</span>
                       <span>Commenter</span>
                     </a>
                   </li>
                   <li>
                     <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
-                      <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
+                      <span class="material-symbols-rounded text-xs scale-75">delete</span>
                       <span>Supprimer</span>
                     </a>
                   </li>

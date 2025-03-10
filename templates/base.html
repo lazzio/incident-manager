@@ -17,6 +17,11 @@
     <!-- TailwindCSS avec DaisyUI -->
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" /> -->
+    
     <!-- Style personnalisé -->
     <style>
         body {
@@ -222,14 +227,16 @@
                     <i class="fas fa-bars"></i>
                 </label>
                 <a href="{% url 'dashboard' %}" class="btn btn-ghost normal-case text-xl">
-                    <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
+                    <span class="material-symbols-rounded text-warning mr-2">
+                        breaking_news_alt_1
+                    </span>
                     Incident Manager
                 </a>
             </div>
             <div class="navbar-center hidden lg:flex">
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
-                    <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}">Incidents</a></li>
+                    <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/incidents/' %}active{% endif %}">Incidents</a></li>
                     <li><a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}">Timeline</a></li>
                     <li><a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}">Reports</a></li>
                 </ul>
@@ -244,13 +251,13 @@
                         </div>
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                        <li><a href="#"><i class="fas fa-user mr-2"></i> Profile</a></li>
-                        <li><a href="#"><i class="fas fa-cog mr-2"></i> Settings</a></li>
+                        <li><a href="#"><span class="material-symbols-rounded mr-2">account_circle</span> Profile</a></li>
+                        <li><a href="#"><span class="material-symbols-rounded mr-2">settings</span> Settings</a></li>
                         <li>
                             <form method="post" action="/logout/" class="w-full">
                                 {% csrf_token %}
-                                <button type="submit" class="flex w-full items-center text-left px-2 py-2 hover:bg-base-200">
-                                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                <button type="submit" class="flex">
+                                    <span class="material-symbols-rounded mr-2">logout</span> Logout
                                 </button>
                             </form>
                         </li>
@@ -274,13 +281,21 @@
                             <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} shadow-lg">
                                 <div>
                                     {% if message.tags == 'success' %}
-                                    <i class="fas fa-check-circle"></i>
+                                    <span class="material-symbols-rounded">
+                                        check_circle
+                                    </span>
                                     {% elif message.tags == 'error' %}
-                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span class="material-symbols-rounded">
+                                        error
+                                    </span>
                                     {% elif message.tags == 'warning' %}
-                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span class="material-symbols-rounded">
+                                        warning
+                                    </span>
                                     {% else %}
-                                    <i class="fas fa-info-circle"></i>
+                                    <span class="material-symbols-rounded">
+                                        info
+                                    </span>
                                     {% endif %}
                                     <span>{{ message }}</span>
                                 </div>
@@ -300,8 +315,12 @@
                     
                     <!-- Toggle button -->
                     <div class="sidebar-toggle-btn sidebar-toggle-btn-initial" id="sidebarToggleBtn">
-                        <i class="fas fa-angle-left icon-collapse"></i>
-                        <i class="fas fa-angle-right icon-expand"></i>
+                        <span class="material-symbols-rounded icon-collapse">
+                            keyboard_arrow_left
+                        </span>
+                        <span class="material-symbols-rounded icon-expand">
+                            keyboard_arrow_right
+                        </span>
                     </div>
                     
                     <div class="w-80 h-full bg-base-200 text-base-content p-4 flex flex-col">
@@ -309,25 +328,33 @@
                         <ul class="menu bg-base-200 rounded-box flex-1">
                             <li>
                                 <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}" data-tooltip="Dashboard">
-                                    <i class="fas fa-tachometer-alt mr-2"></i>
+                                    <span class="material-symbols-rounded mr-2">
+                                        dashboard
+                                    </span>
                                     <span class="sidebar-text">Dashboard</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'incident_list' %}" class="{% if request.path == '/' %}active{% endif %}" data-tooltip="Incidents">
-                                    <i class="fas fa-list-alt mr-2"></i>
+                                <a href="{% url 'incident_list' %}" class="{% if request.path == '/incidents/' %}active{% endif %}" data-tooltip="Incidents">
+                                    <span class="material-symbols-rounded mr-2">
+                                        list
+                                    </span>
                                     <span class="sidebar-text">Incidents</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}" data-tooltip="Timeline">
-                                    <i class="fas fa-clock mr-2"></i>
+                                    <span class="material-symbols-rounded mr-2">
+                                        timeline
+                                    </span>
                                     <span class="sidebar-text">Timeline</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}" data-tooltip="Reports">
-                                    <i class="fas fa-chart-bar mr-2"></i>
+                                    <span class="material-symbols-rounded mr-2">
+                                        stacked_bar_chart
+                                    </span>
                                     <span class="sidebar-text">Reports</span>
                                 </a>
                             </li>
@@ -341,7 +368,9 @@
                         <!-- Action button -->
                         <div class="create-btn-container">
                             <a href="{% url 'incident_create' %}" class="btn btn-primary create-incident-btn">
-                                <i class="fas fa-plus mr-2"></i>
+                                <span class="material-symbols-rounded mr-2">
+                                    library_add
+                                </span>
                                 <span class="sidebar-text">Nouvel incident</span>
                             </a>
                         </div>

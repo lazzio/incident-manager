@@ -21,17 +21,21 @@
             </h1>
             <div class="flex gap-2">
                 <a href="{% url 'incident_update' incident.id %}" class="btn btn-primary">
-                    <i class="fas fa-edit mr-2"></i>
+                    <span class="material-symbols-rounded mr-2">
+                        edit_note
+                    </span>
                     Edit
                 </a>
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
-                        <i class="fas fa-ellipsis-v"></i>
+                        <span class="material-symbols-rounded">
+                            more_vert
+                        </span>
                     </label>
                     <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-                        <li><a href="#comments"><i class="fas fa-comments mr-2"></i> Comments</a></li>
-                        <li><a href="#files"><i class="fas fa-paperclip mr-2"></i> Files</a></li>
-                        <li><a href="{% url 'incident_delete' incident.id %}"><i class="fas fa-trash mr-2 text-error"></i> Delete</a></li>
+                        <li><a href="#comments"><span class="material-symbols-rounded mr-2">comment</span> Comments</a></li>
+                        <li><a href="#files"><span class="material-symbols-rounded mr-2">attach_file</span> Files</a></li>
+                        <li><a href="{% url 'incident_delete' incident.id %}"><span class="material-symbols-rounded mr-2">delete</span> Delete</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,38 +46,38 @@
     <div class="flex flex-wrap gap-2">
         {% if incident.status == 'new' %}
             <div class="badge badge-lg badge-info gap-1">
-                <i class="fas fa-circle-exclamation"></i> New
+                <span class="material-symbols-rounded text-xs scale-75">cake</span> New
             </div>
         {% elif incident.status == 'in_progress' %}
             <div class="badge badge-lg badge-warning gap-1">
-                <i class="fas fa-spinner fa-spin"></i> In Progress
+                <span class="material-symbols-rounded text-xs scale-75">progress_activity</span> In Progress
             </div>
         {% elif incident.status == 'resolved' %}
             <div class="badge badge-lg badge-success gap-1">
-                <i class="fas fa-check"></i> Resolved
+                <span class="material-symbols-rounded text-xs scale-75">check</span> Resolved
             </div>
         {% endif %}
         
         {% if incident.severity == 'LOW' %}
             <div class="badge badge-lg badge-ghost gap-1">
-                <i class="fas fa-arrow-down"></i> Low Severity
+                <span class="material-symbols-rounded text-xs scale-75">south</span> Low Severity
             </div>
         {% elif incident.severity == 'MEDIUM' %}
             <div class="badge badge-lg badge-info gap-1">
-                <i class="fas fa-minus"></i> Medium Severity
+                <span class="material-symbols-rounded text-xs scale-75">remove</span> Medium Severity
             </div>
         {% elif incident.severity == 'HIGH' %}
             <div class="badge badge-lg badge-warning gap-1">
-                <i class="fas fa-arrow-up"></i> High Severity
+                <span class="material-symbols-rounded text-xs scale-75">north</span> High Severity
             </div>
         {% elif incident.severity == 'CRITICAL' %}
             <div class="badge badge-lg badge-error gap-1">
-                <i class="fas fa-skull"></i> Critical Severity
+                <span class="material-symbols-rounded text-xs scale-75">skull</span> Critical Severity
             </div>
         {% endif %}
         
         <div class="badge badge-lg badge-outline gap-1">
-            <i class="fas fa-calendar"></i> {{ incident.start_date|date:"d/m/Y H:i" }}
+            <span class="material-symbols-rounded text-xs scale-75">today</span> {{ incident.start_date|date:"d/m/Y H:i" }}
         </div>
     </div>
 
@@ -84,7 +88,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-info-circle mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">description</span>
                         Description
                     </h2>
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
@@ -97,7 +101,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-tools mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">construction</span>
                         Resolution Process
                     </h2>
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
@@ -110,7 +114,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-wave-square mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">balance</span>
                         Impact
                     </h2>
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
@@ -123,7 +127,7 @@
             <div id="files" class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-paperclip mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">attach_file</span>
                         Files
                     </h2>
                     
@@ -154,13 +158,13 @@
                                 
                                 <div class="card-actions justify-end mt-3">
                                     <a href="{{ file.file.url }}" target="_blank" class="btn btn-xs btn-primary">
-                                        <i class="fas fa-download mr-1"></i>
+                                        <span class="material-symbols-rounded mr-1">download</span>
                                         Download
                                     </a>
                                     {% if file.is_image %}
                                     <button onclick="openImageModal('{{ file.file.url }}', '{{ file.filename }}')"
                                             class="btn btn-xs btn-outline">
-                                        <i class="fas fa-eye mr-1"></i>
+                                            <span class="material-symbols-rounded mr-1">visibility</span>
                                         Preview
                                     </button>
                                     {% endif %}
@@ -169,7 +173,7 @@
                         </div>
                         {% empty %}
                         <div class="col-span-full py-8 flex flex-col items-center">
-                            <i class="fas fa-file text-4xl opacity-30 mb-4"></i>
+                            <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">upload_file</span>
                             <p class="opacity-50">No files attached to this incident.</p>
                         </div>
                         {% endfor %}
@@ -181,7 +185,7 @@
             <div id="comments" class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-comments mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">comment</span>
                         Comments
                         <span class="badge">{{ comments|length }}</span>
                     </h2>
@@ -202,7 +206,7 @@
                         </div>
                         {% empty %}
                         <div class="flex flex-col items-center py-8">
-                            <i class="fas fa-comments text-4xl opacity-30 mb-4"></i>
+                            <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">comment</span>
                             <p class="opacity-50">No comments yet. Be the first to comment on this incident.</p>
                         </div>
                         {% endfor %}
@@ -219,7 +223,7 @@
                             </div>
                             <div class="flex justify-end">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-paper-plane mr-2"></i>
+                                    <span class="material-symbols-rounded mr-2">send</span>
                                     Send
                                 </button>
                             </div>
@@ -235,7 +239,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-info-circle mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">info</span>
                         General Information
                     </h2>
                     
@@ -307,7 +311,7 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-chart-pie mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">pie_chart</span>
                         Statistics
                     </h2>
                     
@@ -334,17 +338,17 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title">
-                        <i class="fas fa-bolt mr-2"></i>
+                        <span class="material-symbols-rounded mr-1">bolt</span>
                         Actions
                     </h2>
                     
                     <div class="space-y-2 mt-2">
                         <a href="{% url 'incident_update' incident.id %}" class="btn btn-primary w-full">
-                            <i class="fas fa-edit mr-2"></i>
+                            <span class="material-symbols-rounded mr-1">edit_note</span>
                             Edit incident
                         </a>
                         <a href="{% url 'incident_delete' incident.id %}" class="btn btn-error w-full">
-                            <i class="fas fa-trash mr-2"></i>
+                            <span class="material-symbols-rounded mr-1">delete</span>
                             Delete incident
                         </a>
                     </div>
@@ -465,7 +469,7 @@
     const originalImg = copyBtn.innerHTML;
     
     // Change button to confirm copy
-    copyBtn.innerHTML = `<img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-4 h-4" alt="Copied">`;
+    copyBtn.innerHTML = `<span class="material-symbols-rounded">check</span>`;
     
     // Show toast notification
     toast.success("Lien copié dans le presse-papier !");
@@ -495,7 +499,7 @@
         <div class="flex justify-end gap-2 mt-2">
           <button class="btn btn-sm btn-ghost cancel-edit">Annuler</button>
           <button class="btn btn-sm btn-primary save-edit" data-id="${commentId}">
-            <img src="{% static 'img/iconsax/All/linear/save-2.svg' %}" class="w-4 h-4 mr-1" alt="Save">
+            <span class="material-symbols-rounded mr-1">save</span>
             Enregistrer
           </button>
         </div>
