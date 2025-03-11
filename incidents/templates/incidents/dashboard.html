@@ -1,143 +1,426 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Dashboard{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<style>
+    .stats-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .icon-wrapper {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+    .dashboard-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .card-header {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    .chart-container {
+        flex-grow: 1;
+        min-height: 250px;
+        position: relative;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
-    
-    <!-- Statistics -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Total incidents -->
-        <div class="bg-card overflow-hidden rounded-lg shadow">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-ticket-alt text-primary text-2xl"></i>
+    <!-- En-tête avec boîte de recherche et actions rapides -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold">Dashboard</h1>
+            <p class="text-muted-foreground mt-1">Bienvenue dans votre tableau de bord de gestion d'incidents</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="dropdown dropdown-end">
+                <button class="btn btn-ghost btn-sm">
+                    <span class="material-symbols-rounded mr-2">filter_alt</span>
+                    Filtres
+                </button>
+                <ul tabindex="0" class="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="?period=day">Aujourd'hui</a></li>
+                    <li><a href="?period=week">Cette semaine</a></li>
+                    <li><a href="?period=month">Ce mois</a></li>
+                    <li><a href="?period=year">Cette année</a></li>
+                </ul>
+            </div>
+            <a href="{% url 'incident_create' %}" class="btn btn-primary">
+                <span class="material-symbols-rounded mr-2">library_add</span>
+                Nouvel incident
+            </a>
+        </div>
+    </div>
+
+    <!-- Cartes statistiques avec indicateurs de tendance -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total des incidents -->
+        <div class="stats-card card bg-base-100 shadow-lg">
+            <div class="card-body p-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-muted-foreground mb-1">TOTAL DES INCIDENTS</p>
+                        <h2 class="card-title text-3xl">{{ total_incidents }}</h2>
+                        <!-- Indicateur de tendance simulé -->
+                        <span class="text-sm text-success">+8% <span class="text-muted-foreground">vs mois dernier</span></span>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">Total Incidents</dt>
-                            <dd class="text-3xl font-semibold">{{ total_incidents }}</dd>
-                        </dl>
+                    <div class="icon-wrapper bg-primary/10">
+                        <span class="material-symbols-rounded">stacks</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Open incidents -->
-        <div class="bg-card overflow-hidden rounded-lg shadow">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-folder-open text-blue-500 text-2xl"></i>
+        <!-- Incidents en attente -->
+        <div class="stats-card card bg-base-100 shadow-lg">
+            <div class="card-body p-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-muted-foreground mb-1">EN ATTENTE</p>
+                        <h2 class="card-title text-3xl">{{ open_incidents }}</h2>
+                        <!-- Indicateur de tendance simulé -->
+                        <span class="text-sm text-error">+12% <span class="text-muted-foreground">vs mois dernier</span></span>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">Open Incidents</dt>
-                            <dd class="text-3xl font-semibold">{{ open_incidents }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- In Progress -->
-        <div class="bg-card overflow-hidden rounded-lg shadow">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-spinner text-yellow-500 text-2xl"></i>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">In Progress</dt>
-                            <dd class="text-3xl font-semibold">{{ in_progress_incidents }}</dd>
-                        </dl>
+                    <div class="icon-wrapper bg-info/10">
+                        <span class="material-symbols-rounded">hourglass_top</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Resolved -->
-        <div class="bg-card overflow-hidden rounded-lg shadow">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+        <!-- Incidents en cours -->
+        <div class="stats-card card bg-base-100 shadow-lg">
+            <div class="card-body p-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-muted-foreground mb-1">EN COURS</p>
+                        <h2 class="card-title text-3xl">{{ in_progress_incidents }}</h2>
+                        <!-- Indicateur de tendance simulé -->
+                        <span class="text-sm text-success">-5% <span class="text-muted-foreground">vs mois dernier</span></span>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-muted-foreground truncate">Resolved</dt>
-                            <dd class="text-3xl font-semibold">{{ resolved_incidents }}</dd>
-                        </dl>
+                    <div class="icon-wrapper bg-warning/10">
+                        <span class="material-symbols-rounded text-warning">run_circle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incidents résolus -->
+        <div class="stats-card card bg-base-100 shadow-lg">
+            <div class="card-body p-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-muted-foreground mb-1">RÉSOLUS</p>
+                        <h2 class="card-title text-3xl">{{ resolved_incidents }}</h2>
+                        <!-- Indicateur de tendance simulé -->
+                        <span class="text-sm text-success">+15% <span class="text-muted-foreground">vs mois dernier</span></span>
+                    </div>
+                    <div class="icon-wrapper bg-success/10">
+                        <span class="material-symbols-rounded test-success">task_alt</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts and lists -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <!-- Recent incidents -->
-        <div class="bg-card rounded-lg shadow">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold mb-4">Recent Incidents</h2>
-                <div class="flow-root">
-                    <ul role="list" class="divide-y divide-border">
-                        {% for incident in recent_incidents %}
-                        <li class="py-4">
-                            <div class="flex items-center space-x-4">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium truncate">
-                                        <a href="{% url 'incident_detail' incident.id %}" class="hover:text-primary">
-                                            {{ incident.title }}
-                                        </a>
-                                    </p>
-                                    <p class="text-sm text-muted-foreground">
-                                        {{ incident.created_at|date:"d/m/Y H:i" }}
-                                    </p>
-                                </div>
-                                <div>
-                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                        {% if incident.status == 'nouveau' %}bg-blue-100 text-blue-800
-                                        {% elif incident.status == 'en_cours' %}bg-yellow-100 text-yellow-800
-                                        {% elif incident.status == 'résolu' %}bg-green-100 text-green-800
-                                        {% endif %}">
-                                        {{ incident.get_status_display }}
-                                    </span>
-                                </div>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
+    <!-- Widgets de graphique et listes -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Graphique d'activité -->
+        <div class="card bg-base-100 shadow-lg lg:col-span-2">
+            <div class="card-body dashboard-card">
+                <div class="card-header flex justify-between items-center">
+                    <h2 class="card-title">
+                        <span class="material-symbols-rounded mr-2">chart_data</span>
+                        Activité des incidents
+                    </h2>
+                    <div class="join">
+                        <button class="join-item btn btn-xs" data-period="day">Jour</button>
+                        <button class="join-item btn btn-xs btn-active" data-period="week">Semaine</button>
+                        <button class="join-item btn btn-xs" data-period="month">Mois</button>
+                    </div>
                 </div>
-                <div class="mt-6">
-                    <a href="{% url 'incident_list' %}" class="text-primary hover:text-primary/80">
-                        View all incidents →
-                    </a>
+                <div class="chart-container">
+                    <canvas id="activityChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Category distribution -->
-        <div class="bg-card rounded-lg shadow">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold mb-4">Category Distribution</h2>
-                <div class="space-y-4">
-                    {% for category in categories %}
-                    <div>
-                        <div class="flex justify-between mb-1">
-                            <span class="text-sm font-medium">{{ category.name }}</span>
-                            <span class="text-sm text-muted-foreground">{{ category.count }}</span>
-                        </div>
-                        <div class="w-full bg-muted rounded-full h-2">
-                            <div class="bg-primary h-2 rounded-full" style="width: {{ category.percentage }}%"></div>
-                        </div>
+        <!-- Distribution par sévérité -->
+        <div class="card bg-base-100 shadow-lg">
+            <div class="card-body dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-symbols-rounded mr-2">data_usage</span>
+                        Sévérité des incidents
+                    </h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="severityChart"></canvas>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    {% for category in categories|slice:":4" %}
+                    <div class="stat bg-base-200 rounded-lg p-2">
+                        <div class="stat-title text-xs">{{ category.name|title }}</div>
+                        <div class="stat-value text-lg">{{ category.count }}</div>
+                        <div class="stat-desc text-xs">{{ category.percentage|floatformat:0 }}% du total</div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Incidents récents et tendances -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Liste des incidents récents -->
+        <div class="card bg-base-100 shadow-lg lg:col-span-2">
+            <div class="card-body">
+                <div class="card-header flex justify-between items-center">
+                    <h2 class="card-title">
+                        <span class="material-symbols-rounded mr-2">early_on</span>
+                        Incidents récents
+                    </h2>
+                    <a href="{% url 'incident_list' %}" class="btn btn-ghost btn-xs">
+                        Voir tous
+                        <span class="material-symbols-rounded ml-1">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Titre</th>
+                                <th>État</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for incident in recent_incidents %}
+                            <tr>
+                                <td>{{ incident.id }}</td>
+                                <td>
+                                    <div class="max-w-xs truncate">{{ incident.title }}</div>
+                                </td>
+                                <td>
+                                    {% if incident.status == 'new' %}
+                                        <div class="badge badge-info gap-1">
+                                            <span class="material-symbols-rounded text-xs scale-75">description</span>
+                                            Nouveau
+                                        </div>
+                                    {% elif incident.status == 'in_progress' %}
+                                        <div class="badge badge-warning gap-1">
+                                            <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
+                                            En cours
+                                        </div>
+                                    {% elif incident.status == 'resolved' %}
+                                        <div class="badge badge-success gap-1">
+                                            <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
+                                            Résolu
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ incident.created_at|date:"d/m/Y" }}</td>
+                                <td>
+                                    <a href="{% url 'incident_detail' incident.id %}" class="btn btn-ghost btn-xs">
+                                        <span class="material-symbols-rounded">visibility</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance et temps de résolution -->
+        <div class="card bg-base-100 shadow-lg">
+            <div class="card-body dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="material-symbols-rounded mr-2">timer</span>
+                        Temps de résolution
+                    </h2>
+                </div>
+                
+                <div class="flex justify-center items-center my-4">
+                    <div class="radial-progress text-primary" style="--value:75; --size:12rem; --thickness: 1rem;">
+                        <div class="flex flex-col items-center">
+                            <span class="text-3xl font-bold">75%</span>
+                            <span class="text-xs text-muted-foreground">dans le SLA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats bg-base-200 stats-vertical shadow mt-4">
+                    <div class="stat">
+                        <div class="stat-title">Temps moyen</div>
+                        <div class="stat-value text-lg">12h 34m</div>
+                        <div class="stat-desc text-success">↘︎ 23% vs précédent</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Incidents critiques</div>
+                        <div class="stat-value text-lg">4h 12m</div>
+                        <div class="stat-desc text-error">↗︎ 8% vs précédent</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Données simulées pour le graphique d'activité
+    const activityData = {
+        labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+        datasets: [{
+            label: ' Nouveaux',
+            data: [3, 5, 2, 7, 4, 1, 2],
+            borderColor: '#3abff8',
+            backgroundColor: 'rgba(58, 191, 248, 0.2)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+        }, {
+            label: ' Résolus',
+            data: [2, 4, 3, 5, 6, 2, 1],
+            borderColor: '#36d399',
+            backgroundColor: 'rgba(54, 211, 153, 0.2)', 
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+        }]
+    };
+
+    // Données simulées pour le graphique de sévérité
+    const severityData = {
+        labels: [' Critique', ' Haute', ' Moyenne', ' Basse'],
+        datasets: [{
+            data: [
+                {% for category in categories %}
+                    {{ category.count }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#f87272',   // Rouge pour critique
+                '#fbbd23',   // Jaune pour haute
+                '#3abff8',   // Bleu pour moyenne
+                '#b3b3b3'    // Gris pour basse
+            ],
+            borderWidth: 0,
+            hoverOffset: 4
+        }]
+    };
+
+    // Configuration du graphique d'activité
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(activityCtx, {
+        type: 'line',
+        data: activityData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 6
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // Configuration du graphique de sévérité
+    const severityCtx = document.getElementById('severityChart').getContext('2d');
+    const severityChart = new Chart(severityCtx, {
+        type: 'doughnut',
+        data: severityData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 6
+                    }
+                }
+            }
+        }
+    });
+
+    // Boutons de périodes pour le graphique d'activité
+    document.querySelectorAll('[data-period]').forEach(button => {
+        button.addEventListener('click', function() {
+            // Enlever la classe active de tous les boutons
+            document.querySelectorAll('[data-period]').forEach(b => {
+                b.classList.remove('btn-active');
+            });
+            // Ajouter la classe active au bouton cliqué
+            this.classList.add('btn-active');
+            
+            // Simuler un changement de données selon la période
+            let newLabels = [];
+            let newData1 = [];
+            let newData2 = [];
+            
+            const period = this.getAttribute('data-period');
+            if (period === 'day') {
+                newLabels = ['9h', '12h', '15h', '18h', '21h', '00h', '3h', '6h'];
+                newData1 = [2, 4, 6, 3, 1, 0, 0, 1];
+                newData2 = [1, 3, 5, 4, 2, 1, 0, 0];
+            } else if (period === 'week') {
+                newLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                newData1 = [3, 5, 2, 7, 4, 1, 2];
+                newData2 = [2, 4, 3, 5, 6, 2, 1];
+            } else if (period === 'month') {
+                newLabels = ['1', '5', '10', '15', '20', '25', '30'];
+                newData1 = [8, 12, 7, 15, 9, 11, 6];
+                newData2 = [5, 9, 8, 10, 12, 7, 4];
+            }
+            
+            // Mettre à jour les données du graphique
+            activityChart.data.labels = newLabels;
+            activityChart.data.datasets[0].data = newData1;
+            activityChart.data.datasets[1].data = newData2;
+            activityChart.update();
+        });
+    });
+});
+</script>
 {% endblock %}

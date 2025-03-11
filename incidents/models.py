@@ -71,14 +71,14 @@ class Incident(models.Model):
         ordering = ['-start_date']
 
 
-class IncidentAttachment(models.Model):
-    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='attachments')
-    file = models.FileField(upload_to='incident_attachments/')
-    description = models.CharField(max_length=255, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+# class IncidentAttachment(models.Model):
+#     incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='attachments')
+#     file = models.FileField(upload_to='incident_attachments/')
+#     description = models.CharField(max_length=255, blank=True)
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
     
-    def __str__(self):
-        return f"Attachment for {self.incident.title}"
+#     def __str__(self):
+#         return f"Attachment for {self.incident.title}"
 
 
 class IncidentLink(models.Model):
@@ -143,13 +143,13 @@ class IncidentFile(models.Model):
     
     @property
     def is_image(self):
-        image_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+        image_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp']
         return self.content_type in image_types
     
     @property
     def file_icon(self):
         if self.is_image:
-            return 'fa-image'
+            return 'fa-file-image'
         elif 'pdf' in self.content_type:
             return 'fa-file-pdf'
         elif 'word' in self.content_type or 'office' in self.content_type:
@@ -157,7 +157,7 @@ class IncidentFile(models.Model):
         elif 'excel' in self.content_type or 'spreadsheet' in self.content_type:
             return 'fa-file-excel'
         elif 'zip' in self.content_type or 'compressed' in self.content_type:
-            return 'fa-file-archive'
+            return 'fa-file-zipper'
         elif 'text' in self.content_type:
             return 'fa-file-alt'
         else:

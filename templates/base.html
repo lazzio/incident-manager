@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mytheme">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Incident Management{% endblock %}</title>
+    
+    <!-- Google Fonts - Roboto Flex -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:wght@100..900&family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- TailwindCSS avec DaisyUI -->
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" /> -->
+    
+    <!-- Style personnalisé -->
+    <style>
+        body {
+            font-family: 'Noto Sans Display', sans-serif;
+            font-weight: 300;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Base styles */
+        .drawer-side {
+            transition: width 0.3s ease, transform 0.3s ease;
+            overflow: visible !important;
+        }
+        
+        /* Sidebar toggle button */
+        .sidebar-toggle-btn {
+            position: absolute;
+            right: -20px;
+            top: 5.5rem;
+            z-index: 9999;
+            width: 36px;
+            height: 36px;
+            background-color: hsl(var(--p));
+            color: hsl(var(--pc));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid hsl(var(--pc));
+        }
+        
+        /* Icons in toggle button */
+        .sidebar-toggle-btn .icon-collapse,
+        .sidebar-toggle-btn .icon-expand {
+            font-size: 16px;
+        }
+        
+        .sidebar-toggle-btn .icon-expand,
+        .drawer-side.collapsed .sidebar-toggle-btn .icon-collapse {
+            display: none;
+        }
+        
+        .drawer-side.collapsed .sidebar-toggle-btn .icon-expand {
+            display: block;
+        }
+        
+        /* Collapsed state */
+        .drawer-side.collapsed {
+            width: 80px !important;
+        }
+        
+        .drawer-side.collapsed .sidebar-text {
+            display: none !important;
+        }
+        
+        .drawer-side.collapsed .menu-title,
+        .drawer-side.collapsed .divider {
+            display: none !important;
+        }
+        
+        .drawer-side.collapsed .menu {
+            align-items: start !important;
+        }
+
+        /* Menu items in collapsed state */
+        .drawer-side.collapsed .menu li a {
+            justify-content: center !important;
+            padding: 0.75rem !important;
+        }
+        
+        .drawer-side.collapsed .menu li a i {
+            margin-right: 0 !important;
+        }
+        
+        /* New Incident button special styling */
+        .create-incident-btn {
+            margin-bottom: 0.5rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-side.collapsed .create-incident-btn {
+            width: 50px !important;
+            border-radius: 50% !important;
+        }
+        
+        /* Content transition */
+        .drawer-content {
+            transition: margin-left 0.3s ease;
+            flex-grow: 1;
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .sidebar-toggle-btn-initial {
+            animation: pulse 2s ease-in-out 3;
+        }
+        
+        /* Full-width components */
+        .global-footer,
+        .global-navbar {
+            width: 100%;
+            flex-shrink: 0; /* Prevent footer from shrinking */
+        }
+        
+        /* Layout structure */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Full viewport height */
+            width: 100%;
+        }
+        
+        /* Main area that contains the drawer */
+        .main-area {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            width: 100%;
+        }
+        
+        /* Responsive layout for sidebar */
+        @media (max-width: 1023px) {
+            .drawer {
+                flex-direction: column;
+            }
+            
+            .drawer-side {
+                position: static;
+                width: 100% !important;
+                height: auto;
+                margin-bottom: 0;
+                order: 2; /* Put sidebar after content on mobile */
+            }
+            
+            .drawer-side > div {
+                width: 100% !important;
+            }
+            
+            .drawer-side .menu {
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .drawer-side .menu li {
+                margin: 0 8px;
+            }
+            
+            .sidebar-toggle-btn {
+                display: none;
+            }
+            
+            .create-btn-container {
+                text-align: center;
+                margin: 1rem 0;
+            }
+            
+            .create-incident-btn {
+                max-width: 200px;
+                margin: 0 auto;
+            }
+            
+            .menu-title, .divider {
+                display: none !important;
+            }
+            
+            .drawer-content {
+                order: 1; /* Put content before sidebar on mobile */
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .drawer {
+                flex-direction: row;
+                flex-grow: 1;
+            }
+            
+            .drawer-side.collapsed ~ .drawer-content {
+                margin-left: 80px;
+            }
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Entire page container -->
+    <div class="page-container bg-base-200">
+        <!-- Navbar - full width -->
+        <nav class="navbar bg-base-100 shadow-lg z-10 global-navbar">
+            <div class="navbar-start">
+                <label for="my-drawer" class="btn btn-square btn-ghost lg:hidden">
+                    <i class="fas fa-bars"></i>
+                </label>
+                <a href="{% url 'dashboard' %}" class="btn btn-ghost normal-case text-xl">
+                    <span class="material-symbols-rounded text-warning mr-2">
+                        breaking_news_alt_1
+                    </span>
+                    Incident Manager
+                </a>
+            </div>
+            <div class="navbar-center hidden lg:flex">
+                <ul class="menu menu-horizontal px-1">
+                    <li><a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
+                    <li><a href="{% url 'incident_list' %}" class="{% if request.path == '/incidents/' %}active{% endif %}">Incidents</a></li>
+                    <li><a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}">Timeline</a></li>
+                    <li><a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}">Reports</a></li>
+                </ul>
+            </div>
+            <div class="navbar-end">
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                        <div class="avatar placeholder">
+                            <div class="bg-primary text-primary-content rounded-full w-10">
+                                <span>{{ request.user.username|slice:":1"|upper }}</span>
+                            </div>
+                        </div>
+                    </label>
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                        <li><a href="#"><span class="material-symbols-rounded mr-2">account_circle</span> Profile</a></li>
+                        <li><a href="#"><span class="material-symbols-rounded mr-2">settings</span> Settings</a></li>
+                        <li>
+                            <form method="post" action="/logout/" class="w-full">
+                                {% csrf_token %}
+                                <button type="submit" class="flex">
+                                    <span class="material-symbols-rounded mr-2">logout</span> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main area containing drawer and content -->
+        <div class="main-area">
+            <div class="drawer lg:drawer-open">
+                <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+                
+                <!-- Content section -->
+                <div class="drawer-content flex flex-col">
+                    <!-- Main content -->
+                    <main class="flex-grow p-4 md:p-6 overflow-y-auto">
+                        {% if messages %}
+                        <div class="toast toast-top toast-end mb-4 z-50">
+                            {% for message in messages %}
+                            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} shadow-lg">
+                                <div>
+                                    {% if message.tags == 'success' %}
+                                    <span class="material-symbols-rounded">
+                                        check_circle
+                                    </span>
+                                    {% elif message.tags == 'error' %}
+                                    <span class="material-symbols-rounded">
+                                        error
+                                    </span>
+                                    {% elif message.tags == 'warning' %}
+                                    <span class="material-symbols-rounded">
+                                        warning
+                                    </span>
+                                    {% else %}
+                                    <span class="material-symbols-rounded">
+                                        info
+                                    </span>
+                                    {% endif %}
+                                    <span>{{ message }}</span>
+                                </div>
+                                <button class="btn btn-sm btn-ghost" onclick="this.parentNode.remove()">×</button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% block content %}{% endblock %}
+                    </main>
+                </div>
+                
+                <!-- Sidebar -->
+                <aside class="drawer-side" id="sidebarElement">
+                    <label for="my-drawer" class="drawer-overlay"></label>
+                    
+                    <!-- Toggle button -->
+                    <div class="sidebar-toggle-btn sidebar-toggle-btn-initial" id="sidebarToggleBtn">
+                        <span class="material-symbols-rounded icon-collapse">
+                            keyboard_arrow_left
+                        </span>
+                        <span class="material-symbols-rounded icon-expand">
+                            keyboard_arrow_right
+                        </span>
+                    </div>
+                    
+                    <div class="w-80 h-full bg-base-200 text-base-content p-4 flex flex-col">
+                        <!-- Main navigation -->
+                        <ul class="menu bg-base-200 rounded-box flex-1">
+                            <li>
+                                <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}" data-tooltip="Dashboard">
+                                    <span class="material-symbols-rounded mr-2">
+                                        dashboard
+                                    </span>
+                                    <span class="sidebar-text">Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'incident_list' %}" class="{% if request.path == '/incidents/' %}active{% endif %}" data-tooltip="Incidents">
+                                    <span class="material-symbols-rounded mr-2">
+                                        list
+                                    </span>
+                                    <span class="sidebar-text">Incidents</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'incident_timeline' %}" class="{% if '/timeline/' in request.path %}active{% endif %}" data-tooltip="Timeline">
+                                    <span class="material-symbols-rounded mr-2">
+                                        timeline
+                                    </span>
+                                    <span class="sidebar-text">Timeline</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'yearly_report' %}" class="{% if '/report/' in request.path %}active{% endif %}" data-tooltip="Reports">
+                                    <span class="material-symbols-rounded mr-2">
+                                        stacked_bar_chart
+                                    </span>
+                                    <span class="sidebar-text">Reports</span>
+                                </a>
+                            </li>
+                            
+                            <li class="menu-title sidebar-text mt-4">
+                                <!-- <span>Add comment/description/name of the section</span> -->
+                            </li>
+                            <div class="divider my-0 sidebar-text"></div>
+                        </ul>
+                        
+                        <!-- Action button -->
+                        <div class="create-btn-container">
+                            <a href="{% url 'incident_create' %}" class="btn btn-primary create-incident-btn">
+                                <span class="material-symbols-rounded mr-2">
+                                    library_add
+                                </span>
+                                <span class="sidebar-text">Nouvel incident</span>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        
+        <!-- Footer - full width -->
+        <footer class="footer footer-center p-4 bg-base-300 text-base-content global-footer">
+            <div>
+                <p>Copyright © {{ current_year }} - Incident Management System</p>
+            </div>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toast notifications
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.toast .alert');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        alert.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 500);
+                    }, 5000);
+                });
+            }, 200);
+            
+            // Sidebar functionality
+            const sidebarElement = document.getElementById('sidebarElement');
+            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+            
+            // Only enable sidebar toggle on large screens
+            if (window.innerWidth >= 1024) {
+                // Load saved state
+                const sidebarState = localStorage.getItem('sidebarState');
+                if (sidebarState === 'collapsed') {
+                    sidebarElement.classList.add('collapsed');
+                }
+                
+                // Toggle sidebar
+                sidebarToggleBtn.addEventListener('click', function() {
+                    sidebarElement.classList.toggle('collapsed');
+                    
+                    if (sidebarElement.classList.contains('collapsed')) {
+                        localStorage.setItem('sidebarState', 'collapsed');
+                    } else {
+                        localStorage.setItem('sidebarState', 'expanded');
+                    }
+                    
+                    this.classList.remove('sidebar-toggle-btn-initial');
+                });
+            } else {
+                // Hide toggle button on small screens
+                if (sidebarToggleBtn) {
+                    sidebarToggleBtn.style.display = 'none';
+                }
+            }
+            
+            // Responsive handling
+            function handleResponsive() {
+                if (window.innerWidth < 1024) {
+                    // On mobile, no need for collapse/expand
+                    sidebarElement.classList.remove('collapsed');
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.style.display = 'none';
+                    }
+                } else {
+                    // On desktop, check saved state
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.style.display = 'flex';
+                    }
+                    const sidebarState = localStorage.getItem('sidebarState');
+                    if (sidebarState === 'collapsed') {
+                        sidebarElement.classList.add('collapsed');
+                    } else {
+                        sidebarElement.classList.remove('collapsed');
+                    }
+                }
+            }
+            
+            handleResponsive();
+            window.addEventListener('resize', handleResponsive);
+        });
+    </script>
+</body>
+</html>

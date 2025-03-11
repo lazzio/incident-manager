@@ -11,7 +11,7 @@ from django.contrib import messages  # Ajout de l'import pour les messages
 
 from .models import Incident, Severity, Comment, IncidentFile  # Ajout de l'import pour IncidentFile
 from .forms import (
-    IncidentForm, IncidentUpdateForm, AttachmentFormSet, LinkFormSet, CommentForm
+    IncidentForm, IncidentUpdateForm, LinkFormSet, CommentForm
 )
 
 import datetime
@@ -67,10 +67,15 @@ class IncidentDetailView(LoginRequiredMixin, DetailView):
 @login_required
 def create_incident(request):
     if request.method == 'POST':
+        # Remove request.FILES from the form - we'll handle files separately
         form = IncidentForm(request.POST)
-        attachment_formset = AttachmentFormSet(request.POST, request.FILES, prefix='attachments')
         link_formset = LinkFormSet(request.POST, prefix='links')
         files = request.FILES.getlist('files')
+        
+        # More detailed debugging
+        print("POST data received:", request.POST)
+        print("FILES received:", request.FILES)
+        print(f"Number of files: {len(files)}")
         
         # Affichage plus détaillé des erreurs du formulaire principal
         if not form.is_valid():
@@ -78,8 +83,12 @@ def create_incident(request):
             for field, errors in form.errors.items():
                 print(f"Field {field} errors: {errors}")
             messages.error(request, "Le formulaire contient des erreurs. Veuillez les corriger.")
+        
+        if not link_formset.is_valid():
+            print("Linkformset errors:", link_formset.errors)
+            messages.error(request, "Le formulaire de liens contient des erreurs.")
             
-        if form.is_valid(): # and attachment_formset.is_valid() and link_formset.is_valid():
+        if form.is_valid() and link_formset.is_valid():
             try:
                 # Utilisation d'une transaction explicite
                 from django.db import transaction
@@ -107,12 +116,10 @@ def create_incident(request):
                     incident.save()
                     print(f"Incident saved with ID: {incident.id}")
                     
-                    # Traiter les formsets après avoir créé l'incident
-                    attachment_formset.instance = incident
-                    attachment_formset.save()
-                    
+                    # Important - Make sure to set the instance before saving formset
                     link_formset.instance = incident
                     link_formset.save()
+                    print("Link formset saved")
                     
                     # Traitement des fichiers
                     file_count = 0
@@ -127,37 +134,29 @@ def create_incident(request):
                             )
                             incident_file.save()
                             file_count += 1
+                            print(f"Saved file: {file.name}")
                         except Exception as e:
                             print(f"Error saving file: {str(e)}")
                             messages.error(request, f"Erreur lors de l'upload du fichier {file.name}: {str(e)}")
                     
                     if file_count > 0:
                         messages.success(request, f"{file_count} fichier(s) uploadé(s) avec succès.")
-                    
-                # Vérifier que l'incident est bien enregistré après la transaction
-                try:
-                    saved_incident = Incident.objects.get(id=incident.id)
-                    print(f"Successfully verified incident {saved_incident.id} is in database")
-                    messages.success(request, 'Incident créé avec succès.')
-                    return redirect('incident_detail', pk=incident.id)
-                except Incident.DoesNotExist:
-                    print("ERROR: Incident was not saved to database")
-                    messages.error(request, "L'incident n'a pas été enregistré. Veuillez réessayer.")
+                
+                # Force commit the transaction
+                transaction.commit()
+                messages.success(request, 'Incident créé avec succès.')
+                return redirect('incident_detail', pk=incident.id)
                     
             except Exception as e:
                 # Capturer et afficher les erreurs de sauvegarde
                 print(f"Error saving incident: {type(e).__name__}: {str(e)}")
-                import traceback
-                traceback.print_exc()
                 messages.error(request, f"Une erreur s'est produite lors de la création de l'incident: {str(e)}")
     else:
         form = IncidentForm()
-        attachment_formset = AttachmentFormSet(prefix='attachments')
         link_formset = LinkFormSet(prefix='links')
     
     return render(request, 'incidents/incident_form.html', {
         'form': form,
-        'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
         'severity_choices': Severity.choices
@@ -169,46 +168,73 @@ def update_incident(request, pk):
     incident = get_object_or_404(Incident, pk=pk)
     
     if request.method == 'POST':
-        form = IncidentForm(request.POST, instance=incident)
-        attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=incident, prefix='attachments')
+        form = IncidentForm(request.POST, request.FILES, instance=incident)  # Include request.FILES here
         link_formset = LinkFormSet(request.POST, instance=incident, prefix='links')
         # S'assurer que getlist est utilisé pour récupérer tous les fichiers
         files = request.FILES.getlist('files')
         
-        if form.is_valid(): #and attachment_formset.is_valid() and link_formset.is_valid():
-            form.save()
-            attachment_formset.save()
-            link_formset.save()
-            
-            # Traitement des fichiers multiples avec gestion des erreurs
-            file_count = 0
-            for file in files:
-                try:
-                    incident_file = IncidentFile(
-                        incident=incident,
-                        file=file,
-                        filename=file.name,
-                        content_type=file.content_type,
-                        uploaded_by=request.user
-                    )
-                    incident_file.save()
-                    file_count += 1
-                except Exception as e:
-                    messages.error(request, f"Error uploading file {file.name}: {str(e)}")
-            
-            if file_count > 0:
-                messages.success(request, f"{file_count} file(s) uploaded successfully.")
+        print("POST data received for update:", request.POST)
+        print("FILES received for update:", request.FILES)
+        
+        # Debug form validation
+        if not form.is_valid():
+            print("Update form errors:", form.errors.as_data())
+            for field, errors in form.errors.items():
+                print(f"Field {field} errors: {errors}")
+            messages.error(request, "Le formulaire contient des erreurs. Veuillez les corriger.")
+        
+        if not link_formset.is_valid():
+            print("Update linkformset errors:", link_formset.errors)
+            messages.error(request, "Le formulaire de liens contient des erreurs.")
+        
+        if form.is_valid() and link_formset.is_valid():
+            try:
+                # Use transaction for update too
+                from django.db import transaction
+                with transaction.atomic():
+                    form.save()
+                    print(f"Incident {incident.id} updated")
+                    
+                    link_formset.save()
+                    print("Link formset saved in update")
+                    
+                    # Traitement des fichiers multiples avec gestion des erreurs
+                    file_count = 0
+                    for file in files:
+                        try:
+                            incident_file = IncidentFile(
+                                incident=incident,
+                                file=file,
+                                filename=file.name,
+                                content_type=file.content_type,
+                                uploaded_by=request.user
+                            )
+                            incident_file.save()
+                            file_count += 1
+                            print(f"Saved file in update: {file.name}")
+                        except Exception as e:
+                            print(f"Error uploading file: {str(e)}")
+                            messages.error(request, f"Error uploading file {file.name}: {str(e)}")
                 
-            messages.success(request, 'Incident updated successfully.')
-            return redirect('incident_detail', pk=incident.pk)
+                    if file_count > 0:
+                        messages.success(request, f"{file_count} file(s) uploaded successfully.")
+                
+                # Force commit the transaction    
+                transaction.commit()
+                messages.success(request, 'Incident updated successfully.')
+                return redirect('incident_detail', pk=incident.pk)
+                
+            except Exception as e:
+                print(f"Error updating incident: {type(e).__name__}: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                messages.error(request, f"Une erreur s'est produite lors de la mise à jour de l'incident: {str(e)}")
     else:
         form = IncidentForm(instance=incident)
-        attachment_formset = AttachmentFormSet(instance=incident, prefix='attachments')
         link_formset = LinkFormSet(instance=incident, prefix='links')
     
     return render(request, 'incidents/incident_form.html', {
         'form': form,
-        'attachment_formset': attachment_formset,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
         'severity_choices': Severity.choices
@@ -353,12 +379,23 @@ def incident_chart_data(request):
     severity_labels = [item['severity'] for item in severity_data]
     severity_counts = [item['count'] for item in severity_data]
     
-    # Duration by severity
-    duration_by_severity = list(incidents.exclude(duration=None).values('severity').annotate(
-        avg_duration=Avg(
-            ExpressionWrapper(F('duration'), output_field=fields.DurationField()) / 3600000000  # Convert microseconds to hours
-        )
-    ).order_by('severity'))
+    # Duration by severity - Correction de l'erreur ici
+    duration_data = []
+    for severity in incidents.values_list('severity', flat=True).distinct():
+        avg_duration = incidents.filter(
+            severity=severity, 
+            duration__isnull=False
+        ).aggregate(
+            avg=Avg('duration')
+        )['avg']
+        
+        if avg_duration:
+            # Convertir la durée moyenne en heures (en secondes divisées par 3600)
+            hours = avg_duration.total_seconds() / 3600
+            duration_data.append({
+                'severity': severity,
+                'avg_duration': round(hours, 2)  # Arrondir à 2 décimales
+            })
     
     # Yearly trend data
     yearly_trend = []
@@ -374,7 +411,7 @@ def incident_chart_data(request):
         'counts': counts,
         'severity_labels': severity_labels,
         'severity_counts': severity_counts,
-        'duration_by_severity': duration_by_severity,
+        'duration_by_severity': duration_data,
         'yearly_trend': yearly_trend
     }
     
