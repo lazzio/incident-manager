@@ -1,3 +1,25 @@
+## [0.6.0](https://github.com/lazzio/incident-manager/-/compare/v0.5.0...v0.6.0) (2025-03-11)
+
+### Features
+
+* left panel collapsed ([0ca36f3](https://github.com/lazzio/incident-manager/-/commit/0ca36f367896927614166daad77bf8c53ebe5508))
+* new design and new icons ([5af8fba](https://github.com/lazzio/incident-manager/-/commit/5af8fba1c6b522eb0535d12f8a96ebf4be38bab3))
+* new design and new icons ([e143969](https://github.com/lazzio/incident-manager/-/commit/e143969dba21d6be458b1890e37b887df23816b0))
+* new login form ([#26](https://github.com/lazzio/incident-manager/-/issues/26)) ([2798a45](https://github.com/lazzio/incident-manager/-/commit/2798a455832fd33c11b49414284e2ec7c30f5b9d))
+* reduce radius ([1efed0a](https://github.com/lazzio/incident-manager/-/commit/1efed0a7adaabc78c974d505eea56a675cf09f28))
+* remove initial file upload ([5437234](https://github.com/lazzio/incident-manager/-/commit/54372340503d3aa3f4c32efde7f2b00b678a61f0))
+* remove zoom functionality ([71f9747](https://github.com/lazzio/incident-manager/-/commit/71f9747aa795aa1108db34496a13318edc8876a6))
+* replace all icons ([#27](https://github.com/lazzio/incident-manager/-/issues/27)) ([ef43001](https://github.com/lazzio/incident-manager/-/commit/ef43001b23ad07e3ae77de115dc6ef49d85dea65))
+* restore pagination ([d861d97](https://github.com/lazzio/incident-manager/-/commit/d861d976aea205008c9135e3ecc0c7c232426fba))
+* sidebar under navbar and footer ([bd56c64](https://github.com/lazzio/incident-manager/-/commit/bd56c6452935beae6f13be0b9bfcd6c0168110b8))
+* switch bare graphs to line ones ([fb89ffe](https://github.com/lazzio/incident-manager/-/commit/fb89ffe611b4b1d9c322d7b67f1e6589d8b3fbac))
+* use daisyui ([cd5a255](https://github.com/lazzio/incident-manager/-/commit/cd5a255158abbaeadb32cef418ded38be07e0442))
+* use noto font ([f106083](https://github.com/lazzio/incident-manager/-/commit/f1060834a9146338a586e923ed4fbbc48bb9628c))
+
+### Bug Fixes
+
+* submission of create and update form ([#24](https://github.com/lazzio/incident-manager/-/issues/24)) ([fb94875](https://github.com/lazzio/incident-manager/-/commit/fb948753ca66ce4a085b649d01b61de9015bdb7a))
+
 ## [0.5.0](https://github.com/lazzio/incident-manager/-/compare/v0.4.0...v0.5.0) (2025-02-27)
 
 ### Features
