@@ -50,3 +50,193 @@
     --ring: 212.7 26.8% 83.9%;
   }
 }
+
+body {
+  font-family: 'Noto Sans Display', sans-serif;
+  font-weight: 300;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Base styles */
+.drawer-side {
+  transition: width 0.3s ease, transform 0.3s ease;
+  overflow: visible !important;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle-btn {
+  position: absolute;
+  right: -20px;
+  top: 5.5rem;
+  z-index: 9999;
+  width: 36px;
+  height: 36px;
+  background-color: hsl(var(--p));
+  color: hsl(var(--pc));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 2px solid hsl(var(--pc));
+}
+
+/* Icons in toggle button */
+.sidebar-toggle-btn .icon-collapse,
+.sidebar-toggle-btn .icon-expand {
+  font-size: 16px;
+}
+
+.sidebar-toggle-btn .icon-expand,
+.drawer-side.collapsed .sidebar-toggle-btn .icon-collapse {
+  display: none;
+}
+
+.drawer-side.collapsed .sidebar-toggle-btn .icon-expand {
+  display: block;
+}
+
+/* Collapsed state */
+.drawer-side.collapsed {
+  width: 80px !important;
+}
+
+.drawer-side.collapsed .sidebar-text {
+  display: none !important;
+}
+
+.drawer-side.collapsed .menu-title,
+.drawer-side.collapsed .divider {
+  display: none !important;
+}
+
+.drawer-side.collapsed .menu {
+  align-items: start !important;
+}
+
+/* Menu items in collapsed state */
+.drawer-side.collapsed .menu li a {
+  justify-content: center !important;
+  padding: 0.75rem !important;
+}
+
+.drawer-side.collapsed .menu li a i {
+  margin-right: 0 !important;
+}
+
+/* New Incident button special styling */
+.create-incident-btn {
+  margin-bottom: 0.5rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.drawer-side.collapsed .create-incident-btn {
+  width: 50px !important;
+  border-radius: 50% !important;
+}
+
+/* Content transition */
+.drawer-content {
+  transition: margin-left 0.3s ease;
+  flex-grow: 1;
+}
+
+/* Animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.sidebar-toggle-btn-initial {
+  animation: pulse 2s ease-in-out 3;
+}
+
+/* Full-width components */
+.global-footer,
+.global-navbar {
+  width: 100%;
+  flex-shrink: 0; /* Prevent footer from shrinking */
+}
+
+/* Layout structure */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
+  width: 100%;
+}
+
+/* Main area that contains the drawer */
+.main-area {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+
+/* Responsive layout for sidebar */
+@media (max-width: 1023px) {
+  .drawer {
+      flex-direction: column;
+  }
+  
+  .drawer-side {
+      position: static;
+      width: 100% !important;
+      height: auto;
+      margin-bottom: 0;
+      order: 2; /* Put sidebar after content on mobile */
+  }
+  
+  .drawer-side > div {
+      width: 100% !important;
+  }
+  
+  .drawer-side .menu {
+      flex-direction: row;
+      justify-content: center;
+      flex-wrap: wrap;
+  }
+  
+  .drawer-side .menu li {
+      margin: 0 8px;
+  }
+  
+  .sidebar-toggle-btn {
+      display: none;
+  }
+  
+  .create-btn-container {
+      text-align: center;
+      margin: 1rem 0;
+  }
+  
+  .create-incident-btn {
+      max-width: 200px;
+      margin: 0 auto;
+  }
+  
+  .menu-title, .divider {
+      display: none !important;
+  }
+  
+  .drawer-content {
+      order: 1; /* Put content before sidebar on mobile */
+  }
+}
+
+@media (min-width: 1024px) {
+  .drawer {
+      flex-direction: row;
+      flex-grow: 1;
+  }
+  
+  .drawer-side.collapsed ~ .drawer-content {
+      margin-left: 80px;
+  }
+}
