@@ -7,9 +7,9 @@ from django.db.models.functions import TruncMonth
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Count, Avg, F, ExpressionWrapper, fields
-from django.contrib import messages  # Ajout de l'import pour les messages
+from django.contrib import messages
 
-from .models import Incident, Severity, Comment, IncidentFile  # Ajout de l'import pour IncidentFile
+from .models import Incident, Severity, Comment, IncidentFile
 from .forms import (
     IncidentForm, IncidentUpdateForm, LinkFormSet, CommentForm
 )
@@ -18,7 +18,7 @@ import datetime
 
 class IncidentListView(LoginRequiredMixin, ListView):
     model = Incident
-    template_name = 'incidents/incident_list.html'
+    template_name = 'incidents/incidents_list.html'
     context_object_name = 'incidents'
     paginate_by = 10
 
@@ -51,7 +51,7 @@ class IncidentListView(LoginRequiredMixin, ListView):
 
 class IncidentDetailView(LoginRequiredMixin, DetailView):
     model = Incident
-    template_name = 'incidents/incident_detail.html'
+    template_name = 'incidents/incidents_detail.html'
     context_object_name = 'incident'
     
     def get_context_data(self, **kwargs):
@@ -155,7 +155,7 @@ def create_incident(request):
         form = IncidentForm()
         link_formset = LinkFormSet(prefix='links')
     
-    return render(request, 'incidents/incident_form.html', {
+    return render(request, 'incidents/incidents_form.html', {
         'form': form,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
@@ -233,7 +233,7 @@ def update_incident(request, pk):
         form = IncidentForm(instance=incident)
         link_formset = LinkFormSet(instance=incident, prefix='links')
     
-    return render(request, 'incidents/incident_form.html', {
+    return render(request, 'incidents/incidents_form.html', {
         'form': form,
         'link_formset': link_formset,
         'status_choices': Incident.STATUS_CHOICES,
@@ -258,13 +258,13 @@ def add_incident_update(request, pk):
 
 class IncidentDeleteView(LoginRequiredMixin, DeleteView):
     model = Incident
-    template_name = 'incidents/incident_confirm_delete.html'
+    template_name = 'incidents/incidents_confirm_delete.html'
     success_url = reverse_lazy('incident_list')
 
 
 class IncidentTimelineView(LoginRequiredMixin, ListView):
     model = Incident
-    template_name = 'incidents/timeline.html'
+    template_name = 'incidents/incidents_timeline.html'
     context_object_name = 'incidents'
 
     def get_queryset(self):
@@ -354,7 +354,7 @@ def yearly_report(request):
         'available_years': available_years,
     }
     
-    return render(request, 'incidents/yearly_report.html', context)
+    return render(request, 'incidents/incidents_yearly_report.html', context)
 
 @login_required
 def incident_chart_data(request):
@@ -485,4 +485,4 @@ def dashboard(request):
             percentage=100.0 * Count('id') / total_incidents
         ).order_by('severity')
     }
-    return render(request, 'incidents/dashboard.html', context)
+    return render(request, 'incidents/incidents_dashboard.html', context)
