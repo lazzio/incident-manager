@@ -1,3 +1,9 @@
+## [0.6.1](https://github.com/lazzio/incident-manager/-/compare/v0.6.0...v0.6.1) (2025-03-12)
+
+### Bug Fixes
+
+* add and delete multiple files ([#29](https://github.com/lazzio/incident-manager/-/issues/29)) ([3e02168](https://github.com/lazzio/incident-manager/-/commit/3e02168f855811d9d5b01adf4f162cf14621f61e))
+
 ## [0.6.0](https://github.com/lazzio/incident-manager/-/compare/v0.5.0...v0.6.0) (2025-03-11)
 
 ### Features
