@@ -555,9 +555,38 @@
     function handleFiles(files) {
       if (!files.length) return;
       
+      // Créer un FormData et y ajouter les fichiers sous le nom 'files'
+      const formData = new FormData();
       [...files].forEach(file => {
+        // Cette ligne est importante - les fichiers doivent être ajoutés au même nom
+        // que celui attendu par la vue (le nom du champ dans le formulaire)
+        formData.append('files', file);
         addFilePreview(file);
       });
+      
+      // Vous pouvez aussi synchroniser avec l'input file
+      updateFileInputWithFiles(files);
+    }
+    
+    // Cette fonction met à jour l'input file avec les fichiers déposés
+    function updateFileInputWithFiles(files) {
+      // Créer un nouveau DataTransfer pour manipuler les fichiers
+      const dataTransfer = new DataTransfer();
+      
+      // Ajouter les fichiers existants s'il y en a
+      if (fileInput.files && fileInput.files.length > 0) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+          dataTransfer.items.add(fileInput.files[i]);
+        }
+      }
+      
+      // Ajouter les nouveaux fichiers
+      for (let i = 0; i < files.length; i++) {
+        dataTransfer.items.add(files[i]);
+      }
+      
+      // Assigner la liste mise à jour à l'input
+      fileInput.files = dataTransfer.files;
     }
     
     function addFilePreview(file) {
@@ -666,6 +695,7 @@
       const fileInput = document.getElementById('fileInput');
       if (fileInput && fileInput.files.length > 0) {
         console.log(`${fileInput.files.length} files selected for upload`);
+        console.log('Files:', fileInput.files);
       }
       
       // Don't prevent the default submission
