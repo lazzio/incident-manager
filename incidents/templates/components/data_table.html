@@ -1,0 +1,68 @@
+{% load table_extras %}
+<div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+        {% if caption %}
+        <caption class="caption-top mb-2">{{ caption }}</caption>
+        {% endif %}
+        
+        <thead>
+            <tr>
+                {% for column in columns %}
+                <th {% if column.sortable %}class="cursor-pointer" onclick="{{ column.sort_function|default:'sortBy' }}('{{ column.field }}')"{% endif %}>
+                    {% if column.sortable %}
+                    <div class="flex items-center gap-1">
+                        {{ column.label }}
+                        <span class="material-symbols-rounded text-xs {% if sort_by == column.field or sort_by == '-'|add:column.field %}opacity-100{% else %}opacity-30{% endif %}">
+                            {% if sort_by == '-'|add:column.field %}
+                            arrow_upward_alt
+                            {% else %}
+                            arrow_downward_alt
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% else %}
+                    {{ column.label }}
+                    {% endif %}
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% if data|length > 0 %}
+                {% for item in data %}
+                <tr {% if row_class %}class="{{ row_class }}"{% endif %}>
+                    {% for column in columns %}
+                    <td {% if column.class %}class="{{ column.class }}"{% endif %}>
+                        {% if column.template %}
+                            {% include column.template with item=item %}
+                        {% elif column.render_function %}
+                            {{ column.render_function|safe }}
+                        {% else %}
+                            {{ item|get_attr:column.field|default:column.default_value }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="{{ columns|length }}" class="text-center py-8">
+                        {% if empty_state_component %}
+                            {% include empty_state_component with title=empty_title message=empty_message action_url=empty_action_url action_text=empty_action_text %}
+                        {% else %}
+                            <div class="text-center opacity-50 py-8">
+                                {{ empty_message|default:"No data available" }}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% if pagination and page_obj %}
+<div class="mt-6">
+    {% include "components/pagination.html" with base_url=pagination_base_url query_params=pagination_query_params show_info=True item_name=pagination_item_name %}
+</div>
+{% endif %}

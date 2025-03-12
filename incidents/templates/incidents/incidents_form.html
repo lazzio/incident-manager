@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block extra_head %}
+{% include "components/common_styles.html" %}
 <style>
   .form-section {
     transition: all 0.3s ease-in-out;
@@ -33,23 +34,6 @@
     transform: rotate(-90deg);
   }
   
-  .fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .file-preview {
-    transition: all 0.2s ease;
-  }
-  
-  .file-preview:hover {
-    transform: scale(1.05);
-  }
-  
   .drag-area {
     border: 2px dashed hsla(var(--bc)/0.2);
     transition: all 0.3s ease;
@@ -66,13 +50,14 @@
 <div class="space-y-6 fade-in">
   <!-- En-tête avec breadcrumbs -->
   <div>
-    <div class="text-sm breadcrumbs">
-      <ul>
-        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-        <li><a href="{% url 'incident_list' %}">Incidents</a></li>
-        <li>{% if form.instance.id %}Modifier l'incident #{{ form.instance.id }}{% else %}Nouvel incident{% endif %}</li>
-      </ul>
-    </div>
+    {% url 'dashboard' as dashboard_url %}
+    {% url 'incident_list' as incident_list_url %}
+    
+    {% if form.instance.id %}
+      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents', 'url': '/incidents/'}, {'label': 'Incident #"|add:form.instance.id|stringformat:"s"|add:"', 'url': '/incident/"|add:form.instance.id|stringformat:"s"|add:"/'}, {'label': 'Modifier'}]" %}
+    {% else %}
+      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents', 'url': '/incidents/'}, {'label': 'Nouvel incident'}]" %}
+    {% endif %}
     
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold">
@@ -148,10 +133,7 @@
     <div class="card bg-base-100 shadow-lg form-section">
       <div class="card-body p-0">
         <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="general">
-          <h2 class="text-xl font-bold flex items-center">
-            <span class="material-symbols-rounded mr-2">library_books</span>
-            Informations générales
-          </h2>
+          {% include "components/card_header.html" with title="Informations générales" icon="library_books" %}
           <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
         </div>
         
@@ -316,10 +298,7 @@
     <div class="card bg-base-100 shadow-lg form-section">
       <div class="card-body p-0">
         <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="resolution">
-          <h2 class="text-xl font-bold flex items-center">
-            <span class="material-symbols-rounded mr-2">checklist</span>
-            Résolution et impact
-          </h2>
+          {% include "components/card_header.html" with title="Résolution et impact" icon="checklist" %}
           <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
         </div>
         
@@ -357,10 +336,7 @@
     <div class="card bg-base-100 shadow-lg form-section">
       <div class="card-body p-0">
         <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="attachments">
-          <h2 class="text-xl font-bold flex items-center">
-            <span class="material-symbols-rounded mr-2">attach_file</span>
-            Fichiers attachés
-          </h2>
+          {% include "components/card_header.html" with title="Fichiers attachés" icon="attach_file" %}
           <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
         </div>
         
@@ -380,7 +356,7 @@
           
           <!-- Prévisualisations des fichiers -->
           <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4" id="filePreviewsContainer">
-            {% if form.instance.id %}
+            {% if form.instance.id and form.instance.files.all|length > 0 %}
               {% for file in form.instance.files.all %}
               <div class="file-preview card bg-base-200">
                 <div class="card-body p-3">
@@ -420,52 +396,51 @@
       <div class="card bg-base-100 shadow-lg form-section">
         <div class="card-body p-0">
           <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="links">
-            <h3 class="text-xl font-bold flex items-center">
-              <span class="material-symbols-rounded mr-2">link</span>
-              Lien #{{ forloop.counter }}
-            </h3>
+            {% include "components/card_header.html" with title="Lien #"|add:forloop.counter|stringformat:"s" icon="link" %}
           </div>
           
           {{ link_form.id }}
           {% if link_form.instance.pk %}{{ link_form.DELETE }}{% endif %}
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="form-control w-full">
-                <div class="label">
-                  <span class="label-text font-medium">URL</span>
-                </div>
-                {{ link_form.url }}
-                {% if link_form.url.errors %}
-                <div class="label">
-                  <span class="label-text-alt text-error">{{ link_form.url.errors }}</span>
-                </div>
-                {% endif %}
+          <div class="p-6 space-y-4 form-section-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="form-control w-full">
+                  <div class="label">
+                    <span class="label-text font-medium">URL</span>
+                  </div>
+                  {{ link_form.url }}
+                  {% if link_form.url.errors %}
+                  <div class="label">
+                    <span class="label-text-alt text-error">{{ link_form.url.errors }}</span>
+                  </div>
+                  {% endif %}
+                </label>
+              </div>
+              <div>
+                <label class="form-control w-full">
+                  <div class="label">
+                    <span class="label-text font-medium">Titre</span>
+                  </div>
+                  {{ link_form.title }}
+                  {% if link_form.title.errors %}
+                  <div class="label">
+                    <span class="label-text-alt text-error">{{ link_form.title.errors }}</span>
+                  </div>
+                  {% endif %}
+                </label>
+              </div>
+            </div>
+            
+            {% if link_form.instance.pk %}
+            <div class="flex justify-end">
+              <label class="cursor-pointer label">
+                <span class="label-text mr-2">Supprimer ce lien</span>
+                <input type="checkbox" name="{{ link_form.DELETE.html_name }}" class="checkbox checkbox-error" />
               </label>
             </div>
-            <div>
-              <label class="form-control w-full">
-                <div class="label">
-                  <span class="label-text font-medium">Titre</span>
-                </div>
-                {{ link_form.title }}
-                {% if link_form.title.errors %}
-                <div class="label">
-                  <span class="label-text-alt text-error">{{ link_form.title.errors }}</span>
-                </div>
-                {% endif %}
-              </label>
-            </div>
+            {% endif %}
           </div>
-          
-          {% if link_form.instance.pk %}
-          <div class="flex justify-end">
-            <label class="cursor-pointer label">
-              <span class="label-text mr-2">Supprimer ce lien</span>
-              <input type="checkbox" name="{{ link_form.DELETE.html_name }}" class="checkbox checkbox-error" />
-            </label>
-          </div>
-          {% endif %}
         </div>
       </div>
     {% endfor %}
@@ -495,6 +470,8 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/components.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Section toggling
@@ -505,7 +482,7 @@
       });
     });
     
-    // File upload preview
+    // File upload preview and other form functionality
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const previewsContainer = document.getElementById('filePreviewsContainer');

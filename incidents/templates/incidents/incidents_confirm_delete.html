@@ -4,6 +4,7 @@
 {% block title %}Supprimer l'incident - {{ incident.title }}{% endblock %}
 
 {% block extra_head %}
+{% include "components/common_styles.html" %}
 <style>
   .warning-icon {
     animation: pulse 2s infinite;
@@ -14,35 +15,19 @@
     50% { opacity: 1; transform: scale(1.05); }
     100% { opacity: 0.8; transform: scale(1); }
   }
-  
-  .fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="fade-in max-w-2xl mx-auto space-y-6">
+{% include "components/fade_in.html" with class="max-w-2xl mx-auto space-y-6" content='
   <!-- En-tête avec breadcrumbs -->
-  <div class="text-sm breadcrumbs">
-    <ul>
-      <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-      <li><a href="{% url 'incident_list' %}">Incidents</a></li>
-      <li><a href="{% url 'incident_detail' incident.id %}">Incident #{{ incident.id }}</a></li>
-      <li>Supprimer</li>
-    </ul>
-  </div>
+  {% include "components/breadcrumbs.html" with items="[{\"label\": \"Dashboard\", \"url\": \"{% url \"dashboard\" %}\"}, {\"label\": \"Incidents\", \"url\": \"{% url \"incident_list\" %}\"}, {\"label\": \"Incident #'|add:incident.id|stringformat:"s"|add:'\", \"url\": \"{% url \"incident_detail\" incident.id %}\"}, {\"label\": \"Supprimer\"}]" %}
   
   <!-- Card de confirmation -->
   <div class="card bg-base-100 shadow-lg">
     <div class="card-body">
       <div class="flex flex-col items-center text-center mb-6">
-        <img src="{% static 'img/iconsax/All/bulk/warning-2.svg' %}" class="w-20 h-20 text-warning warning-icon mb-4" alt="Warning">
+        <img src="{% static "img/iconsax/All/bulk/warning-2.svg" %}" class="w-20 h-20 text-warning warning-icon mb-4" alt="Warning">
         <h2 class="card-title text-2xl">Supprimer l'incident ?</h2>
         <p class="text-muted-foreground mt-1">Cette action est irréversible et supprimera toutes les informations liées à cet incident.</p>
       </div>
@@ -55,44 +40,8 @@
           <span class="text-muted-foreground">Créé le:</span> {{ incident.created_at|date:"d/m/Y H:i" }}
         </div>
         <div class="mt-2 flex flex-wrap gap-2">
-          {% if incident.status == 'new' %}
-          <span class="badge badge-info gap-1">
-            <img src="{% static 'img/iconsax/All/linear/document-text.svg' %}" class="w-3 h-3" alt="New">
-            Nouveau
-          </span>
-          {% elif incident.status == 'in_progress' %}
-          <span class="badge badge-warning gap-1">
-            <img src="{% static 'img/iconsax/All/linear/timer-pause.svg' %}" class="w-3 h-3" alt="In Progress">
-            En cours
-          </span>
-          {% elif incident.status == 'resolved' %}
-          <span class="badge badge-success gap-1">
-            <img src="{% static 'img/iconsax/All/linear/tick-circle.svg' %}" class="w-3 h-3" alt="Resolved">
-            Résolu
-          </span>
-          {% endif %}
-          
-          {% if incident.severity == 'LOW' %}
-          <span class="badge badge-ghost gap-1">
-            <img src="{% static 'img/iconsax/All/linear/arrow-down.svg' %}" class="w-3 h-3" alt="Low">
-            Basse
-          </span>
-          {% elif incident.severity == 'MEDIUM' %}
-          <span class="badge badge-info gap-1">
-            <img src="{% static 'img/iconsax/All/linear/minus.svg' %}" class="w-3 h-3" alt="Medium">
-            Moyenne
-          </span>
-          {% elif incident.severity == 'HIGH' %}
-          <span class="badge badge-warning gap-1">
-            <img src="{% static 'img/iconsax/All/linear/arrow-up.svg' %}" class="w-3 h-3" alt="High">
-            Haute
-          </span>
-          {% elif incident.severity == 'CRITICAL' %}
-          <span class="badge badge-error gap-1">
-            <img src="{% static 'img/iconsax/All/linear/danger.svg' %}" class="w-3 h-3" alt="Critical">
-            Critique
-          </span>
-          {% endif %}
+          {% include "components/status_badge.html" with status=incident.status %}
+          {% include "components/severity_badge.html" with severity=incident.severity %}
         </div>
       </div>
       
@@ -100,7 +49,7 @@
       <div class="mb-6">
         <h3 class="font-semibold mb-2">Données qui seront supprimées :</h3>
         <ul class="list-disc ml-5 space-y-1 text-sm">
-          <li>Informations de base de l'incident</li>
+          <li>Informations de base de l\'incident</li>
           <li>{{ comments_count }} commentaire(s)</li>
           <li>{{ files_count }} fichier(s) attaché(s)</li>
           <li>Historique des mises à jour</li>
@@ -118,22 +67,23 @@
         </div>
         
         <div class="flex flex-wrap gap-3 justify-end">
-          <a href="{% url 'incident_detail' incident.id %}" class="btn btn-ghost">
-            <img src="{% static 'img/iconsax/All/linear/arrow-left.svg' %}" class="w-4 h-4 mr-2" alt="Back">
+          <a href="{% url "incident_detail" incident.id %}" class="btn btn-ghost">
+            <img src="{% static "img/iconsax/All/linear/arrow-left.svg" %}" class="w-4 h-4 mr-2" alt="Back">
             Retour
           </a>
           <button type="submit" id="delete-btn" class="btn btn-error" disabled>
-            <img src="{% static 'img/iconsax/All/linear/trash.svg' %}" class="w-4 h-4 mr-2" alt="Delete">
-            Supprimer l'incident
+            <img src="{% static "img/iconsax/All/linear/trash.svg" %}" class="w-4 h-4 mr-2" alt="Delete">
+            Supprimer l\'incident
           </button>
         </div>
       </form>
     </div>
   </div>
-</div>
+' %}
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/components.js' %}"></script>
 <script>
   // Enable delete button only when checkbox is checked
   const checkbox = document.getElementById('confirm-checkbox');

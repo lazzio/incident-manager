@@ -1,0 +1,30 @@
+<div class="relative flex-grow">
+    <form method="get" class="w-full" {% if form_id %}id="{{ form_id }}"{% endif %}>
+        <!-- Preserve existing query parameters -->
+        {% for param, value in preserved_params.items %}
+            {% if param != 'search' %}
+                <input type="hidden" name="{{ param }}" value="{{ value }}">
+            {% endif %}
+        {% endfor %}
+        
+        <div class="relative">
+            <span class="material-symbols-rounded absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">search</span>
+            <input type="text" 
+                   name="{{ search_param|default:'search' }}" 
+                   value="{{ current_value }}" 
+                   placeholder="{{ placeholder|default:'Rechercher...' }}"
+                   class="input input-bordered pl-10 w-full {{ input_class }}"
+                   autocomplete="off">
+            {% if current_value %}
+            <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2" 
+                    onclick="{{ clear_function|default:'clearSearch()' }}">
+                <span class="material-symbols-rounded">restart_alt</span>
+            </button>
+            {% endif %}
+        </div>
+        
+        {% if show_submit %}
+        <button type="submit" class="hidden">Rechercher</button>
+        {% endif %}
+    </form>
+</div>

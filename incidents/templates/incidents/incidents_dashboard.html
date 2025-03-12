@@ -3,24 +3,10 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block extra_head %}
+{% include "components/common_styles.html" %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <style>
-    .stats-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-    .icon-wrapper {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-    }
     .dashboard-card {
         height: 100%;
         display: flex;
@@ -70,72 +56,16 @@
     <!-- Cartes statistiques avec indicateurs de tendance -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total des incidents -->
-        <div class="stats-card card bg-base-100 shadow-lg">
-            <div class="card-body p-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold text-muted-foreground mb-1">TOTAL DES INCIDENTS</p>
-                        <h2 class="card-title text-3xl">{{ total_incidents }}</h2>
-                        <!-- Indicateur de tendance simulé -->
-                        <span class="text-sm text-success">+8% <span class="text-muted-foreground">vs mois dernier</span></span>
-                    </div>
-                    <div class="icon-wrapper bg-primary/10">
-                        <span class="material-symbols-rounded">stacks</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "components/stats_card.html" with title="Total des incidents" value=total_incidents icon="stacks" trend="+8%" trend_positive=True %}
 
         <!-- Incidents en attente -->
-        <div class="stats-card card bg-base-100 shadow-lg">
-            <div class="card-body p-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold text-muted-foreground mb-1">EN ATTENTE</p>
-                        <h2 class="card-title text-3xl">{{ open_incidents }}</h2>
-                        <!-- Indicateur de tendance simulé -->
-                        <span class="text-sm text-error">+12% <span class="text-muted-foreground">vs mois dernier</span></span>
-                    </div>
-                    <div class="icon-wrapper bg-info/10">
-                        <span class="material-symbols-rounded">hourglass_top</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "components/stats_card.html" with title="En attente" value=open_incidents icon="hourglass_top" icon_bg="bg-info/10" trend="+12%" trend_positive=False %}
 
         <!-- Incidents en cours -->
-        <div class="stats-card card bg-base-100 shadow-lg">
-            <div class="card-body p-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold text-muted-foreground mb-1">EN COURS</p>
-                        <h2 class="card-title text-3xl">{{ in_progress_incidents }}</h2>
-                        <!-- Indicateur de tendance simulé -->
-                        <span class="text-sm text-success">-5% <span class="text-muted-foreground">vs mois dernier</span></span>
-                    </div>
-                    <div class="icon-wrapper bg-warning/10">
-                        <span class="material-symbols-rounded text-warning">run_circle</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "components/stats_card.html" with title="En cours" value=in_progress_incidents icon="run_circle" icon_bg="bg-warning/10" icon_class="text-warning" trend="-5%" trend_positive=True %}
 
         <!-- Incidents résolus -->
-        <div class="stats-card card bg-base-100 shadow-lg">
-            <div class="card-body p-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold text-muted-foreground mb-1">RÉSOLUS</p>
-                        <h2 class="card-title text-3xl">{{ resolved_incidents }}</h2>
-                        <!-- Indicateur de tendance simulé -->
-                        <span class="text-sm text-success">+15% <span class="text-muted-foreground">vs mois dernier</span></span>
-                    </div>
-                    <div class="icon-wrapper bg-success/10">
-                        <span class="material-symbols-rounded test-success">task_alt</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "components/stats_card.html" with title="Résolus" value=resolved_incidents icon="task_alt" icon_bg="bg-success/10" icon_class="text-success" trend="+15%" trend_positive=True %}
     </div>
 
     <!-- Widgets de graphique et listes -->
@@ -144,10 +74,7 @@
         <div class="card bg-base-100 shadow-lg lg:col-span-2">
             <div class="card-body dashboard-card">
                 <div class="card-header flex justify-between items-center">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">chart_data</span>
-                        Activité des incidents
-                    </h2>
+                    {% include "components/card_header.html" with title="Activité des incidents" icon="chart_data" %}
                     <div class="join">
                         <button class="join-item btn btn-xs" data-period="day">Jour</button>
                         <button class="join-item btn btn-xs btn-active" data-period="week">Semaine</button>
@@ -164,10 +91,7 @@
         <div class="card bg-base-100 shadow-lg">
             <div class="card-body dashboard-card">
                 <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">data_usage</span>
-                        Sévérité des incidents
-                    </h2>
+                    {% include "components/card_header.html" with title="Sévérité des incidents" icon="data_usage" %}
                 </div>
                 <div class="chart-container">
                     <canvas id="severityChart"></canvas>
@@ -190,16 +114,9 @@
         <!-- Liste des incidents récents -->
         <div class="card bg-base-100 shadow-lg lg:col-span-2">
             <div class="card-body">
-                <div class="card-header flex justify-between items-center">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">early_on</span>
-                        Incidents récents
-                    </h2>
-                    <a href="{% url 'incident_list' %}" class="btn btn-ghost btn-xs">
-                        Voir tous
-                        <span class="material-symbols-rounded ml-1">arrow_forward</span>
-                    </a>
-                </div>
+                {% url 'incident_list' as incident_list_url %}
+                {% include "components/card_header.html" with title="Incidents récents" icon="early_on" action_url=incident_list_url action_label="Voir tous" %}
+                
                 <div class="overflow-x-auto">
                     <table class="table table-zebra w-full">
                         <thead>
@@ -219,22 +136,7 @@
                                     <div class="max-w-xs truncate">{{ incident.title }}</div>
                                 </td>
                                 <td>
-                                    {% if incident.status == 'new' %}
-                                        <div class="badge badge-info gap-1">
-                                            <span class="material-symbols-rounded text-xs scale-75">description</span>
-                                            Nouveau
-                                        </div>
-                                    {% elif incident.status == 'in_progress' %}
-                                        <div class="badge badge-warning gap-1">
-                                            <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
-                                            En cours
-                                        </div>
-                                    {% elif incident.status == 'resolved' %}
-                                        <div class="badge badge-success gap-1">
-                                            <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
-                                            Résolu
-                                        </div>
-                                    {% endif %}
+                                    {% include "components/status_badge.html" with status=incident.status %}
                                 </td>
                                 <td>{{ incident.created_at|date:"d/m/Y" }}</td>
                                 <td>
@@ -254,10 +156,7 @@
         <div class="card bg-base-100 shadow-lg">
             <div class="card-body dashboard-card">
                 <div class="card-header">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-2">timer</span>
-                        Temps de résolution
-                    </h2>
+                    {% include "components/card_header.html" with title="Temps de résolution" icon="timer" %}
                 </div>
                 
                 <div class="flex justify-center items-center my-4">
@@ -286,6 +185,7 @@
     </div>
 </div>
 
+<script src="{% static 'js/components.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Données simulées pour le graphique d'activité

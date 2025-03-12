@@ -1,0 +1,16 @@
+{% if status == 'new' %}
+<div class="badge {% if large %}badge-lg{% endif %} badge-info gap-1">
+    <span class="material-symbols-rounded text-xs scale-75">description</span>
+    {{ new_text|default:"Nouveau" }}
+</div>
+{% elif status == 'in_progress' %}
+<div class="badge {% if large %}badge-lg{% endif %} badge-warning gap-1">
+    <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
+    {{ in_progress_text|default:"En cours" }}
+</div>
+{% elif status == 'resolved' %}
+<div class="badge {% if large %}badge-lg{% endif %} badge-success gap-1">
+    <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
+    {{ resolved_text|default:"Résolu" }}
+</div>
+{% endif %}

@@ -1,0 +1,18 @@
+<div class="stats-card card bg-base-100 shadow-lg">
+    <div class="card-body p-4">
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="text-xs font-semibold text-muted-foreground mb-1">{{ title|upper }}</p>
+                <h2 class="card-title text-3xl">{{ value }}</h2>
+                {% if trend %}
+                <span class="text-sm {% if trend_positive %}text-success{% else %}text-error{% endif %}">
+                    {{ trend }} <span class="text-muted-foreground">{{ trend_label|default:"vs mois dernier" }}</span>
+                </span>
+                {% endif %}
+            </div>
+            <div class="icon-wrapper {% if icon_bg %}{{ icon_bg }}{% else %}bg-primary/10{% endif %}">
+                <span class="material-symbols-rounded {% if icon_class %}{{ icon_class }}{% endif %}">{{ icon }}</span>
+            </div>
+        </div>
+    </div>
+</div>

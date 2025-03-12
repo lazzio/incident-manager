@@ -1,0 +1,22 @@
+<div class="flex gap-2">
+    {% if view_url %}
+    <a href="{{ view_url }}" class="btn {% if size %}btn-{{ size }}{% else %}btn-sm{% endif %} btn-ghost">
+        <span class="material-symbols-rounded">visibility</span>
+        {{ view_text|default:"Voir" }}
+    </a>
+    {% endif %}
+    
+    {% if edit_url %}
+    <a href="{{ edit_url }}" class="btn {% if size %}btn-{{ size }}{% else %}btn-sm mt-2{% endif %} {% if primary %}btn-primary{% else %}btn-ghost{% endif %}">
+        <span class="material-symbols-rounded">edit</span>
+        {{ edit_text|default:"Modifier" }}
+    </a>
+    {% endif %}
+    
+    {% if delete_url %}
+    <a href="{{ delete_url }}" class="btn {% if size %}btn-{{ size }}{% else %}btn-sm{% endif %} {% if delete_style %}{{ delete_style }}{% else %}btn-ghost text-error{% endif %}">
+        <span class="material-symbols-rounded">delete</span>
+        {{ delete_text|default:"Supprimer" }}
+    </a>
+    {% endif %}
+</div>
