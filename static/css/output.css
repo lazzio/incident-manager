@@ -4994,6 +4994,10 @@ html:has(.drawer-toggle:checked) {
   overflow-wrap: break-word;
 }
 
+.rounded {
+  border-radius: 0.25rem;
+}
+
 .rounded-box {
   border-radius: var(--rounded-box, 1rem);
 }
@@ -5008,10 +5012,6 @@ html:has(.drawer-toggle:checked) {
 
 .rounded-md {
   border-radius: calc(var(--radius) - 2px);
-}
-
-.rounded {
-  border-radius: 0.25rem;
 }
 
 .border {

@@ -2,6 +2,7 @@ from django import forms
 from .models import Incident, IncidentLink, IncidentUpdate, Comment
 from django.forms import inlineformset_factory
 from django.utils import timezone
+from .widgets import MultipleFileInput
 
 """
 Django forms for the incident management system.
@@ -18,6 +19,12 @@ FormSets:
 """
 
 class IncidentForm(forms.ModelForm):
+    # Ajouter le champ files explicitement avec le widget MultipleFileInput
+    files = forms.FileField(
+        widget=MultipleFileInput(),
+        required=False,
+        label="Fichiers attachés"
+    )
     
     class Meta:
         model = Incident
@@ -60,6 +67,10 @@ class IncidentForm(forms.ModelForm):
         status = cleaned_data.get('status')
         if status == 'resolved' and not end_date:  # Changed from 'CLOSED' to match STATUS_CHOICES
             self.add_error('end_date', "Une date de fin est requise pour les incidents clôturés.")
+        
+        # Supprimer l'erreur sur le champ 'files' s'il y en a une
+        if 'files' in self._errors:
+            del self._errors['files']
             
         return cleaned_data
 

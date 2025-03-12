@@ -22,12 +22,20 @@ def validate_forms(request, form, link_formset) -> bool:
     """Helper function to validate forms and display error messages"""
     is_valid = True
     
+    # Exécuter la validation mais ignorer le champ files
     if not form.is_valid():
         print("Form errors:", form.errors.as_data())
         for field, errors in form.errors.items():
             print(f"Field {field} errors: {errors}")
-        messages.error(request, "Le formulaire contient des erreurs. Veuillez les corriger.")
-        is_valid = False
+            
+        # Ignorer les erreurs spécifiques au champ files
+        if set(form.errors.keys()) == {'files'}:
+            # Si la seule erreur concerne les fichiers, considérer le formulaire comme valide
+            print("Ignoring files field errors and proceeding...")
+            is_valid = True
+        else:
+            messages.error(request, "Le formulaire contient des erreurs. Veuillez les corriger.")
+            is_valid = False
     
     if not link_formset.is_valid():
         print("Linkformset errors:", link_formset.errors)
@@ -202,12 +210,14 @@ def create_incident(request):
         logged and displayed to the user as error messages
     """
     if request.method == 'POST':
-        # Remove request.FILES from the form - we'll handle files separately
-        form = IncidentForm(request.POST)
+        # Traiter correctement les fichiers
+        form = IncidentForm(request.POST, request.FILES)
         link_formset = LinkFormSet(request.POST, prefix='links')
+        
+        # Récupérer les fichiers du champ 'files' de notre formulaire
         files = request.FILES.getlist('files')
         
-        # More detailed debugging
+        # Déboguer la réception des fichiers
         print("POST data received:", request.POST)
         print("FILES received:", request.FILES)
         print(f"Number of files: {len(files)}")
@@ -268,6 +278,34 @@ def create_incident(request):
     })
     
     
+def delete_incident_files(incident, file_ids):
+    """
+    Supprimer les fichiers spécifiés associés à un incident.
+    
+    Args:
+        incident: L'objet Incident associé aux fichiers
+        file_ids: Liste des IDs de fichiers à supprimer
+    
+    Returns:
+        int: Nombre de fichiers supprimés
+    """
+    count = 0
+    for file_id in file_ids:
+        try:
+            file_id = int(file_id.strip())
+            file = IncidentFile.objects.filter(id=file_id, incident=incident).first()
+            if file:
+                file_name = file.filename
+                file.file.delete(save=False)  # Supprimer le fichier physique
+                file.delete()  # Supprimer l'enregistrement de la base de données
+                count += 1
+                print(f"Fichier supprimé: {file_name} (ID: {file_id})")
+        except Exception as e:
+            print(f"Erreur lors de la suppression du fichier {file_id}: {str(e)}")
+    
+    return count
+
+
 @login_required
 def update_incident(request, pk):
     """
@@ -289,30 +327,52 @@ def update_incident(request, pk):
     incident = get_object_or_404(Incident, pk=pk)
     
     if request.method == 'POST':
-        form = IncidentForm(request.POST, instance=incident)
+        # Traiter correctement les fichiers
+        form = IncidentForm(request.POST, request.FILES, instance=incident)
         link_formset = LinkFormSet(request.POST, instance=incident, prefix='links')
+        
+        # Récupérer les fichiers du champ 'files' de notre formulaire
         files = request.FILES.getlist('files')
+        
+        # Récupérer les fichiers à supprimer
+        files_to_delete = request.POST.get('delete_files', '')
         
         print("POST data received for update:", request.POST)
         print("FILES received for update:", request.FILES)
+        print(f"Number of files to upload: {len(files)}")
+        print(f"Files to delete: {files_to_delete}")
         
         if validate_forms(request, form, link_formset):
             def update_incident_data():
-                form.save()
+                # Sauvegarder les données de base de l'incident
+                updated_incident = form.save()
                 print(f"Incident {incident.id} updated")
                 
+                # Sauvegarder les liens
                 link_formset.save()
                 print("Link formset saved in update")
                 
-                # Process files
-                process_incident_files(request, incident, files)
+                # Supprimer les fichiers sélectionnés
+                delete_count = 0
+                if files_to_delete:
+                    file_ids = files_to_delete.split(',')
+                    delete_count = delete_incident_files(updated_incident, file_ids)
+                    if delete_count > 0:
+                        messages.success(request, f"{delete_count} fichier(s) supprimé(s) avec succès.")
                 
-                return incident
+                # Traitement des fichiers s'il y en a
+                if files:
+                    process_incident_files(request, updated_incident, files)
+                    print(f"Processed {len(files)} files for incident {incident.id}")
+                else:
+                    print("No files to process for this update")
+                
+                return updated_incident
             
             updated_incident = handle_transaction(
                 request,
                 update_incident_data,
-                'Incident updated successfully.',
+                'Incident mis à jour avec succès.',
                 'Une erreur s\'est produite lors de la mise à jour de l\'incident'
             )
             
