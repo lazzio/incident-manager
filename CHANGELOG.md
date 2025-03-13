@@ -1,3 +1,9 @@
+## [0.6.2](https://github.com/lazzio/incident-manager/-/compare/v0.6.1...v0.6.2) (2025-03-13)
+
+### Refactor
+
+* fragment code and ui components ([#30](https://github.com/lazzio/incident-manager/-/issues/30)) ([22bf1a4](https://github.com/lazzio/incident-manager/-/commit/22bf1a43275aeb0ef3ca68798b17337d59547b5b))
+
 ## [0.6.1](https://github.com/lazzio/incident-manager/-/compare/v0.6.0...v0.6.1) (2025-03-12)
 
 ### Bug Fixes
