@@ -1,3 +1,9 @@
+## [0.7.0](https://github.com/lazzio/incident-manager/-/compare/v0.6.2...v0.7.0) (2025-03-13)
+
+### Features
+
+* ui components ([#31](https://github.com/lazzio/incident-manager/-/issues/31)) ([29904d2](https://github.com/lazzio/incident-manager/-/commit/29904d2162324e134e60fd69d1cb3b693c279b4f))
+
 ## [0.6.2](https://github.com/lazzio/incident-manager/-/compare/v0.6.1...v0.6.2) (2025-03-13)
 
 ### Refactor
