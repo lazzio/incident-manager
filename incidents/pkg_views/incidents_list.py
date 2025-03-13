@@ -49,4 +49,7 @@ class IncidentListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['status_choices'] = Incident.STATUS_CHOICES
         context['severity_choices'] = Severity.choices
+        context['breadcrumb_items'] = [
+            {'label': 'Incidents list', 'url': '/incidents/'}
+        ]
         return context

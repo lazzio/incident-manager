@@ -4528,10 +4528,6 @@ html:has(.drawer-toggle:checked) {
   margin-top: 2rem;
 }
 
-.mt-0\.5 {
-  margin-top: 0.125rem;
-}
-
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
