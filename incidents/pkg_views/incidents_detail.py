@@ -30,4 +30,8 @@ class IncidentDetailView(LoginRequiredMixin, DetailView):
         context['comments'] = self.object.comments.all()
         context['comment_form'] = CommentForm()
         context['incident_files'] = self.object.files.all().order_by('-uploaded_at')
+        context['breadcrumb_items'] = [
+            {'label': 'Incidents list', 'url': '/incidents/'},
+            {'label': self.object.title[0:25], 'url': '/incident/{self.object.pk}/'}
+        ]
         return context

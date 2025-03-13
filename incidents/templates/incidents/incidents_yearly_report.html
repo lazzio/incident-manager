@@ -10,13 +10,7 @@
 <div class="space-y-6">
     <!-- En-tête avec breadcrumbs -->
     <div>
-        <div class="text-sm breadcrumbs">
-            <ul>
-                <li><a href="{% url 'dashboard' %}">Home</a></li>
-                <li>Annual Report</li>
-                <li>{{ year }}</li>
-            </ul>
-        </div>
+        {% include "components/breadcrumbs.html" %}
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h1 class="text-3xl font-bold">Annual Report {{ year }}</h1>
@@ -151,10 +145,7 @@
     <!-- Longest Incidents -->
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-            <h2 class="card-title">
-                <i class="fas fa-hourglass-end mr-2"></i>
-                Longest Incidents
-            </h2>
+            {% include "components/card_header.html" with title="Longest Incidents" icon="hourglass_arrow_up" %}
             
             <div class="overflow-x-auto">
                 <table class="table table-zebra w-full">
@@ -175,15 +166,7 @@
                                 <div class="font-medium">{{ incident.title }}</div>
                             </td>
                             <td>
-                                {% if incident.severity == 'LOW' %}
-                                    <span class="badge badge-ghost">Low</span>
-                                {% elif incident.severity == 'MEDIUM' %}
-                                    <span class="badge badge-info">Medium</span>
-                                {% elif incident.severity == 'HIGH' %}
-                                    <span class="badge badge-warning">High</span>
-                                {% elif incident.severity == 'CRITICAL' %}
-                                    <span class="badge badge-error">Critical</span>
-                                {% endif %}
+                                {% include "components/severity_badge.html" with severity=incident.severity %}
                             </td>
                             <td>{{ incident.start_date|date:"d/m/Y H:i" }}</td>
                             <td>{{ incident.end_date|date:"d/m/Y H:i" }}</td>

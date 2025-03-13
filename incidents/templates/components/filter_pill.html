@@ -1,0 +1,6 @@
+<div class="filter-pill badge {{ color_class|default:'badge-neutral' }} gap-1">
+    <span>{{ label }}: {{ value }}</span>
+    <button onclick="{{ remove_function }}('{{ filter_name }}', '{{ value|escapejs }}')" class="ml-1">
+        <span class="material-symbols-rounded scale-75">cancel</span>
+    </button>
+</div>

@@ -3,29 +3,29 @@
 
 {% block title %}Incident #{{ incident.id }} - {{ incident.title }}{% endblock %}
 
+{% block extra_head %}
+{% include "components/common_styles.html" %}
+{% endblock %}
+
 {% block content %}
 <div class="space-y-6">
     <!-- En-tête avec breadcrumbs -->
     <div>
-        <div class="text-sm breadcrumbs">
-            <ul>
-                <li><a href="{% url 'dashboard' %}">Home</a></li>
-                <li><a href="{% url 'incident_list' %}">Incidents</a></li>
-                <li>Incident #{{ incident.id }}</li>
-            </ul>
-        </div>
+        {% if breadcrumb_items %}
+            {% include "components/breadcrumbs.html" with items=breadcrumb_items %}
+        {% else %}
+            {% url 'dashboard' as dashboard_url %}
+            {% url 'incident_list' as incident_list_url %}
+            {% include "components/breadcrumbs.html" with items=items|default:"[{'label': 'Dashboard', 'url': dashboard_url}, {'label': 'Incidents', 'url': incident_list_url}, {'label': 'Incident #"|add:incident.id|stringformat:"s"|add:"'}]" %}
+        {% endif %}
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h1 class="text-3xl font-bold">
                 {{ incident.title }}
             </h1>
             <div class="flex gap-2">
-                <a href="{% url 'incident_update' incident.id %}" class="btn btn-primary">
-                    <span class="material-symbols-rounded mr-2">
-                        edit_note
-                    </span>
-                    Edit
-                </a>
+                {% url 'incident_update' incident.id as incident_edit_url %}
+                {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit" primary=True %}
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
                         <span class="material-symbols-rounded">
@@ -44,37 +44,8 @@
 
     <!-- Info badge -->
     <div class="flex flex-wrap gap-2">
-        {% if incident.status == 'new' %}
-            <div class="badge badge-lg badge-info gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">cake</span> New
-            </div>
-        {% elif incident.status == 'in_progress' %}
-            <div class="badge badge-lg badge-warning gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">progress_activity</span> In Progress
-            </div>
-        {% elif incident.status == 'resolved' %}
-            <div class="badge badge-lg badge-success gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">check</span> Resolved
-            </div>
-        {% endif %}
-        
-        {% if incident.severity == 'LOW' %}
-            <div class="badge badge-lg badge-ghost gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">south</span> Low Severity
-            </div>
-        {% elif incident.severity == 'MEDIUM' %}
-            <div class="badge badge-lg badge-info gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">remove</span> Medium Severity
-            </div>
-        {% elif incident.severity == 'HIGH' %}
-            <div class="badge badge-lg badge-warning gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">north</span> High Severity
-            </div>
-        {% elif incident.severity == 'CRITICAL' %}
-            <div class="badge badge-lg badge-error gap-1">
-                <span class="material-symbols-rounded text-xs scale-75">skull</span> Critical Severity
-            </div>
-        {% endif %}
+        {% include "components/status_badge.html" with status=incident.status new_text="New" in_progress_text="In Progress" resolved_text="Resolved" large=True %}
+        {% include "components/severity_badge.html" with severity=incident.severity low_text="Low Severity" medium_text="Medium Severity" high_text="High Severity" critical_text="Critical Severity" large=True %}
         
         <div class="badge badge-lg badge-outline gap-1">
             <span class="material-symbols-rounded text-xs scale-75">today</span> {{ incident.start_date|date:"d/m/Y H:i" }}
@@ -87,10 +58,7 @@
             <!-- Description -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">description</span>
-                        Description
-                    </h2>
+                    {% include "components/card_header.html" with title="Description" icon="description" %}
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
                         {{ incident.details }}
                     </div>
@@ -100,10 +68,7 @@
             <!-- Resolution Process -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">construction</span>
-                        Resolution Process
-                    </h2>
+                    {% include "components/card_header.html" with title="Resolution Process" icon="construction" %}
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
                         {{ incident.resolution_process }}
                     </div>
@@ -113,10 +78,7 @@
             <!-- Impact -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">balance</span>
-                        Impact
-                    </h2>
+                    {% include "components/card_header.html" with title="Impact" icon="balance" %}
                     <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
                         {{ incident.impact }}
                     </div>
@@ -126,10 +88,7 @@
             <!-- Files -->
             <div id="files" class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">attach_file</span>
-                        Files
-                    </h2>
+                    {% include "components/card_header.html" with title="Files" icon="attach_file" %}
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {% for file in incident_files %}
@@ -137,7 +96,7 @@
                             <div class="card-body p-4">
                                 {% if file.is_image %}
                                 <figure class="h-32 flex items-center justify-center bg-base-300 rounded-md mb-3 overflow-hidden cursor-pointer"
-                                       onclick="openImageModal('{{ file.file.url }}', '{{ file.filename }}')">
+                                       onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')">
                                     <img src="{{ file.file.url }}" alt="{{ file.filename }}" 
                                          class="h-full w-full object-contain">
                                 </figure>
@@ -162,7 +121,7 @@
                                         Download
                                     </a>
                                     {% if file.is_image %}
-                                    <button onclick="openImageModal('{{ file.file.url }}', '{{ file.filename }}')"
+                                    <button onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')"
                                             class="btn btn-xs btn-outline">
                                             <span class="material-symbols-rounded mr-1">visibility</span>
                                         Preview
@@ -184,11 +143,7 @@
             <!-- Comments -->
             <div id="comments" class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">comment</span>
-                        Comments
-                        <span class="badge">{{ comments|length }}</span>
-                    </h2>
+                    {% include "components/card_header.html" with title="Comments" icon="comment" badge=comments|length %}
                     
                     <div class="space-y-4 mb-6">
                         {% for comment in comments %}
@@ -238,10 +193,7 @@
             <!-- Info générales -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">info</span>
-                        General Information
-                    </h2>
+                    {% include "components/card_header.html" with title="General Information" icon="info" %}
                     
                     <div class="space-y-4 mt-2">
                         <div>
@@ -310,10 +262,7 @@
             <!-- Statistiques -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">pie_chart</span>
-                        Statistics
-                    </h2>
+                    {% include "components/card_header.html" with title="Statistics" icon="pie_chart" %}
                     
                     <div class="stats stats-vertical shadow w-full">
                         <div class="stat">
@@ -337,20 +286,13 @@
             <!-- Actions -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded mr-1">bolt</span>
-                        Actions
-                    </h2>
+                    {% include "components/card_header.html" with title="Actions" icon="bolt" %}
                     
                     <div class="space-y-2 mt-2">
-                        <a href="{% url 'incident_update' incident.id %}" class="btn btn-primary w-full">
-                            <span class="material-symbols-rounded mr-1">edit_note</span>
-                            Edit incident
-                        </a>
-                        <a href="{% url 'incident_delete' incident.id %}" class="btn btn-error w-full">
-                            <span class="material-symbols-rounded mr-1">delete</span>
-                            Delete incident
-                        </a>
+                        {% url 'incident_update' incident.id as incident_edit_url %}
+                        {% url 'incident_delete' incident.id as incident_delete_url %}
+                        {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit incident" primary=True size="" %}
+                        {% include "components/action_buttons.html" with delete_url=incident_delete_url delete_text="Delete incident" delete_style="btn-error" size="" %}
                     </div>
                 </div>
             </div>
@@ -358,106 +300,13 @@
     </div>
 </div>
 
-<!-- Modal pour prévisualiser les images -->
-<div id="imageModal" class="fixed inset-0 bg-black/0 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
-    <div id="modalContainer" class="bg-base-100 rounded-lg shadow-lg max-w-4xl w-full mx-4 overflow-hidden transform scale-95 transition-all duration-300 ease-in-out">
-        <div class="flex justify-between items-center p-4 border-b border-base-300">
-            <h3 id="modalTitle" class="text-xl font-semibold truncate">Aperçu du fichier</h3>
-            <button id="closeModal" class="btn btn-sm btn-circle btn-ghost">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-        <div class="p-4">
-            <div id="modalContent" class="flex items-center justify-center">
-                <!-- Le contenu de l'image sera injecté ici -->
-            </div>
-        </div>
-        <div class="flex justify-end items-center p-4 border-t border-base-300 gap-2">
-            <a id="downloadLink" href="#" class="btn btn-primary">
-                <i class="fas fa-download mr-2"></i>
-                Download
-            </a>
-            <button id="closeModalBtn" class="btn btn-ghost">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-    function openImageModal(imageUrl, filename) {
-        // Récupérer les éléments de la modale
-        const modal = document.getElementById('imageModal');
-        const modalContainer = document.getElementById('modalContainer');
-        const modalContent = document.getElementById('modalContent');
-        const modalTitle = document.getElementById('modalTitle');
-        const downloadLink = document.getElementById('downloadLink');
-        
-        // Mettre à jour le contenu de la modale
-        modalTitle.textContent = filename;
-        modalContent.innerHTML = `<img src="${imageUrl}" alt="${filename}" class="max-h-[70vh] max-w-full object-contain">`;
-        downloadLink.href = imageUrl;
-        
-        // Afficher la modale avec animation
-        modal.classList.remove('pointer-events-none');
-        
-        // Forcer un reflow pour que les transitions fonctionnent
-        void modal.offsetWidth;
-        
-        // Appliquer l'animation
-        modal.classList.add('opacity-100');
-        modal.classList.add('bg-black/50');
-        modalContainer.classList.remove('scale-95');
-        modalContainer.classList.add('scale-100');
-        
-        // Empêcher le défilement de la page
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeModal() {
-        const modal = document.getElementById('imageModal');
-        const modalContainer = document.getElementById('modalContainer');
-        
-        // Masquer la modale avec animation
-        modal.classList.remove('opacity-100');
-        modal.classList.remove('bg-black/50');
-        modal.classList.add('opacity-0');
-        modalContainer.classList.remove('scale-100');
-        modalContainer.classList.add('scale-95');
-        
-        // Attendre la fin de l'animation avant de cacher complètement
-        setTimeout(() => {
-            modal.classList.add('pointer-events-none');
-            document.body.style.overflow = '';
-        }, 300);
-    }
-    
-    // Fermer la modale en cliquant sur le bouton de fermeture
-    document.getElementById('closeModal').addEventListener('click', closeModal);
-    
-    // Fermer la modale en cliquant sur le bouton Fermer
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    
-    // Fermer la modale en cliquant à l'extérieur de celle-ci
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-    
-    // Fermer la modale avec la touche Échap
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !document.getElementById('imageModal').classList.contains('pointer-events-none')) {
-            closeModal();
-        }
-    });
-</script>
+{% include "components/modal.html" with id="imageModal" title="Aperçu du fichier" show_download=True %}
 
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/components.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
 <script>
   function copyShareUrl() {
     const copyText = document.getElementById("shareUrl");
@@ -650,6 +499,16 @@
       // Remove query param from URL without reloading page
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
+    }
+    
+    if (urlParams.get('comment_added') === 'true') {
+      toast.success('Commentaire ajouté avec succès');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    if (urlParams.get('updated') === 'true') {
+      toast.success('Incident mis à jour avec succès');
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   });
 </script>

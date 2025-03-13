@@ -3,16 +3,8 @@
 {% block title %}Incidents{% endblock %}
 
 {% block extra_head %}
+{% include "components/common_styles.html" %}
 <style>
-  .fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
   .filter-pill {
     transition: all 0.3s ease;
   }
@@ -34,47 +26,6 @@
     background-color: rgba(var(--primary), 0.1);
     color: hsl(var(--primary));
   }
-  
-  .badge-status, .badge-severity {
-    transition: all 0.3s ease;
-  }
-
-  .incident-card {
-    transition: all 0.3s ease;
-    height: 100%;
-  }
-  
-  .incident-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card-header-content {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-  }
-  
-  /* Skeleton loading animation */
-  @keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
-  }
-  
-  .skeleton-pulse {
-    animation: pulse 1.5s infinite;
-    background-color: hsl(var(--muted));
-    border-radius: 0.25rem;
-  }
 </style>
 {% endblock %}
 
@@ -83,12 +34,7 @@
   <!-- En-tête et recherche -->
   <div class="flex flex-col lg:flex-row justify-between gap-4 items-start">
     <div>
-      <div class="text-sm breadcrumbs">
-        <ul>
-          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-          <li>Incidents</li>
-        </ul>
-      </div>
+      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents'}]" %}
       <h1 class="text-3xl font-bold">Incidents</h1>
       <p class="text-muted-foreground mt-1">Gérez et suivez tous les incidents du système</p>
     </div>
@@ -127,24 +73,7 @@
     <div class="card-body p-4">
       <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
         <!-- Recherche -->
-        <div class="relative flex-grow">
-          <form method="get" class="w-full">
-            <div class="relative">
-              <span class="material-symbols-rounded absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">search</span>
-              <input type="text" 
-                     name="search" 
-                     value="{{ request.GET.search }}" 
-                     placeholder="Rechercher un incident par titre, ID ou détails..."
-                     class="input input-bordered pl-10 w-full"
-                     autocomplete="off">
-              {% if request.GET.search %}
-              <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2" onclick="clearSearch()">
-                <span class="material-symbols-rounded">restart_alt</span>
-              </button>
-              {% endif %}
-            </div>
-          </form>
-        </div>
+        {% include "components/search_bar.html" with current_value=request.GET.search placeholder="Rechercher un incident par titre, ID ou détails..." preserved_params=preserved_params clear_function="clearSearch" %}
 
         <!-- Boutons de filtres -->
         <div class="flex items-center gap-2 lg:w-auto w-full">
@@ -254,21 +183,11 @@
       <div class="flex flex-wrap gap-2 mt-4 items-center">
         <span class="text-sm text-muted-foreground">Filtres actifs:</span>
         {% if request.GET.search %}
-        <div class="filter-pill badge gap-1">
-          <span>Recherche: "{{ request.GET.search }}"</span>
-          <button onclick="removeFilter('search')" class="ml-1">
-            <span class="material-symbols-rounded">cancel</span>
-          </button>
-        </div>
+        {% include "components/filter_pill.html" with label="Recherche" value=request.GET.search filter_name="search" remove_function="removeFilter" %}
         {% endif %}
         
         {% for status in selected_status %}
-        <div class="filter-pill badge badge-info gap-1">
-          <span>Statut: {{ status }}</span>
-          <button onclick="removeFilterValue('status', '{{ status }}')" class="ml-1">
-            <span class="material-symbols-rounded">cancel</span>
-          </button>
-        </div>
+        {% include "components/filter_pill.html" with label="Statut" value=status filter_name="status" color_class="badge-info" remove_function="removeFilterValue" %}
         {% endfor %}
         
         {% for severity in selected_severity %}
@@ -351,45 +270,10 @@
                     </div>
                   </td>
                   <td>
-                    {% if incident.status == 'new' %}
-                    <div class="badge badge-info gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">description</span>
-                      Nouveau
-                    </div>
-                    {% elif incident.status == 'in_progress' %}
-                    <div class="badge badge-warning gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
-                      En cours
-                    </div>
-                    {% elif incident.status == 'resolved' %}
-                    <div class="badge badge-success gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
-                      Résolu
-                    </div>
-                    {% endif %}
+                    {% include "components/status_badge.html" with status=incident.status %}
                   </td>
                   <td>
-                    {% if incident.severity == 'LOW' %}
-                    <div class="badge badge-ghost gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">south</span>
-                      Basse
-                    </div>
-                    {% elif incident.severity == 'MEDIUM' %}
-                    <div class="badge badge-info gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">remove</span>
-                      Moyenne
-                    </div>
-                    {% elif incident.severity == 'HIGH' %}
-                    <div class="badge badge-warning gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">north</span>
-                      Haute
-                    </div>
-                    {% elif incident.severity == 'CRITICAL' %}
-                    <div class="badge badge-error gap-1">
-                      <span class="material-symbols-rounded text-xs scale-75">skull</span>
-                      Critique
-                    </div>
-                    {% endif %}
+                    {% include "components/severity_badge.html" with severity=incident.severity low_text="Basse" medium_text="Moyenne" high_text="Haute" critical_text="Critique" %}
                   </td>
                   <td>
                     <div class="flex items-center gap-1">
@@ -413,12 +297,7 @@
                   </td>
                   <td>
                     <div class="flex gap-1">
-                      <a href="{% url 'incident_detail' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Voir les détails">
-                        <span class="material-symbols-rounded">visibility</span>
-                      </a>
-                      <a href="{% url 'incident_update' incident.id %}" class="btn btn-square btn-sm btn-ghost tooltip" data-tip="Modifier">
-                        <span class="material-symbols-rounded">edit</span>
-                      </a>
+                      {% include "components/action_buttons.html" with view_url=incident.get_absolute_url size="xs" view_text="" edit_url=incident.get_edit_url edit_text="" %}
                       <div class="dropdown dropdown-left dropdown-hover">
                         <div tabindex="0" class="btn btn-square btn-sm btn-ghost m-1">
                           <span class="material-symbols-rounded">more_horiz</span>
@@ -473,7 +352,6 @@
                 {% endfor %}
               </tbody>
             </table>
-
         </div>
       </div>
     </div>
@@ -487,22 +365,7 @@
             <div class="flex justify-between items-start mb-2">
               <div class="badge font-mono">ID #{{ incident.id }}</div>
               <div>
-                {% if incident.status == 'new' %}
-                <div class="badge badge-info gap-1">
-                  <span class="material-symbols-rounded text-xs scale-75">description</span>
-                  Nouveau
-                </div>
-                {% elif incident.status == 'in_progress' %}
-                <div class="badge badge-warning gap-1">
-                  <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
-                  En cours
-                </div>
-                {% elif incident.status == 'resolved' %}
-                <div class="badge badge-success gap-1">
-                  <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
-                  Résolu
-                </div>
-                {% endif %}
+                {% include "components/status_badge.html" with status=incident.status %}
               </div>
             </div>
             
@@ -557,8 +420,7 @@
             <div class="divider my-1"></div>
             
             <div class="card-actions justify-end">
-              <a href="{% url 'incident_detail' incident.id %}" class="btn btn-xs btn-ghost">Voir</a>
-              <a href="{% url 'incident_update' incident.id %}" class="btn btn-xs btn-ghost">Modifier</a>
+              {% include "components/action_buttons.html" with view_url=incident.get_absolute_url view_text="Voir" size="xs" edit_url=incident.get_edit_url edit_text="Modifier" %}
               <div class="dropdown dropdown-top dropdown-end">
                 <div tabindex="0" class="btn btn-xs btn-ghost">
                   <span class="material-symbols-rounded scale-75">more_vert</span>
@@ -614,40 +476,13 @@
   </div>
 
 <!-- Pagination -->
-<div class="flex justify-center mt-8">
-  <div class="join">
-      {% if page_obj.has_previous %}
-          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page=1" class="join-item btn">«</a>
-          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ page_obj.previous_page_number }}" class="join-item btn">‹</a>
-      {% else %}
-          <button class="join-item btn btn-disabled">«</button>
-          <button class="join-item btn btn-disabled">‹</button>
-      {% endif %}
-      
-      {% for num in page_obj.paginator.page_range %}
-          {% if page_obj.number == num %}
-              <button class="join-item btn btn-active">{{ num }}</button>
-          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-              <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ num }}" class="join-item btn">{{ num }}</a>
-          {% endif %}
-      {% endfor %}
-      
-      {% if page_obj.has_next %}
-          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ page_obj.next_page_number }}" class="join-item btn">›</a>
-          <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.severity %}severity={{ request.GET.severity }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="join-item btn">»</a>
-      {% else %}
-          <button class="join-item btn btn-disabled">›</button>
-          <button class="join-item btn btn-disabled">»</button>
-      {% endif %}
-  </div>
-</div>
+{% include "components/pagination.html" with page_obj=page_obj base_url="?" query_params=pagination_query_params show_info=True item_name="incidents" %}
 
-<div class="text-center text-sm text-gray-500 mt-2">
-  Affichage de {{ page_obj.start_index }} à {{ page_obj.end_index }} sur {{ page_obj.paginator.count }} incidents
-</div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/components.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
 <script>
   // View switching functionality
   document.addEventListener('DOMContentLoaded', function() {

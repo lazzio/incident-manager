@@ -1,0 +1,28 @@
+<div id="{{ id|default:'modal' }}" class="fixed inset-0 bg-black/0 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
+    <div id="{{ id|default:'modal' }}-container" class="bg-base-100 rounded-lg shadow-lg max-w-4xl w-full mx-4 overflow-hidden transform scale-95 transition-all duration-300 ease-in-out">
+        <div class="flex justify-between items-center p-4 border-b border-base-300">
+            <h3 id="{{ id|default:'modal' }}-title" class="text-xl font-semibold truncate">{{ title|default:"Modal Title" }}</h3>
+            <button class="btn btn-sm btn-circle btn-ghost close-modal" data-modal-id="{{ id|default:'modal' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-4">
+            <div id="{{ id|default:'modal' }}-content" class="flex items-center justify-center">
+                {{ content|safe }}
+            </div>
+        </div>
+        <div class="flex justify-end items-center p-4 border-t border-base-300 gap-2">
+            {% if show_download %}
+            <a id="{{ id|default:'modal' }}-download" href="#" class="btn btn-primary">
+                <span class="material-symbols-rounded mr-2">download</span>
+                Télécharger
+            </a>
+            {% endif %}
+            <button class="btn btn-ghost close-modal" data-modal-id="{{ id|default:'modal' }}">
+                Fermer
+            </button>
+        </div>
+    </div>
+</div>

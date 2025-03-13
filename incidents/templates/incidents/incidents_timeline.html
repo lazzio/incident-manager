@@ -4,41 +4,9 @@
 {% block title %}Chronologie des Incidents{% endblock %}
 
 {% block extra_head %}
+{% include "components/common_styles.html" %}
 <style>
-  /* Animations et transitions */
-  .fade-in {
-    animation: fadeIn 0.7s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .timeline-item {
-    transition: all 0.3s ease;
-    animation: slideIn 0.5s ease-out forwards;
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  
-  @keyframes slideIn {
-    to { opacity: 1; transform: translateX(0); }
-  }
-  
-  /* Animation delays - using predefined classes instead */
-  .delay-1 { animation-delay: 0.1s; }
-  .delay-2 { animation-delay: 0.2s; }
-  .delay-3 { animation-delay: 0.3s; }
-  .delay-4 { animation-delay: 0.4s; }
-  .delay-5 { animation-delay: 0.5s; }
-  .delay-6 { animation-delay: 0.6s; }
-  .delay-7 { animation-delay: 0.7s; }
-  .delay-8 { animation-delay: 0.8s; }
-  .delay-9 { animation-delay: 0.9s; }
-  .delay-10 { animation-delay: 1s; }
-  
-  /* Timeline styling */
+  /* Timeline specific styling */
   .timeline-container {
     position: relative;
     padding-left: 2rem;
@@ -208,18 +176,13 @@
 </style>
 {% endblock %}
 
+
 {% block content %}
 <div class="space-y-6 fade-in">
   <!-- En-tête avec navigation de période -->
   <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
     <div>
-      <div class="text-sm breadcrumbs">
-        <ul>
-          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-          <li>Chronologie</li>
-          <li>{{ selected_year }}</li>
-        </ul>
-      </div>
+      {% include "components/breadcrumbs.html" %}
       <h1 class="text-3xl font-bold">Chronologie des Incidents</h1>
       <p class="text-muted-foreground mt-1">
         Visualisez les incidents chronologiquement
@@ -252,10 +215,7 @@
   <!-- Filtres et contrôles -->
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body p-4">
-      <h3 class="font-semibold flex items-center">
-        <span class="material-symbols-rounded mr-2">add_circle</span>
-        Filtres et période
-      </h3>
+      {% include "components/card_header.html" with title="Filtres et période" icon="add_circle" %}
       
       <!-- Navigation rapide par mois -->
       <div class="period-nav scrollbar-hide">
@@ -388,31 +348,8 @@
                   {{ incident.title }}
                 </div>
                 <div class="flex gap-2">
-                  {% if incident.status == 'new' %}
-                  <div class="badge badge-info gap-1">
-                    <span class="material-symbols-rounded text-xs scale-75">description</span>
-                    Nouveau
-                  </div>
-                  {% elif incident.status == 'in_progress' %}
-                  <div class="badge badge-warning gap-1">
-                    <span class="material-symbols-rounded text-xs scale-75">run_circle</span>
-                    En cours
-                  </div>
-                  {% elif incident.status == 'resolved' %}
-                  <div class="badge badge-success gap-1">
-                    <span class="material-symbols-rounded text-xs scale-75">task_alt</span>
-                    Résolu
-                  </div>
-                  {% endif %}
-                  
-                  <div class="badge 
-                    {% if incident.severity == 'CRITICAL' %}badge-error
-                    {% elif incident.severity == 'HIGH' %}badge-warning
-                    {% elif incident.severity == 'MEDIUM' %}badge-info
-                    {% else %}badge-ghost{% endif %} gap-1">
-                    <span class="material-symbols-rounded text-xs scale-75">warning</span>
-                    {{ incident.get_severity_display }}
-                  </div>
+                  {% include "components/status_badge.html" with status=incident.status %}
+                  {% include "components/severity_badge.html" with severity=incident.severity %}
                 </div>
               </h3>
               
@@ -458,10 +395,7 @@
                 </div>
                 
                 <div class="flex gap-2">
-                  <a href="{% url 'incident_detail' incident.id %}" class="btn btn-sm btn-ghost">
-                    <span class="material-symbols-rounded">visibility</span>
-                    Détails
-                  </a>
+                  {% include "components/action_buttons.html" with view_url=incident.get_absolute_url view_text="Détails" size="sm" %}
                   <div class="dropdown dropdown-left dropdown-hover">
                     <div tabindex="0" class="btn btn-sm btn-ghost">
                       <span class="material-symbols-rounded">more_horiz</span>
@@ -513,6 +447,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/components.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Scroll animation

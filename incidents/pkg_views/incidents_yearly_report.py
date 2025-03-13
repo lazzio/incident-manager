@@ -110,6 +110,10 @@ def yearly_report(request: object) -> HttpResponse:
         'available_years': available_years,
     }
     
+    context['breadcrumb_items'] = [
+        {'label': 'Report', 'url': '/report/'}
+    ]
+    
     return render(request, 'incidents/incidents_yearly_report.html', context)
 
 

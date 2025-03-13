@@ -33,5 +33,8 @@ class IncidentTimelineView(LoginRequiredMixin, ListView):
         # Get all years that have incidents
         years = Incident.objects.dates('start_date', 'year')
         context['available_years'] = [date.year for date in years]
+        context['breadcrumb_items'] = [
+            {'label': 'Timeline', 'url': '/timeline/'}
+        ]
         
         return context
