@@ -4932,6 +4932,10 @@ html:has(.drawer-toggle:checked) {
   height: 20rem;
 }
 
+.h-\[1em\] {
+  height: 1em;
+}
+
 .h-full {
   height: 100%;
 }
@@ -5016,6 +5020,10 @@ html:has(.drawer-toggle:checked) {
   flex-shrink: 0;
 }
 
+.shrink-0 {
+  flex-shrink: 0;
+}
+
 .flex-grow {
   flex-grow: 1;
 }
@@ -5047,6 +5055,12 @@ html:has(.drawer-toggle:checked) {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.select-none {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .resize {
@@ -5444,6 +5458,11 @@ html:has(.drawer-toggle:checked) {
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
+}
+
+.text-base\/7 {
+  font-size: 1rem;
+  line-height: 1.75rem;
 }
 
 .text-lg {
@@ -6083,6 +6102,11 @@ body {
     padding-bottom: 8rem;
   }
 
+  .sm\:text-5xl {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
   .sm\:text-7xl {
     font-size: 4.5rem;
     line-height: 1;
@@ -6091,6 +6115,11 @@ body {
   .sm\:text-xl\/8 {
     font-size: 1.25rem;
     line-height: 2rem;
+  }
+
+  .sm\:text-sm\/6 {
+    font-size: 0.875rem;
+    line-height: 1.5rem;
   }
 }
 
