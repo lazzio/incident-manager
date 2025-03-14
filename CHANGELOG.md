@@ -1,3 +1,9 @@
+## [0.8.0](https://github.com/lazzio/incident-manager/-/compare/v0.7.0...v0.8.0) (2025-03-14)
+
+### Features
+
+* add profile page ([#32](https://github.com/lazzio/incident-manager/-/issues/32)) ([dfa7af9](https://github.com/lazzio/incident-manager/-/commit/dfa7af942c4a18e655f1a92976a1b7ebbf74c837))
+
 ## [0.7.0](https://github.com/lazzio/incident-manager/-/compare/v0.6.2...v0.7.0) (2025-03-13)
 
 ### Features
