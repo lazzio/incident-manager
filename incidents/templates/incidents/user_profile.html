@@ -1,0 +1,482 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block extra_head %}
+{% include "components/common_styles.html" %}
+<style>
+    .profile-section {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section-header {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .form-section-header:hover {
+        background-color: hsla(var(--b2)/0.7);
+    }
+
+    .avatar-upload {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+    }
+
+    .avatar-edit {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        z-index: 10;
+    }
+
+    .highlight-input {
+        animation: highlight-pulse 2s ease-in-out;
+    }
+
+    @keyframes highlight-pulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 rgba(var(--primary), 0);
+        }
+
+        50% {
+            box-shadow: 0 0 15px rgba(var(--primary), 0.4);
+        }
+    }
+
+    .modal-warning {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        background-color: rgba(var(--warning), 0.1);
+        border-left: 4px solid hsl(var(--warning));
+        border-radius: 0.25rem;
+        margin: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6 fade-in">
+    <!-- En-tête avec breadcrumbs -->
+    <div>
+        {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label':'Mon Profil'}]" %}
+
+        <h1 class="text-3xl font-bold">Mon Profil</h1>
+        <p class="text-muted-foreground mt-1">Gérez vos informations personnelles et vos préférences</p>
+    </div>
+
+    <!-- User info and stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- User profile card -->
+        <div class="card bg-base-100 shadow-lg p-6">
+            <div class="flex flex-col items-center text-center">
+                <!-- User Avatar -->
+                <div class="avatar-upload mb-4">
+                    <div class="avatar placeholder">
+                        <div class="bg-primary text-primary-content rounded-full w-24">
+                            <span class="text-3xl">{{ user.username|slice:":1"|upper }}</span>
+                        </div>
+                    </div>
+                    <div class="avatar-edit">
+                        <button class="btn btn-circle btn-sm btn-primary">
+                            <span class="material-symbols-rounded">edit</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Username and role -->
+                <h2 class="text-xl font-bold">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="text-muted-foreground">
+                    {% if user.is_superuser %}
+                    Administrateur
+                    {% elif user.is_staff %}
+                    Gestionnaire
+                    {% else %}
+                    Utilisateur
+                    {% endif %}
+                </p>
+
+                <div class="divider"></div>
+
+                <!-- Account info -->
+                <div class="w-full text-left">
+                    <div class="mb-2">
+                        <span class="text-muted-foreground">Nom d'utilisateur:</span>
+                        <span class="font-medium">{{ user.username }}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted-foreground">Email:</span>
+                        <span class="font-medium">{{ user.email|default:"Non renseigné" }}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted-foreground">Membre depuis:</span>
+                        <span class="font-medium">{{ user.date_joined|date:"d/m/Y" }}</span>
+                    </div>
+                    <div>
+                        <span class="text-muted-foreground">Dernière connexion:</span>
+                        <span class="font-medium">{{ user.last_login|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User stats -->
+        <div class="lg:col-span-2">
+            <div class="card bg-base-100 shadow-lg mb-6">
+                <div class="card-body">
+                    <h2 class="card-title">Statistiques</h2>
+
+                    <!-- Stats grid -->
+                    <div class="stats stats-vertical lg:stats-horizontal shadow w-full text-center">
+                        <div class="stat">
+                            <div class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ user_stats.created_incidents }}</div>
+                            <div class="stat-title text-base/7">Incidents créés</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ user_stats.assigned_incidents }}</div>
+                            <div class="stat-title text-base/7">Incidents assignés</div>
+                        </div>
+
+                        <div class="stat">
+                            <div class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ user_stats.resolved_assigned }}</div>
+                            <div class="stat-title text-base/7">Résolus</div>
+                        </div>
+                    </div>
+
+                    <!-- Additional stats in circles -->
+                    <div class="flex flex-wrap justify-center gap-4 mt-4">
+                        <div class="stat-card radial-progress text-primary"
+                            style="--value:{{ user_stats.open_assigned|default:0 }}; --size:7rem; --thickness: 0.5rem;"
+                            role="progressbar">
+                            <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                <span class="text-xl font-bold">{{ user_stats.open_assigned }}</span>
+                                <span class="text-xs">En attente</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card radial-progress text-warning"
+                            style="--value:{{ user_stats.in_progress_assigned|default:0 }}; --size:7rem; --thickness: 0.5rem;"
+                            role="progressbar">
+                            <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                <span class="text-xl font-bold">{{ user_stats.in_progress_assigned }}</span>
+                                <span class="text-xs">En cours</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile settings section -->
+            <div class=" card bg-base-100 shadow-lg profile-section mb-6">
+                <div class="card-body p-0">
+                    <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header"
+                        data-section="profile">
+                        {% include "components/card_header.html" with title="Informations personnelles" icon="person" %}
+                        <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
+                    </div>
+
+                    <div class="p-6 space-y-4 form-section-content" id="profile">
+                        <form method="post" class="space-y-4" id="profile-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="profile">
+                            {{ profile_form.confirm_username_change }}
+                            <input type="hidden" id="original_username" value="{{ user.username }}">
+
+                            <!-- Username field -->
+                            <div>
+                                <label class="form-control w-full">
+                                    <div class="label">
+                                        <span class="label-text font-medium">Nom d'utilisateur</span>
+                                    </div>
+                                    {{ profile_form.username }}
+                                    {% if profile_form.username.errors %}
+                                    <div class="label">
+                                        <span class="label-text-alt text-error">{{ profile_form.username.errors }}</span>
+                                    </div>
+                                    {% endif %}
+                                </label>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text font-medium">Prénom</span>
+                                        </div>
+                                        {{ profile_form.first_name }}
+                                        {% if profile_form.first_name.errors %}
+                                        <div class="label">
+                                            <span class="label-text-alt text-error">{{ profile_form.first_name.errors }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <label class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text font-medium">Nom</span>
+                                        </div>
+                                        {{ profile_form.last_name }}
+                                        {% if profile_form.last_name.errors %}
+                                        <div class="label">
+                                            <span class="label-text-alt text-error">{{ profile_form.last_name.errors }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="form-control w-full">
+                                    <div class="label">
+                                        <span class="label-text font-medium">Adresse email</span>
+                                    </div>
+                                    {{ profile_form.email }}
+                                    {% if profile_form.email.errors %}
+                                    <div class="label">
+                                        <span class="label-text-alt text-error">{{ profile_form.email.errors }}</span>
+                                    </div>
+                                    {% endif %}
+                                </label>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="material-symbols-rounded mr-1">save</span>
+                                    Enregistrer les modifications
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Username change confirmation modal -->
+                        <dialog id="username_change_modal" class="modal modal-bottom sm:modal-middle">
+                            <div class="modal-box">
+                                <h3 class="font-bold text-lg">Confirmer le changement de nom d'utilisateur</h3>
+                                <div class="py-4">
+                                    <p>Vous êtes sur le point de changer votre nom d'utilisateur:</p>
+                                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2 my-4">
+                                        <div class="badge badge-lg badge-neutral" id="old_username_display"></div>
+                                        <span class="material-symbols-rounded">arrow_forward</span>
+                                        <div class="badge badge-lg badge-primary" id="new_username_display"></div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-warning">
+                                    <span class="material-symbols-rounded text-warning mr-2">warning</span>
+                                    <p class="text-sm">
+                                        Ce changement affectera votre connexion. Vous devrez utiliser votre nouveau
+                                        nom d'utilisateur lors de votre prochaine connexion.
+                                    </p>
+                                </div>
+
+                                <div class="modal-action">
+                                    <button type="button" id="cancel_username_change" class="btn">Annuler</button>
+                                    <button type="button" id="confirm_username_change" class="btn btn-primary">Je
+                                        confirme</button>
+                                </div>
+                            </div>
+                            <form method="dialog" class="modal-backdrop">
+                                <button>Fermer</button>
+                            </form>
+                        </dialog>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password section -->
+            <div class="card bg-base-100 shadow-lg profile-section">
+                <div class="card-body p-0">
+                    <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header"
+                        data-section="password">
+                        {% include "components/card_header.html" with title="Changer le mot de passe" icon="password" %}
+                        <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
+                    </div>
+
+                    <div class="p-6 space-y-4 form-section-content" id="password">
+                        <form method="post" class="space-y-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="password">
+
+                            <div class="form-control w-full">
+                                <div class="label">
+                                    <span class="label-text font-medium">Mot de passe actuel</span>
+                                </div>
+                                {{ password_form.old_password }}
+                                {% if password_form.old_password.errors %}
+                                <div class="label">
+                                    <span class="label-text-alt text-error">{{ password_form.old_password.errors }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-control w-full">
+                                <div class="label">
+                                    <span class="label-text font-medium">Nouveau mot de passe</span>
+                                </div>
+                                {{ password_form.new_password1 }}
+                                {% if password_form.new_password1.errors %}
+                                <div class="label">
+                                    <span class="label-text-alt text-error">{{ password_form.new_password1.errors }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="label">
+                                    <span class="label-text-alt text-muted-foreground">{{ password_form.new_password1.help_text }}</span>
+                                </div>
+                            </div>
+
+                            <div class="form-control w-full">
+                                <div class="label">
+                                    <span class="label-text font-medium">Confirmer le nouveau mot de passe</span>
+                                </div>
+                                {{ password_form.new_password2 }}
+                                {% if password_form.new_password2.errors %}
+                                <div class="label">
+                                    <span class="label-text-alt text-error">{{ password_form.new_password2.errors }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="material-symbols-rounded mr-1">lock_reset</span>
+                                    Changer le mot de passe
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Section toggling
+        document.querySelectorAll('.form-section-header').forEach(header => {
+            header.addEventListener('click', function () {
+                const section = this.closest('.profile-section');
+                section.classList.toggle('collapsed');
+
+                // Toggle content visibility
+                const content = this.nextElementSibling;
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        });
+
+        // Apply styles to password form elements
+        document.querySelectorAll('#password input').forEach(input => {
+            input.classList.add('input', 'input-bordered', 'w-full');
+        });
+
+        // Username change confirmation handling
+        const usernameInput = document.querySelector('input[name="username"]');
+        const originalUsername = document.getElementById('original_username').value;
+        const confirmField = document.querySelector('input[name="confirm_username_change"]');
+        const usernameModal = document.getElementById('username_change_modal');
+
+        if (usernameInput && usernameModal) {
+            let lastValue = usernameInput.value;
+
+            // Listen for changes to the username field
+            usernameInput.addEventListener('change', function () {
+                const newUsername = this.value.trim();
+
+                // If username has changed, show confirmation modal
+                if (newUsername !== originalUsername && newUsername !== '') {
+                    // Update the modal display
+                    document.getElementById('old_username_display').textContent = originalUsername;
+                    document.getElementById('new_username_display').textContent = newUsername;
+
+                    // Show the modal
+                    usernameModal.showModal();
+                }
+            });
+
+            // Handle confirmation button click
+            document.getElementById('confirm_username_change').addEventListener('click', function () {
+                // Set the confirmation field to true
+                confirmField.value = 'true';
+
+                // Add visual feedback
+                usernameInput.classList.add('highlight-input');
+
+                // Close the modal
+                usernameModal.close();
+            });
+
+            // Handle cancel button click
+            document.getElementById('cancel_username_change').addEventListener('click', function () {
+                // Reset the username field to original value
+                usernameInput.value = originalUsername;
+
+                // Close the modal
+                usernameModal.close();
+            });
+
+            // Listen for form submission
+            document.getElementById('profile-form').addEventListener('submit', function (e) {
+                const newUsername = usernameInput.value.trim();
+
+                // If username has changed but not confirmed, show modal and prevent submission
+                if (newUsername !== originalUsername && confirmField.value !== 'true') {
+                    e.preventDefault();
+
+                    // Update the modal display
+                    document.getElementById('old_username_display').textContent = originalUsername;
+                    document.getElementById('new_username_display').textContent = newUsername;
+
+                    // Show the modal
+                    usernameModal.showModal();
+                }
+            });
+        }
+
+        // Recent activities tab handling
+        const tabCreated = document.getElementById('tab-created');
+        const tabAssigned = document.getElementById('tab-assigned');
+
+        if (tabCreated && tabAssigned) {
+            const contentCreated = document.getElementById('content-created');
+            const contentAssigned = document.getElementById('content-assigned');
+
+            tabCreated.addEventListener('click', function () {
+                tabCreated.classList.add('tab-active');
+                tabAssigned.classList.remove('tab-active');
+                contentCreated.classList.remove('hidden');
+                contentAssigned.classList.add('hidden');
+            });
+
+            tabAssigned.addEventListener('click', function () {
+                tabAssigned.classList.add('tab-active');
+                tabCreated.classList.remove('tab-active');
+                contentAssigned.classList.remove('hidden');
+                contentCreated.classList.add('hidden');
+            });
+        }
+    });
+</script>
+{% endblock %}
