@@ -8,6 +8,7 @@ from .pkg_views import (
     incidents_timeline,
     incidents_dashboard,
     incidents_yearly_report,
+    user_views,
 )
 
 urlpatterns = [
@@ -23,4 +24,5 @@ urlpatterns = [
     path('report/', incidents_yearly_report.yearly_report, name='yearly_report'),
     path('report/<int:year>/export/', incidents_yearly_report.export_yearly_report, name='export_yearly_report'),
     path('api/chart-data/', incidents_yearly_report.incident_chart_data, name='incident_chart_data'),
+    path('profile/', user_views.profile, name='user_profile'),
 ]
