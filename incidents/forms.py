@@ -79,6 +79,10 @@ class IncidentLinkForm(forms.ModelForm):
     class Meta:
         model = IncidentLink
         fields = ['url', 'title']
+        widgets = {
+            'url': forms.URLInput(attrs={'class': 'form-control input input-bordered'}),
+            'title': forms.TextInput(attrs={'class': 'form-control input input-bordered'}),
+        }
 
 
 class IncidentUpdateForm(forms.ModelForm):
