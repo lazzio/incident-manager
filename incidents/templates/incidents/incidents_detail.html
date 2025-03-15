@@ -4,300 +4,330 @@
 {% block title %}Incident #{{ incident.id }} - {{ incident.title }}{% endblock %}
 
 {% block extra_head %}
-{% include "components/common_styles.html" %}
 {% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <!-- En-tête avec breadcrumbs -->
-    <div>
-        {% if breadcrumb_items %}
-            {% include "components/breadcrumbs.html" with items=breadcrumb_items %}
-        {% else %}
-            {% url 'dashboard' as dashboard_url %}
-            {% url 'incident_list' as incident_list_url %}
-            {% include "components/breadcrumbs.html" with items=items|default:"[{'label': 'Dashboard', 'url': dashboard_url}, {'label': 'Incidents', 'url': incident_list_url}, {'label': 'Incident #"|add:incident.id|stringformat:"s"|add:"'}]" %}
-        {% endif %}
-        
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h1 class="text-3xl font-bold">
-                {{ incident.title }}
-            </h1>
-            <div class="flex gap-2">
-                {% url 'incident_update' incident.id as incident_edit_url %}
-                {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit" primary=True %}
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-circle">
-                        <span class="material-symbols-rounded">
-                            more_vert
-                        </span>
-                    </label>
-                    <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-                        <li><a href="#comments"><span class="material-symbols-rounded mr-2">comment</span> Comments</a></li>
-                        <li><a href="#files"><span class="material-symbols-rounded mr-2">attach_file</span> Files</a></li>
-                        <li><a href="{% url 'incident_delete' incident.id %}"><span class="material-symbols-rounded mr-2">delete</span> Delete</a></li>
-                    </ul>
-                </div>
-            </div>
+  <!-- En-tête avec breadcrumbs -->
+  <div>
+    {% if breadcrumb_items %}
+    {% include "components/breadcrumbs.html" with items=breadcrumb_items %}
+    {% else %}
+    {% url 'dashboard' as dashboard_url %}
+    {% url 'incident_list' as incident_list_url %}
+    {% include "components/breadcrumbs.html" with items=items|default:"[{'label': 'Dashboard', 'url': dashboard_url}, {'label': 'Incidents', 'url': incident_list_url}, {'label': 'Incident #"|add:incident.id|stringformat:"s"|add:"'}]" %}
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h1 class="text-3xl font-bold">
+        {{ incident.title }}
+      </h1>
+      <div class="flex gap-2">
+        {% url 'incident_update' incident.id as incident_edit_url %}
+        {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit" primary=True size="md" %}
+        <div class="dropdown dropdown-end">
+          <label tabindex="0" class="btn btn-ghost btn-circle">
+            <span class="material-symbols-rounded">
+              more_vert
+            </span>
+          </label>
+          <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+            <li><a href="#comments"><span class="material-symbols-rounded mr-2">comment</span> Comments</a></li>
+            <li><a href="#files"><span class="material-symbols-rounded mr-2">attach_file</span> Files</a></li>
+            <li><a href="{% url 'incident_delete' incident.id %}"><span
+                  class="material-symbols-rounded mr-2">delete</span> Delete</a></li>
+          </ul>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info badge -->
+  <div class="flex flex-wrap gap-2">
+    {% include "components/status_badge.html" with status=incident.status new_text="New" in_progress_text="In Progress" resolved_text="Resolved" large=True %}
+    {% include "components/severity_badge.html" with severity=incident.severity low_text="Low Severity" medium_text="Medium Severity" high_text="High Severity" critical_text="Critical Severity" large=True %}
+
+    <div class="badge badge-lg badge-outline gap-1">
+      <span class="material-symbols-rounded text-xs scale-75">today</span> {{ incident.start_date|date:"d/m/Y H:i" }}
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Colonne principale -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Description -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Description" icon="description" %}
+          <div class="divider my-2"></div>
+          <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
+            {{ incident.details }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Resolution Process -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Resolution Process" icon="construction" %}
+          <div class="divider my-2"></div>
+          <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
+            {{ incident.resolution_process }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Impact -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Impact" icon="balance" %}
+          <div class="divider my-2"></div>
+          <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
+            {{ incident.impact }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Files -->
+      <div id="files" class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Files" icon="attach_file" %}
+          <div class="divider my-2"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for file in incident_files %}
+            <div class="card bg-base-200">
+              <div class="card-body p-4">
+                {% if file.is_image %}
+                <figure
+                  class="h-32 flex items-center justify-center bg-base-300 rounded-md mb-3 overflow-hidden cursor-pointer"
+                  onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')">
+                  <img src="{{ file.file.url }}" alt="{{ file.filename }}" class="h-full w-full object-contain">
+                </figure>
+                {% else %}
+                <figure class="h-32 flex items-center justify-center bg-base-300 rounded-md mb-3">
+                  <i class="fas {{ file.file_icon }} fa-3x opacity-50"></i>
+                </figure>
+                {% endif %}
+
+                <h3 class="card-title text-sm line-clamp-2" title="{{ file.filename }}">
+                  {{ file.filename }}
+                </h3>
+
+                <div class="text-xs opacity-70 flex justify-between">
+                  <span>{{ file.uploaded_at|date:"d/m/Y H:i" }}</span>
+                  <span>{{ file.uploaded_by.username }}</span>
+                </div>
+
+                <div class="card-actions justify-end mt-3">
+                  <a href="{{ file.file.url }}" target="_blank" class="btn btn-xs btn-primary">
+                    <span class="material-symbols-rounded mr-1">download</span>
+                    Download
+                  </a>
+                  {% if file.is_image %}
+                  <button onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')"
+                    class="btn btn-xs btn-outline">
+                    <span class="material-symbols-rounded mr-1">visibility</span>
+                    Preview
+                  </button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-8 flex flex-col items-center">
+              <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">upload_file</span>
+              <p class="opacity-50">No files attached to this incident.</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments -->
+      <div id="comments" class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Comments" icon="comment" badge=comments|length %}
+          <div class="divider my-2"></div>
+
+          <div class="space-y-4 mb-6">
+            {% for comment in comments %}
+            <div class="chat {% if comment.created_by == request.user %}chat-end{% else %}chat-start{% endif %}">
+              <div class="chat-image avatar placeholder">
+                <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
+                  <span>{{ comment.created_by.username|slice:":1"|upper }}</span>
+                </div>
+              </div>
+              <div class="chat-header">
+                {{ comment.created_by.get_full_name|default:comment.created_by.username }}
+                <time class="text-xs opacity-50">{{ comment.created_at|date:"d/m/Y H:i" }}</time>
+              </div>
+              <div class="chat-bubble {% if comment.created_by == request.user %}chat-bubble-primary{% endif %}">{{ comment.text }}</div>
+            </div>
+            {% empty %}
+            <div class="flex flex-col items-center py-8">
+              <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">comment</span>
+              <p class="opacity-50">No comments yet. Be the first to comment on this incident.</p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Formulaire de commentaire -->
+          <div class="border-t border-base-300 pt-4">
+            <h3 class="font-medium mb-3">Add a comment</h3>
+            <form method="post" action="{% url 'add_comment' incident.id %}" class="space-y-4">
+              {% csrf_token %}
+              <div class="form-control">
+                <textarea name="text" rows="3" class="textarea textarea-bordered w-full"
+                  placeholder="Write your comment here..." required></textarea>
+              </div>
+              <div class="flex justify-end">
+                <button type="submit" class="btn btn-primary">
+                  <span class="material-symbols-rounded mr-2">send</span>
+                  Send
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Info badge -->
-    <div class="flex flex-wrap gap-2">
-        {% include "components/status_badge.html" with status=incident.status new_text="New" in_progress_text="In Progress" resolved_text="Resolved" large=True %}
-        {% include "components/severity_badge.html" with severity=incident.severity low_text="Low Severity" medium_text="Medium Severity" high_text="High Severity" critical_text="Critical Severity" large=True %}
-        
-        <div class="badge badge-lg badge-outline gap-1">
-            <span class="material-symbols-rounded text-xs scale-75">today</span> {{ incident.start_date|date:"d/m/Y H:i" }}
-        </div>
-    </div>
+    <!-- Colonne latérale -->
+    <div class="space-y-6">
+      <!-- Info générales -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="General Informations" icon="info" %}
+          <div class="divider my-2"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Colonne principale -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Description -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Description" icon="description" %}
-                    <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
-                        {{ incident.details }}
+          <div class="space-y-4 mt-2">
+            <!-- Created by -->
+            <div class="grid grid-cols-3 items-center gap-2">
+              <div class="col-span-1">
+                <p class="text-sm font-medium text-base-content/70">Created by:</p>
+              </div>
+              <div class="col-span-2">
+                <div class="flex items-center">
+                  <div class="avatar placeholder mr-2">
+                    <div class="bg-neutral text-neutral-content rounded-full w-8">
+                      <span>{{ incident.created_by.username|slice:":1"|upper }}</span>
                     </div>
+                  </div>
+                  <span>{{ incident.created_by.username|default:user.username }} ({{ incident.created_by.get_full_name|default:incident.created_by.username }})</span>
                 </div>
+              </div>
             </div>
-            
-            <!-- Resolution Process -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Resolution Process" icon="construction" %}
-                    <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
-                        {{ incident.resolution_process }}
-                    </div>
-                </div>
+
+
+            <!-- Assigned to -->
+            <div class="grid grid-cols-3 items-center gap-2">
+              <div class="col-span-1">
+                <p class="text-sm font-medium text-base-content/70">Assigned to:</p>
+              </div>
+              <div class="col-span-2">
+                <span class="badge badge-outline badge-warning gap-1">
+                  {% if incident.assigned_to %}
+                  <span class="material-symbols-rounded">person</span>
+                  {{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}
+                  {% else %}
+                  <span class="material-symbols-rounded">person</span>
+                  Not assigned
+                  {% endif %}
+                </span>
+              </div>
             </div>
-            
-            <!-- Impact -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Impact" icon="balance" %}
-                    <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
-                        {{ incident.impact }}
-                    </div>
-                </div>
+
+            <!-- Category -->
+            <div class="grid grid-cols-3 items-center gap-2">
+              <div class="col-span-1">
+                <p class="text-sm font-medium text-base-content/70">Category:</p>
+              </div>
+              <div class="col-span-2">
+                <span class="badge badge-primary">{{ incident.get_category_display }}</span>
+              </div>
             </div>
-            
-            <!-- Files -->
-            <div id="files" class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Files" icon="attach_file" %}
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {% for file in incident_files %}
-                        <div class="card bg-base-200">
-                            <div class="card-body p-4">
-                                {% if file.is_image %}
-                                <figure class="h-32 flex items-center justify-center bg-base-300 rounded-md mb-3 overflow-hidden cursor-pointer"
-                                       onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')">
-                                    <img src="{{ file.file.url }}" alt="{{ file.filename }}" 
-                                         class="h-full w-full object-contain">
-                                </figure>
-                                {% else %}
-                                <figure class="h-32 flex items-center justify-center bg-base-300 rounded-md mb-3">
-                                    <i class="fas {{ file.file_icon }} fa-3x opacity-50"></i>
-                                </figure>
-                                {% endif %}
-                                
-                                <h3 class="card-title text-sm line-clamp-2" title="{{ file.filename }}">
-                                    {{ file.filename }}
-                                </h3>
-                                
-                                <div class="text-xs opacity-70 flex justify-between">
-                                    <span>{{ file.uploaded_at|date:"d/m/Y H:i" }}</span>
-                                    <span>{{ file.uploaded_by.username }}</span>
-                                </div>
-                                
-                                <div class="card-actions justify-end mt-3">
-                                    <a href="{{ file.file.url }}" target="_blank" class="btn btn-xs btn-primary">
-                                        <span class="material-symbols-rounded mr-1">download</span>
-                                        Download
-                                    </a>
-                                    {% if file.is_image %}
-                                    <button onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')"
-                                            class="btn btn-xs btn-outline">
-                                            <span class="material-symbols-rounded mr-1">visibility</span>
-                                        Preview
-                                    </button>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="col-span-full py-8 flex flex-col items-center">
-                            <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">upload_file</span>
-                            <p class="opacity-50">No files attached to this incident.</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
+
+            <!-- Duration -->
+            <div class="grid grid-cols-3 items-center gap-2">
+              <div class="col-span-1">
+                <p class="text-sm font-medium text-base-content/70">Duration:</p>
+              </div>
+              <div class="col-span-2">
+                <span class="badge badge-success gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {% if incident.duration %}
+                  {{ incident.duration }}
+                  {% elif incident.start_date and incident.end_date %}
+                  {{ incident.start_date|timesince:incident.end_date }}
+                  {% elif incident.start_date %}
+                  Ongoing
+                  {% else %}
+                  Unknown
+                  {% endif %}
+                </span>
+              </div>
             </div>
-            
-            <!-- Comments -->
-            <div id="comments" class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Comments" icon="comment" badge=comments|length %}
-                    
-                    <div class="space-y-4 mb-6">
-                        {% for comment in comments %}
-                        <div class="chat {% if comment.created_by == request.user %}chat-end{% else %}chat-start{% endif %}">
-                            <div class="chat-image avatar placeholder">
-                                <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
-                                    <span>{{ comment.created_by.username|slice:":1"|upper }}</span>
-                                </div>
-                            </div>
-                            <div class="chat-header">
-                                {{ comment.created_by.get_full_name|default:comment.created_by.username }}
-                                <time class="text-xs opacity-50">{{ comment.created_at|date:"d/m/Y H:i" }}</time>
-                            </div>
-                            <div class="chat-bubble {% if comment.created_by == request.user %}chat-bubble-primary{% endif %}">{{ comment.text }}</div>
-                        </div>
-                        {% empty %}
-                        <div class="flex flex-col items-center py-8">
-                            <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">comment</span>
-                            <p class="opacity-50">No comments yet. Be the first to comment on this incident.</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <!-- Formulaire de commentaire -->
-                    <div class="border-t border-base-300 pt-4">
-                        <h3 class="font-medium mb-3">Add a comment</h3>
-                        <form method="post" action="{% url 'add_comment' incident.id %}" class="space-y-4">
-                            {% csrf_token %}
-                            <div class="form-control">
-                                <textarea name="text" rows="3" class="textarea textarea-bordered w-full" 
-                                          placeholder="Write your comment here..." required></textarea>
-                            </div>
-                            <div class="flex justify-end">
-                                <button type="submit" class="btn btn-primary">
-                                    <span class="material-symbols-rounded mr-2">send</span>
-                                    Send
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+
+            <div class="divider my-4"></div>
+
+            <!-- Timestamps Footer -->
+            <div class="flex flex-col space-y-2 text-sm text-base-content/70">
+              <div class="flex justify-between">
+                <span>Created at:</span>
+                <time class="font-medium">{{ incident.created_at|date:"d/m/Y H:i" }}</time>
+              </div>
+              <div class="flex justify-between">
+                <span>Last updated:</span>
+                <time class="font-medium">{{ incident.updated_at|date:"d/m/Y H:i" }}</time>
+              </div>
             </div>
+          </div>
         </div>
-        
-        <!-- Colonne latérale -->
-        <div class="space-y-6">
-            <!-- Info générales -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="General Information" icon="info" %}
-                    
-                    <div class="space-y-4 mt-2">
-                        <div>
-                            <div class="text-sm font-medium opacity-70 mb-1">Created by:</div>
-                            <div class="flex items-center">
-                                <div class="avatar placeholder mr-2">
-                                    <div class="bg-neutral-focus text-neutral-content rounded-full w-8">
-                                        <span>{{ incident.created_by.username|slice:":1"|upper }}</span>
-                                    </div>
-                                </div>
-                                <span>{{ incident.created_by.get_full_name|default:incident.created_by.username }}</span>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm font-medium opacity-70 mb-1">Assigned to:</div>
-                            <div>
-                                {% if incident.assigned_to %}
-                                <div class="flex items-center">
-                                    <div class="avatar placeholder mr-2">
-                                        <div class="bg-primary-focus text-primary-content rounded-full w-8">
-                                            <span>{{ incident.assigned_to.username|slice:":1"|upper }}</span>
-                                        </div>
-                                    </div>
-                                    <span>{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}</span>
-                                </div>
-                                {% else %}
-                                <span class="opacity-50">Not assigned</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm font-medium opacity-70 mb-1">Category:</div>
-                            <div>{{ incident.get_category_display }}</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm font-medium opacity-70 mb-1">Duration:</div>
-                            <div>
-                                {% if incident.duration %}
-                                {{ incident.duration }}
-                                {% elif incident.start_date and incident.end_date %}
-                                {{ incident.start_date|timesince:incident.end_date }}
-                                {% elif incident.start_date %}
-                                <span class="opacity-50">Ongoing</span>
-                                {% else %}
-                                <span class="opacity-50">Unknown</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm font-medium opacity-70 mb-1">Created at:</div>
-                            <div>{{ incident.created_at|date:"d/m/Y H:i" }}</div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-sm font-medium opacity-70 mb-1">Last updated:</div>
-                            <div>{{ incident.updated_at|date:"d/m/Y H:i" }}</div>
-                        </div>
-                    </div>
-                </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Statistics" icon="pie_chart" %}
+
+          <div class="stats stats-vertical lg:stats-horizontal shadow w-full text-center">
+            <div class="stat">
+              <div class="stat-title">Files</div>
+              <div class="stat-value">{{ incident_files|length }}</div>
             </div>
-            
-            <!-- Statistiques -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Statistics" icon="pie_chart" %}
-                    
-                    <div class="stats stats-vertical shadow w-full">
-                        <div class="stat">
-                            <div class="stat-title">Files</div>
-                            <div class="stat-value">{{ incident_files|length }}</div>
-                        </div>
-                        
-                        <div class="stat">
-                            <div class="stat-title">Comments</div>
-                            <div class="stat-value">{{ comments|length }}</div>
-                        </div>
-                        
-                        <div class="stat">
-                            <div class="stat-title">Updates</div>
-                            <div class="stat-value">{{ updates|length }}</div>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="stat">
+              <div class="stat-title">Comments</div>
+              <div class="stat-value">{{ comments|length }}</div>
             </div>
-            
-            <!-- Actions -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title="Actions" icon="bolt" %}
-                    
-                    <div class="space-y-2 mt-2">
-                        {% url 'incident_update' incident.id as incident_edit_url %}
-                        {% url 'incident_delete' incident.id as incident_delete_url %}
-                        {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit incident" primary=True size="" %}
-                        {% include "components/action_buttons.html" with delete_url=incident_delete_url delete_text="Delete incident" delete_style="btn-error" size="" %}
-                    </div>
-                </div>
+
+            <div class="stat">
+              <div class="stat-title">Updates</div>
+              <div class="stat-value">{{ updates|length }}</div>
             </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title="Actions" icon="bolt" %}
+
+          <div class="space-y-2 mt-2">
+            {% url 'incident_update' incident.id as incident_edit_url %}
+            {% url 'incident_delete' incident.id as incident_delete_url %}
+            {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit incident" primary=True size="" %}
+            {% include "components/action_buttons.html" with delete_url=incident_delete_url delete_text="Delete incident" delete_style="btn-error" size="" %}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 {% include "components/modal.html" with id="imageModal" title="Aperçu du fichier" show_download=True %}
@@ -313,33 +343,33 @@
     copyText.select();
     copyText.setSelectionRange(0, 99999);
     document.execCommand("copy");
-    
+
     const copyBtn = document.getElementById("copyBtn");
     const originalImg = copyBtn.innerHTML;
-    
+
     // Change button to confirm copy
     copyBtn.innerHTML = `<span class="material-symbols-rounded">check</span>`;
-    
+
     // Show toast notification
-    toast.success("Lien copié dans le presse-papier !");
-    
+    toast.success("Link copied !");
+
     // Reset button after 2 seconds
     setTimeout(() => {
       copyBtn.innerHTML = originalImg;
     }, 2000);
   }
-  
+
   // Handle comment editing and deletion
   document.querySelectorAll('.edit-comment').forEach(btn => {
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', function (e) {
       e.preventDefault();
       const commentId = this.getAttribute('data-id');
-      
+
       // Find the comment container
       const commentContainer = this.closest('.bg-base-200');
       const commentTextElement = commentContainer.querySelector('.prose');
       const originalText = commentTextElement.textContent.trim();
-      
+
       // Create edit form
       const editForm = document.createElement('div');
       editForm.className = 'mt-3';
@@ -353,26 +383,26 @@
           </button>
         </div>
       `;
-      
+
       // Replace comment text with edit form
       commentTextElement.style.display = 'none';
       commentContainer.appendChild(editForm);
-      
+
       // Handle cancel button
-      editForm.querySelector('.cancel-edit').addEventListener('click', function() {
+      editForm.querySelector('.cancel-edit').addEventListener('click', function () {
         commentTextElement.style.display = '';
         editForm.remove();
       });
-      
+
       // Handle save button
-      editForm.querySelector('.save-edit').addEventListener('click', function() {
+      editForm.querySelector('.save-edit').addEventListener('click', function () {
         const newText = editForm.querySelector('textarea').value.trim();
-        
+
         if (newText !== originalText) {
           // Show loading state
           this.classList.add('loading');
           this.disabled = true;
-          
+
           // Send update to server
           fetch(`/incidents/comment/${commentId}/update/`, {
             method: 'POST',
@@ -382,23 +412,23 @@
             },
             body: `text=${encodeURIComponent(newText)}`
           })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Update comment text
-              commentTextElement.innerHTML = newText.replace(/\n/g, '<br>');
-              commentTextElement.style.display = '';
-              editForm.remove();
-              
-              toast.success('Commentaire mis à jour avec succès');
-            } else {
-              toast.error('Erreur lors de la mise à jour du commentaire');
-            }
-          })
-          .catch(error => {
-            toast.error('Une erreur est survenue');
-            console.error('Error:', error);
-          });
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Update comment text
+                commentTextElement.innerHTML = newText.replace(/\n/g, '<br>');
+                commentTextElement.style.display = '';
+                editForm.remove();
+
+                toast.success('Comment successfully updated');
+              } else {
+                toast.error('Error updating comment');
+              }
+            })
+            .catch(error => {
+              toast.error('An error occurred');
+              console.error('Error:', error);
+            });
         } else {
           // No changes, just cancel
           commentTextElement.style.display = '';
@@ -407,13 +437,13 @@
       });
     });
   });
-  
+
   document.querySelectorAll('.delete-comment').forEach(btn => {
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', function (e) {
       e.preventDefault();
       const commentId = this.getAttribute('data-id');
-      
-      if (confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')) {
+
+      if (confirm('Are you sure you want to delete this comment?')) {
         // Send delete request to server
         fetch(`/incidents/comment/${commentId}/delete/`, {
           method: 'POST',
@@ -421,32 +451,32 @@
             'X-CSRFToken': getCookie('csrftoken'),
           }
         })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Remove comment from DOM
-            this.closest('.bg-base-200').remove();
-            toast.success('Commentaire supprimé avec succès');
-          } else {
-            toast.error('Erreur lors de la suppression du commentaire');
-          }
-        })
-        .catch(error => {
-          toast.error('Une erreur est survenue');
-          console.error('Error:', error);
-        });
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Remove comment from DOM
+              this.closest('.bg-base-200').remove();
+              toast.success('Comment successfully deleted');
+            } else {
+              toast.error('Error deleting comment');
+            }
+          })
+          .catch(error => {
+            toast.error('An error occurred');
+            console.error('Error:', error);
+          });
       }
     });
   });
-  
+
   // Handle the self-assignment button
-  document.querySelector('[href="#assign-to-me"]')?.addEventListener('click', function(e) {
+  document.querySelector('[href="#assign-to-me"]')?.addEventListener('click', function (e) {
     e.preventDefault();
-    
+
     // Show loading state
     this.classList.add('loading');
     this.disabled = true;
-    
+
     // Send assignment request to server
     fetch(`/incidents/{{ incident.id }}/assign/`, {
       method: 'POST',
@@ -454,25 +484,25 @@
         'X-CSRFToken': getCookie('csrftoken'),
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Reload page to show updated assignment
-        window.location.reload();
-      } else {
-        toast.error(data.message || 'Erreur lors de l\'assignation');
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Reload page to show updated assignment
+          window.location.reload();
+        } else {
+          toast.error(data.message || 'Error assigning incident');
+          this.classList.remove('loading');
+          this.disabled = false;
+        }
+      })
+      .catch(error => {
+        toast.error('An error occurred');
+        console.error('Error:', error);
         this.classList.remove('loading');
         this.disabled = false;
-      }
-    })
-    .catch(error => {
-      toast.error('Une erreur est survenue');
-      console.error('Error:', error);
-      this.classList.remove('loading');
-      this.disabled = false;
-    });
+      });
   });
-  
+
   // Helper to get CSRF token from cookies
   function getCookie(name) {
     let cookieValue = null;
@@ -488,26 +518,26 @@
     }
     return cookieValue;
   }
-  
+
   // Show success message if redirected with query param
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
-    
+
     if (urlParams.get('assignment_success') === 'true') {
-      toast.success('Incident assigné avec succès');
-      
+      toast.success('Incident assigned successfully');
+
       // Remove query param from URL without reloading page
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
     }
-    
+
     if (urlParams.get('comment_added') === 'true') {
-      toast.success('Commentaire ajouté avec succès');
+      toast.success('Comment added successfully');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-    
+
     if (urlParams.get('updated') === 'true') {
-      toast.success('Incident mis à jour avec succès');
+      toast.success('Incident updated successfully');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   });
