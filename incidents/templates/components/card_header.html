@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="card-header flex justify-between items-center">
     <h2 class="card-title">
         {% if icon %}<span class="material-symbols-rounded mr-2">{{ icon }}</span>{% endif %}
@@ -6,7 +7,7 @@
     </h2>
     {% if action_url %}
     <a href="{{ action_url }}" class="btn btn-ghost btn-xs">
-        {{ action_label|default:"Voir tous" }}
+        {{ action_label|default:_("see all") }}
         <span class="material-symbols-rounded ml-1">arrow_forward</span>
     </a>
     {% endif %}

@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="stats-card card bg-base-100 shadow-lg">
     <div class="card-body p-4">
         <div class="flex justify-between items-start">
@@ -6,7 +7,7 @@
                 <h2 class="card-title text-3xl">{{ value }}</h2>
                 {% if trend %}
                 <span class="text-sm {% if trend_positive %}text-success{% else %}text-error{% endif %}">
-                    {{ trend }} <span class="text-muted-foreground">{{ trend_label|default:"vs mois dernier" }}</span>
+                    {{ trend }} <span class="text-muted-foreground">{{ trend_label|default:_("vs last month") }}</span>
                 </span>
                 {% endif %}
             </div>

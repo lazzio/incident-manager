@@ -1,10 +1,11 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en" data-theme="mytheme">
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Incident Managert{% endblock %}</title>
+    <title>{% block title %}{% trans "Incident Manager" %}{% endblock %}</title>
     
     <!-- Google Fonts - Roboto Flex -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -177,7 +178,7 @@
                                 <span class="material-symbols-rounded mr-2">
                                     library_add
                                 </span>
-                                <span class="sidebar-text">Nouvel incident</span>
+                                <span class="sidebar-text">{% trans "Nouvel incident" %}</span>
                             </a>
                         </div>
                     </div>

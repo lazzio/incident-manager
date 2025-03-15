@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="relative flex-grow">
     <form method="get" class="w-full" {% if form_id %}id="{{ form_id }}"{% endif %}>
         <!-- Preserve existing query parameters -->
@@ -24,7 +25,7 @@
         </div>
         
         {% if show_submit %}
-        <button type="submit" class="hidden">Rechercher</button>
+        <button type="submit" class="hidden">{% trans "search" %}</button>
         {% endif %}
     </form>
 </div>

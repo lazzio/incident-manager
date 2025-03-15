@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block title %}Incident #{{ incident.id }} - {{ incident.title }}{% endblock %}
@@ -32,10 +33,10 @@
             </span>
           </label>
           <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-            <li><a href="#comments"><span class="material-symbols-rounded mr-2">comment</span> Comments</a></li>
-            <li><a href="#files"><span class="material-symbols-rounded mr-2">attach_file</span> Files</a></li>
+            <li><a href="#comments"><span class="material-symbols-rounded mr-2">comment</span> {% trans "comments" %}</a></li>
+            <li><a href="#files"><span class="material-symbols-rounded mr-2">attach_file</span> {% trans "files" %}</a></li>
             <li><a href="{% url 'incident_delete' incident.id %}"><span
-                  class="material-symbols-rounded mr-2">delete</span> Delete</a></li>
+                  class="material-symbols-rounded mr-2">delete</span>{% trans "delete" %}</a></li>
           </ul>
         </div>
       </div>
@@ -121,13 +122,13 @@
                 <div class="card-actions justify-end mt-3">
                   <a href="{{ file.file.url }}" target="_blank" class="btn btn-xs btn-primary">
                     <span class="material-symbols-rounded mr-1">download</span>
-                    Download
+                    {% trans "download" %}
                   </a>
                   {% if file.is_image %}
                   <button onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')"
                     class="btn btn-xs btn-outline">
                     <span class="material-symbols-rounded mr-1">visibility</span>
-                    Preview
+                    {% trans "preview" %}
                   </button>
                   {% endif %}
                 </div>
@@ -136,7 +137,7 @@
             {% empty %}
             <div class="col-span-full py-8 flex flex-col items-center">
               <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">upload_file</span>
-              <p class="opacity-50">No files attached to this incident.</p>
+              <p class="opacity-50">{% trans "no files attached to this incident." %}</p>
             </div>
             {% endfor %}
           </div>
@@ -166,14 +167,14 @@
             {% empty %}
             <div class="flex flex-col items-center py-8">
               <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">comment</span>
-              <p class="opacity-50">No comments yet. Be the first to comment on this incident.</p>
+              <p class="opacity-50">{% trans "no comments yet. Be the first to comment on this incident." %}</p>
             </div>
             {% endfor %}
           </div>
 
           <!-- Formulaire de commentaire -->
           <div class="border-t border-base-300 pt-4">
-            <h3 class="font-medium mb-3">Add a comment</h3>
+            <h3 class="font-medium mb-3">{% trans "add a comment" %}</h3>
             <form method="post" action="{% url 'add_comment' incident.id %}" class="space-y-4">
               {% csrf_token %}
               <div class="form-control">
@@ -183,7 +184,7 @@
               <div class="flex justify-end">
                 <button type="submit" class="btn btn-primary">
                   <span class="material-symbols-rounded mr-2">send</span>
-                  Send
+                  {% trans "send" %}
                 </button>
               </div>
             </form>
@@ -204,7 +205,7 @@
             <!-- Created by -->
             <div class="grid grid-cols-3 items-center gap-2">
               <div class="col-span-1">
-                <p class="text-sm font-medium text-base-content/70">Created by:</p>
+                <p class="text-sm font-medium text-base-content/70">{% trans "created by" %} :</p>
               </div>
               <div class="col-span-2">
                 <div class="flex items-center">
@@ -222,7 +223,7 @@
             <!-- Assigned to -->
             <div class="grid grid-cols-3 items-center gap-2">
               <div class="col-span-1">
-                <p class="text-sm font-medium text-base-content/70">Assigned to:</p>
+                <p class="text-sm font-medium text-base-content/70">{% trans "assigned to" %} :</p>
               </div>
               <div class="col-span-2">
                 <span class="badge badge-outline badge-warning gap-1">
@@ -231,7 +232,7 @@
                   {{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}
                   {% else %}
                   <span class="material-symbols-rounded">person</span>
-                  Not assigned
+                  {% trans "not assigned" %}
                   {% endif %}
                 </span>
               </div>
@@ -240,7 +241,7 @@
             <!-- Category -->
             <div class="grid grid-cols-3 items-center gap-2">
               <div class="col-span-1">
-                <p class="text-sm font-medium text-base-content/70">Category:</p>
+                <p class="text-sm font-medium text-base-content/70">{% trans "category" %} :</p>
               </div>
               <div class="col-span-2">
                 <span class="badge badge-primary">{{ incident.get_category_display }}</span>
@@ -250,7 +251,7 @@
             <!-- Duration -->
             <div class="grid grid-cols-3 items-center gap-2">
               <div class="col-span-1">
-                <p class="text-sm font-medium text-base-content/70">Duration:</p>
+                <p class="text-sm font-medium text-base-content/70">{% trans "duration" %} :</p>
               </div>
               <div class="col-span-2">
                 <span class="badge badge-success gap-1">
@@ -264,9 +265,9 @@
                   {% elif incident.start_date and incident.end_date %}
                   {{ incident.start_date|timesince:incident.end_date }}
                   {% elif incident.start_date %}
-                  Ongoing
+                  {% trans "ongoing" %}
                   {% else %}
-                  Unknown
+                  {% trans "unknown" %}
                   {% endif %}
                 </span>
               </div>
@@ -277,11 +278,11 @@
             <!-- Timestamps Footer -->
             <div class="flex flex-col space-y-2 text-sm text-base-content/70">
               <div class="flex justify-between">
-                <span>Created at:</span>
+                <span>{% trans "created at" %} :</span>
                 <time class="font-medium">{{ incident.created_at|date:"d/m/Y H:i" }}</time>
               </div>
               <div class="flex justify-between">
-                <span>Last updated:</span>
+                <span>{% trans "last update" %} :</span>
                 <time class="font-medium">{{ incident.updated_at|date:"d/m/Y H:i" }}</time>
               </div>
             </div>
@@ -296,17 +297,17 @@
 
           <div class="stats stats-vertical lg:stats-horizontal shadow w-full text-center">
             <div class="stat">
-              <div class="stat-title">Files</div>
+              <div class="stat-title">{% trans "files" %}</div>
               <div class="stat-value">{{ incident_files|length }}</div>
             </div>
 
             <div class="stat">
-              <div class="stat-title">Comments</div>
+              <div class="stat-title">{% trans "comments" %}</div>
               <div class="stat-value">{{ comments|length }}</div>
             </div>
 
             <div class="stat">
-              <div class="stat-title">Updates</div>
+              <div class="stat-title">{% trans "updates" %}</div>
               <div class="stat-value">{{ updates|length }}</div>
             </div>
           </div>

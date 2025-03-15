@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}Supprimer l'incident - {{ incident.title }}{% endblock %}
+{% block title %}{% trans "delete incident" %} - {{ incident.title }}{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -27,16 +28,16 @@
     <div class="card-body">
       <div class="flex flex-col items-center text-center mb-6">
         <img src="{% static "img/iconsax/All/bulk/warning-2.svg" %}" class="w-20 h-20 text-warning warning-icon mb-4" alt="Warning">
-        <h2 class="card-title text-2xl">Supprimer l'incident ?</h2>
-        <p class="text-muted-foreground mt-1">Cette action est irréversible et supprimera toutes les informations liées à cet incident.</p>
+        <h2 class="card-title text-2xl">{% trans "delete incident" %} ?</h2>
+        <p class="text-muted-foreground mt-1">{% trans "this action is irreversible and will remove all remaining data" %}</p>
       </div>
       
       <!-- Incident info -->
       <div class="bg-base-200 rounded-lg p-4 mb-6">
         <div class="font-bold">{{ incident.title }}</div>
         <div class="text-sm mt-1">
-          <span class="text-muted-foreground">ID:</span> {{ incident.id }} | 
-          <span class="text-muted-foreground">Créé le:</span> {{ incident.created_at|date:"d/m/Y H:i" }}
+          <span class="text-muted-foreground">{% trans "id" %} :</span> {{ incident.id }} | 
+          <span class="text-muted-foreground">{% trans "created at" %} :</span> {{ incident.created_at|date:"d/m/Y H:i" }}
         </div>
         <div class="mt-2 flex flex-wrap gap-2">
           {% include "components/status_badge.html" with status=incident.status %}
@@ -46,12 +47,12 @@
       
       <!-- Impact summary -->
       <div class="mb-6">
-        <h3 class="font-semibold mb-2">Données qui seront supprimées :</h3>
+        <h3 class="font-semibold mb-2">{% trans "data that will be deleted" %} :</h3>
         <ul class="list-disc ml-5 space-y-1 text-sm">
-          <li>Informations de base de l\'incident</li>
-          <li>{{ comments_count }} commentaire(s)</li>
-          <li>{{ files_count }} fichier(s) attaché(s)</li>
-          <li>Historique des mises à jour</li>
+          <li>{% trans "basic incident informations" %}</li>
+          <li>{{ comments_count }} {% trans "comments" %}</li>
+          <li>{{ files_count }} {% trans "attached files" %}</li>
+          <li>{% trans "updates history" %}</li>
         </ul>
       </div>
       
@@ -61,18 +62,18 @@
         <div class="form-control">
           <label class="label cursor-pointer justify-start gap-2">
             <input type="checkbox" id="confirm-checkbox" class="checkbox checkbox-error">
-            <span>Je comprends que cette action est irréversible</span>
+            <span>{% trans "I understand this action is irreversible" %}</span>
           </label>
         </div>
         
         <div class="flex flex-wrap gap-3 justify-end">
           <a href="{% url "incident_detail" incident.id %}" class="btn btn-ghost">
             <img src="{% static "img/iconsax/All/linear/arrow-left.svg" %}" class="w-4 h-4 mr-2" alt="Back">
-            Retour
+            {% trans "back" %}
           </a>
           <button type="submit" id="delete-btn" class="btn btn-error" disabled>
             <img src="{% static "img/iconsax/All/linear/trash.svg" %}" class="w-4 h-4 mr-2" alt="Delete">
-            Supprimer l\'incident
+            {% trans "delete incident" %}
           </button>
         </div>
       </form>

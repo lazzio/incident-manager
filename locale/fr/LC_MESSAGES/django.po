@@ -1,0 +1,347 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-15 21:37+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: incidents/models.py:9
+msgid "Critical"
+msgstr ""
+
+#: incidents/models.py:10
+msgid "High"
+msgstr ""
+
+#: incidents/models.py:11
+msgid "Medium"
+msgstr ""
+
+#: incidents/models.py:12
+msgid "Low"
+msgstr ""
+
+#: incidents/templates/components/action_buttons.html:6
+msgid "open"
+msgstr ""
+
+#: incidents/templates/components/action_buttons.html:13
+msgid "edit"
+msgstr ""
+
+#: incidents/templates/components/action_buttons.html:20
+#: incidents/templates/incidents/incidents_detail.html:39
+msgid "delete"
+msgstr ""
+
+#: incidents/templates/components/card_header.html:10
+msgid "see all"
+msgstr ""
+
+#: incidents/templates/components/data_table.html:55
+msgid "no data available"
+msgstr ""
+
+#: incidents/templates/components/empty_state.html:10
+msgid "no element found"
+msgstr ""
+
+#: incidents/templates/components/empty_state.html:17
+#: incidents/templates/incidents/incidents_confirm_delete.html:72
+msgid "back"
+msgstr ""
+
+#: incidents/templates/components/modal.html:21
+#: incidents/templates/incidents/incidents_detail.html:125
+msgid "download"
+msgstr ""
+
+#: incidents/templates/components/modal.html:25
+msgid "close"
+msgstr ""
+
+#: incidents/templates/components/pagination.html:30
+msgid "display from"
+msgstr ""
+
+#: incidents/templates/components/pagination.html:30
+msgid "to"
+msgstr ""
+
+#: incidents/templates/components/pagination.html:30
+msgid "on"
+msgstr ""
+
+#: incidents/templates/components/pagination.html:30
+msgid "elements"
+msgstr ""
+
+#: incidents/templates/components/search_bar.html:28
+msgid "search"
+msgstr ""
+
+#: incidents/templates/components/severity_badge.html:5
+msgid "low"
+msgstr ""
+
+#: incidents/templates/components/severity_badge.html:10
+msgid "medium"
+msgstr ""
+
+#: incidents/templates/components/severity_badge.html:15
+msgid "high"
+msgstr ""
+
+#: incidents/templates/components/severity_badge.html:20
+msgid "critical"
+msgstr ""
+
+#: incidents/templates/components/stats_card.html:10
+msgid "vs last month"
+msgstr ""
+
+#: incidents/templates/components/status_badge.html:5
+msgid "new"
+msgstr ""
+
+#: incidents/templates/components/status_badge.html:10
+#: incidents/templates/incidents/incidents_dashboard.html:65
+msgid "running"
+msgstr ""
+
+#: incidents/templates/components/status_badge.html:15
+#: incidents/templates/incidents/incidents_dashboard.html:68
+msgid "resolved"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:5
+#: incidents/templates/incidents/incidents_confirm_delete.html:31
+#: incidents/templates/incidents/incidents_confirm_delete.html:76
+msgid "delete incident"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:32
+msgid "this action is irreversible and will remove all remaining data"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:39
+#: incidents/templates/incidents/incidents_dashboard.html:124
+msgid "id"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:40
+#: incidents/templates/incidents/incidents_detail.html:281
+msgid "created at"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:50
+msgid "data that will be deleted"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:52
+msgid "basic incident informations"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:53
+#: incidents/templates/incidents/incidents_detail.html:36
+#: incidents/templates/incidents/incidents_detail.html:305
+msgid "comments"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:54
+msgid "attached files"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:55
+msgid "updates history"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_confirm_delete.html:65
+msgid "I understand this action is irreversible"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:34
+msgid "welcome on your incidents dashboard"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:40
+msgid "filter"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:43
+msgid "today"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:44
+msgid "current week"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:45
+msgid "current month"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:46
+msgid "current year"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:51
+msgid "new incident"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:59
+msgid "total incidents"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:62
+msgid "waiting"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:77
+msgid "activity"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:79
+msgid "day"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:80
+msgid "week"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:81
+msgid "month"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:94
+msgid "incidents severity"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:104
+msgid "of total"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:118
+msgid "recent incidents"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:125
+msgid "title"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:126
+msgid "state"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:127
+msgid "date"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:128
+msgid "actions"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:159
+msgid "resolution time"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:166
+msgid "in SLA"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:173
+msgid "average time"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:175
+msgid "vs previous one"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:178
+msgid "critical incident"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_dashboard.html:180
+msgid "previous one"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:37
+#: incidents/templates/incidents/incidents_detail.html:300
+msgid "files"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:131
+msgid "preview"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:140
+msgid "no files attached to this incident."
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:170
+msgid "no comments yet. Be the first to comment on this incident."
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:177
+msgid "add a comment"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:187
+msgid "send"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:208
+msgid "created by"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:226
+msgid "assigned to"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:235
+msgid "not assigned"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:244
+msgid "category"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:254
+msgid "duration"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:268
+msgid "ongoing"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:270
+msgid "unknown"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:285
+msgid "last update"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:310
+msgid "updates"
+msgstr ""
+
+#: templates/base.html:8
+msgid "Incident Manager"
+msgstr ""
+
+#: templates/base.html:181
+msgid "Nouvel incident"
+msgstr ""
