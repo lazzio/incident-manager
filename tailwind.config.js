@@ -123,21 +123,6 @@ module.exports = {
   ],
   // Configuration de DaisyUI (facultatif)
   daisyui: {
-    themes: [
-      {
-        mytheme: {
-          "primary": "#99C7FF",
-          "secondary": "#FFE499",
-          "accent": "#CC99FF",
-          "neutral": "#F5F5F5",
-          "base-100": "#ffffff",
-          "info": "#3ABFF8",
-          "success": "#36D399",
-          "warning": "#FBBD23",
-          "error": "#F87272",
-        },
-      },
-    ],
     darkTheme: "dark",
     base: true,
     styled: true,
