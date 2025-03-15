@@ -115,7 +115,7 @@
         <div class="card bg-base-100 shadow-lg lg:col-span-2">
             <div class="card-body">
                 {% url 'incident_list' as incident_list_url %}
-                {% include "components/card_header.html" with title=_("recent incidents") icon="early_on" action_url=incident_list_url action_label="Voir tous" %}
+                {% include "components/card_header.html" with title=_("recent incidents") icon="early_on" action_url=incident_list_url action_label=_("see all") %}
                 
                 <div class="overflow-x-auto">
                     <table class="table table-zebra w-full">

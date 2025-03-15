@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-15 21:37+0100\n"
+"POT-Creation-Date: 2025-03-15 21:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,6 +48,7 @@ msgid "delete"
 msgstr ""
 
 #: incidents/templates/components/card_header.html:10
+#: incidents/templates/incidents/incidents_dashboard.html:118
 msgid "see all"
 msgstr ""
 
@@ -73,19 +74,19 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: incidents/templates/components/pagination.html:30
-msgid "display from"
+#: incidents/templates/components/pagination.html:31
+msgid "from"
 msgstr ""
 
-#: incidents/templates/components/pagination.html:30
+#: incidents/templates/components/pagination.html:31
 msgid "to"
 msgstr ""
 
-#: incidents/templates/components/pagination.html:30
+#: incidents/templates/components/pagination.html:31
 msgid "on"
 msgstr ""
 
-#: incidents/templates/components/pagination.html:30
+#: incidents/templates/components/pagination.html:31
 msgid "elements"
 msgstr ""
 
