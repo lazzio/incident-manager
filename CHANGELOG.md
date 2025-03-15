@@ -1,3 +1,9 @@
+## [0.9.0](https://github.com/lazzio/incident-manager/-/compare/v0.8.0...v0.9.0) (2025-03-15)
+
+### Features
+
+* improve ui incident details ([#33](https://github.com/lazzio/incident-manager/-/issues/33)) ([bc52b7c](https://github.com/lazzio/incident-manager/-/commit/bc52b7c73b4f15aa2e0bae0200bc6ad1901681f5))
+
 ## [0.8.0](https://github.com/lazzio/incident-manager/-/compare/v0.7.0...v0.8.0) (2025-03-14)
 
 ### Features
