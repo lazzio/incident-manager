@@ -1,3 +1,9 @@
+## [0.10.0](https://github.com/lazzio/incident-manager/-/compare/v0.9.0...v0.10.0) (2025-03-16)
+
+### Features
+
+* i18n ([#34](https://github.com/lazzio/incident-manager/-/issues/34)) ([c699f76](https://github.com/lazzio/incident-manager/-/commit/c699f763e461505c47adda47261779e3efd32624))
+
 ## [0.9.0](https://github.com/lazzio/incident-manager/-/compare/v0.8.0...v0.9.0) (2025-03-15)
 
 ### Features
