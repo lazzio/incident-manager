@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django import forms
 from django.contrib.auth.models import User
-import json
+from django.utils.translation import gettext_lazy as _
 
 
 class UserProfileForm(forms.ModelForm):
@@ -32,13 +32,11 @@ class UserProfileForm(forms.ModelForm):
         # If username is being changed, make sure it's not taken and change is confirmed
         if instance and instance.username != username:
             if User.objects.filter(username=username).exclude(pk=instance.pk).exists():
-                raise forms.ValidationError("Ce nom d'utilisateur est déjà pris.")
+                raise forms.ValidationError(_("This username is already used."))
             
             # If username change isn't confirmed via modal, raise error
             if not self.cleaned_data.get('confirm_username_change'):
-                raise forms.ValidationError(
-                    "Vous devez confirmer le changement de nom d'utilisateur via la fenêtre de confirmation."
-                )
+                raise forms.ValidationError(_("You must confirm the username change via the confirmation window."))
                 
         return username
 
@@ -74,9 +72,9 @@ def profile(request):
             if profile_form.is_valid():
                 profile_form.save()
                 if username_changed:
-                    messages.success(request, f"Votre nom d'utilisateur a été changé de {original_username} à {new_username}.")
+                    messages.success(request, f"_('Your username was changed from') {original_username} _('to') {new_username}.")
                 else:
-                    messages.success(request, "Votre profil a été mis à jour avec succès.")
+                    messages.success(request, "_('Your profile information was updated successfully.')")
                 return redirect('user_profile')
         
         # Handle password change
@@ -86,7 +84,7 @@ def profile(request):
                 updated_user = password_form.save()
                 # Important: update the session to prevent logout
                 update_session_auth_hash(request, updated_user)
-                messages.success(request, "Votre mot de passe a été mis à jour avec succès.")
+                messages.success(request, "_('Your password was changed successfully.')")
                 return redirect('user_profile')
     
     # Get statistics about user's incidents

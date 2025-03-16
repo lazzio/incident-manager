@@ -59,7 +59,7 @@
       <!-- Description -->
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="Description" icon="description" %}
+          {% include "components/card_header.html" with title=_("description") icon="description" %}
           <div class="divider my-2"></div>
           <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
             {{ incident.details }}
@@ -70,7 +70,7 @@
       <!-- Resolution Process -->
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="Resolution Process" icon="construction" %}
+          {% include "components/card_header.html" with title=_("resolution process") icon="construction" %}
           <div class="divider my-2"></div>
           <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
             {{ incident.resolution_process }}
@@ -81,7 +81,7 @@
       <!-- Impact -->
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="Impact" icon="balance" %}
+          {% include "components/card_header.html" with title=_("impact") icon="balance" %}
           <div class="divider my-2"></div>
           <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
             {{ incident.impact }}
@@ -92,7 +92,7 @@
       <!-- Files -->
       <div id="files" class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="Files" icon="attach_file" %}
+          {% include "components/card_header.html" with title=_("files") icon="attach_file" %}
           <div class="divider my-2"></div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for file in incident_files %}
@@ -179,7 +179,7 @@
               {% csrf_token %}
               <div class="form-control">
                 <textarea name="text" rows="3" class="textarea textarea-bordered w-full"
-                  placeholder="Write your comment here..." required></textarea>
+                  placeholder='{% trans "write your comment here..." %}' required></textarea>
               </div>
               <div class="flex justify-end">
                 <button type="submit" class="btn btn-primary">
@@ -198,7 +198,7 @@
       <!-- Info générales -->
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="General Informations" icon="info" %}
+          {% include "components/card_header.html" with title=_("global informations") icon="info" %}
           <div class="divider my-2"></div>
 
           <div class="space-y-4 mt-2">
@@ -293,7 +293,7 @@
       <!-- Statistics -->
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="Statistics" icon="pie_chart" %}
+          {% include "components/card_header.html" with title=_("statistics") icon="pie_chart" %}
 
           <div class="stats stats-vertical lg:stats-horizontal shadow w-full text-center">
             <div class="stat">
@@ -317,13 +317,13 @@
       <!-- Actions -->
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-          {% include "components/card_header.html" with title="Actions" icon="bolt" %}
+          {% include "components/card_header.html" with title=_("actions") icon="bolt" %}
 
           <div class="space-y-2 mt-2">
             {% url 'incident_update' incident.id as incident_edit_url %}
             {% url 'incident_delete' incident.id as incident_delete_url %}
-            {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text="Edit incident" primary=True size="" %}
-            {% include "components/action_buttons.html" with delete_url=incident_delete_url delete_text="Delete incident" delete_style="btn-error" size="" %}
+            {% include "components/action_buttons.html" with edit_url=incident_edit_url edit_text=_("edit incident") primary=True size="" %}
+            {% include "components/action_buttons.html" with delete_url=incident_delete_url delete_text=_("delete incident") delete_style="btn-error" size="" %}
           </div>
         </div>
       </div>
@@ -331,7 +331,7 @@
   </div>
 </div>
 
-{% include "components/modal.html" with id="imageModal" title="Aperçu du fichier" show_download=True %}
+{% include "components/modal.html" with id="imageModal" title=_("file preview") show_download=True %}
 
 {% endblock %}
 

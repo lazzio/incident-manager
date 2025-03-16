@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load report_extras %}
-{% block title %}Annual Report {{ year }}{% endblock %}
+{% block title %}{% trans "annual repoprt" %} {{ year }}{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -8,12 +9,12 @@
 
 {% block content %}
 <div class="space-y-6">
-    <!-- En-tête avec breadcrumbs -->
+    <!-- Breadcrumbs header -->
     <div>
         {% include "components/breadcrumbs.html" %}
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h1 class="text-3xl font-bold">Annual Report {{ year }}</h1>
+            <h1 class="text-3xl font-bold">{% trans "annual report" %} {{ year }}</h1>
             <div class="flex gap-2">
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn">
@@ -25,13 +26,13 @@
                         {% for y in available_years %}
                         <li><a href="?year={{ y }}" {% if y == year %}class="active"{% endif %}>{{ y }}</a></li>
                         {% empty %}
-                        <li><a class="disabled">No data available</a></li>
+                        <li><a class="disabled">{% trans "no data available" %}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
                 <a href="{% url 'export_yearly_report' year %}" class="btn btn-outline">
                     <i class="fas fa-file-export mr-2"></i>
-                    Export
+                    {% trans "export" %}
                 </a>
             </div>
         </div>
@@ -43,14 +44,14 @@
             <div class="stat-figure text-primary">
                 <i class="fas fa-clipboard-list fa-2x"></i>
             </div>
-            <div class="stat-title">Total Incidents</div>
+            <div class="stat-title">{% trans "total incidents "%}</div>
             <div class="stat-value">{{ total_incidents }}</div>
             <div class="stat-desc">
                 {% if prev_year_data %}
                     {% if total_incidents > prev_year_data.total_incidents %}
-                    <span class="text-error">↗︎ {{ total_incidents|subtract:prev_year_data.total_incidents }} more than last year</span>
+                    <span class="text-error">↗︎ {{ total_incidents|subtract:prev_year_data.total_incidents }} {% trans "more than last year" %}</span>
                     {% else %}
-                    <span class="text-success">↘︎ {{ prev_year_data.total_incidents|subtract:total_incidents }} less than last year</span>
+                    <span class="text-success">↘︎ {{ prev_year_data.total_incidents|subtract:total_incidents }} {% trans "less than last year" %}</span>
                     {% endif %}
                 {% endif %}
             </div>
@@ -60,14 +61,14 @@
             <div class="stat-figure text-primary">
                 <i class="fas fa-hourglass fa-2x"></i>
             </div>
-            <div class="stat-title">Avg. Resolution Time</div>
+            <div class="stat-title">{% trans "avg resolution time" %}</div>
             <div class="stat-value">{{ avg_resolution_time|floatformat:1 }}h</div>
             <div class="stat-desc">
                 {% if prev_year_data %}
                     {% if avg_resolution_time > prev_year_data.avg_resolution_time %}
-                    <span class="text-error">↗︎ {{ avg_resolution_time|subtract:prev_year_data.avg_resolution_time|floatformat:1 }}h longer than last year</span>
+                    <span class="text-error">↗︎ {{ avg_resolution_time|subtract:prev_year_data.avg_resolution_time|floatformat:1 }}{% trans "h longer than last year" %}</span>
                     {% else %}
-                    <span class="text-success">↘︎ {{ prev_year_data.avg_resolution_time|subtract:avg_resolution_time|floatformat:1 }}h faster than last year</span>
+                    <span class="text-success">↘︎ {{ prev_year_data.avg_resolution_time|subtract:avg_resolution_time|floatformat:1 }}{% trans "h faster than last year" %}</span>
                     {% endif %}
                 {% endif %}
             </div>
@@ -81,7 +82,7 @@
             {% with critical_count=severity_counts|filter_by_severity:"CRITICAL"|sum_counts %}
             <div class="stat-value">{{ critical_count }}</div>
             <div class="stat-desc">
-                {{ critical_count|percentage_of:total_incidents }}% of all incidents
+                {{ critical_count|percentage_of:total_incidents }}% {% trans "of all incidents" %}
             </div>
             {% endwith %}
         </div>
@@ -94,7 +95,7 @@
             <div class="card-body">
                 <h2 class="card-title">
                     <i class="fas fa-calendar-days mr-2"></i>
-                    Monthly Distribution
+                    {% trans "monthly distribution" %}
                 </h2>
                 <div class="h-80">
                     <canvas id="monthlyChart"></canvas>
@@ -107,7 +108,7 @@
             <div class="card-body">
                 <h2 class="card-title">
                     <i class="fas fa-chart-pie mr-2"></i>
-                    Severity Distribution
+                    {% trans "severity distribution" %}
                 </h2>
                 <div class="h-80">
                     <canvas id="severityChart"></canvas>
@@ -121,6 +122,7 @@
                 <h2 class="card-title">
                     <i class="fas fa-stopwatch mr-2"></i>
                     Resolution Time by Severity
+                    {% trans "resolution time by severity" %}
                 </h2>
                 <div class="h-80">
                     <canvas id="resolutionChart"></canvas>
@@ -134,6 +136,7 @@
                 <h2 class="card-title">
                     <i class="fas fa-chart-line mr-2"></i>
                     Yearly Trend
+                    {% trans "yearly trend" %}
                 </h2>
                 <div class="h-80">
                     <canvas id="yearlyTrendChart"></canvas>
@@ -145,18 +148,18 @@
     <!-- Longest Incidents -->
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-            {% include "components/card_header.html" with title="Longest Incidents" icon="hourglass_arrow_up" %}
+            {% include "components/card_header.html" with title=_("longest incidents") icon="hourglass_arrow_up" %}
             
             <div class="overflow-x-auto">
                 <table class="table table-zebra w-full">
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Severity</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Duration</th>
-                            <th>Actions</th>
+                            <th>{% trans "title" %}</th>
+                            <th>{% trans "severity" %}</th>
+                            <th>{% trans "start date" %}</th>
+                            <th>{% trans "end date" %}</th>
+                            <th>{% trans "duration" %}</th>
+                            <th>{% trans "actions" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -179,7 +182,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center">No incidents found</td>
+                            <td colspan="6" class="text-center">{% trans "no incidents found" %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -202,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: {
                     labels: data.months,
                     datasets: [{
-                        label: 'Number of Incidents',
+                        label: '{% trans "number of incidents" %}',
                         data: data.counts,
                         backgroundColor: '#99C7FF',
                         borderColor: '#3D7ACC',
@@ -261,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: {
                     labels: resolutionLabels,
                     datasets: [{
-                        label: 'Average Resolution Time (hours)',
+                        label: '{% trans "average resolution time (hours)" %}',
                         data: resolutionData,
                         backgroundColor: '#CC99FF',
                         borderColor: '#7A3DCC',
@@ -294,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: {
                     labels: yearLabels,
                     datasets: [{
-                        label: 'Number of Incidents',
+                        label: '{% trans "number of incidents" %}',
                         data: yearCounts,
                         backgroundColor: 'rgba(153, 199, 255, 0.2)',
                         borderColor: '#3D7ACC',

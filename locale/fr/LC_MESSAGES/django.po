@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 19:03+0100\n"
+"POT-Creation-Date: 2025-03-16 21:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,6 +52,14 @@ msgstr ""
 msgid "Low"
 msgstr ""
 
+#: incidents/pkg_views/user_views.py:35
+msgid "This username is already used."
+msgstr ""
+
+#: incidents/pkg_views/user_views.py:39
+msgid "You must confirm the username change via the confirmation window."
+msgstr ""
+
 #: incidents/templates/components/action_buttons.html:6
 msgid "open"
 msgstr ""
@@ -64,6 +72,8 @@ msgstr ""
 
 #: incidents/templates/components/action_buttons.html:20
 #: incidents/templates/incidents/incidents_detail.html:39
+#: incidents/templates/incidents/incidents_list.html:329
+#: incidents/templates/incidents/incidents_list.html:452
 msgid "delete"
 msgstr ""
 
@@ -74,6 +84,7 @@ msgstr ""
 
 #: incidents/templates/components/data_table.html:55
 #: incidents/templates/incidents/incidents_timeline.html:203
+#: incidents/templates/incidents/incidents_yearly_report.html:29
 msgid "no data available"
 msgstr ""
 
@@ -93,14 +104,17 @@ msgid "download"
 msgstr ""
 
 #: incidents/templates/components/modal.html:25
+#: incidents/templates/incidents/user_profile.html:293
 msgid "close"
 msgstr ""
 
 #: incidents/templates/components/pagination.html:31
+#: incidents/templates/incidents/incidents_list.html:204
 msgid "from"
 msgstr ""
 
 #: incidents/templates/components/pagination.html:31
+#: incidents/templates/incidents/incidents_list.html:204
 msgid "to"
 msgstr ""
 
@@ -113,22 +127,31 @@ msgid "elements"
 msgstr ""
 
 #: incidents/templates/components/search_bar.html:28
+#: incidents/templates/incidents/incidents_list.html:186
 msgid "search"
 msgstr ""
 
 #: incidents/templates/components/severity_badge.html:5
+#: incidents/templates/incidents/incidents_list.html:276
+#: incidents/templates/incidents/incidents_list.html:385
 msgid "low"
 msgstr ""
 
 #: incidents/templates/components/severity_badge.html:10
+#: incidents/templates/incidents/incidents_list.html:276
+#: incidents/templates/incidents/incidents_list.html:387
 msgid "medium"
 msgstr ""
 
 #: incidents/templates/components/severity_badge.html:15
+#: incidents/templates/incidents/incidents_list.html:276
+#: incidents/templates/incidents/incidents_list.html:389
 msgid "high"
 msgstr ""
 
 #: incidents/templates/components/severity_badge.html:20
+#: incidents/templates/incidents/incidents_list.html:276
+#: incidents/templates/incidents/incidents_list.html:391
 msgid "critical"
 msgstr ""
 
@@ -142,17 +165,20 @@ msgstr ""
 
 #: incidents/templates/components/status_badge.html:10
 #: incidents/templates/incidents/incidents_dashboard.html:65
+#: incidents/templates/incidents/user_profile.html:177
 msgid "running"
 msgstr ""
 
 #: incidents/templates/components/status_badge.html:15
 #: incidents/templates/incidents/incidents_dashboard.html:68
+#: incidents/templates/incidents/user_profile.html:157
 msgid "resolved"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_confirm_delete.html:5
 #: incidents/templates/incidents/incidents_confirm_delete.html:31
 #: incidents/templates/incidents/incidents_confirm_delete.html:76
+#: incidents/templates/incidents/incidents_detail.html:326
 msgid "delete incident"
 msgstr ""
 
@@ -162,6 +188,7 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_confirm_delete.html:39
 #: incidents/templates/incidents/incidents_dashboard.html:124
+#: incidents/templates/incidents/incidents_list.html:239
 msgid "id"
 msgstr ""
 
@@ -220,6 +247,7 @@ msgstr ""
 #: incidents/templates/incidents/incidents_dashboard.html:51
 #: incidents/templates/incidents/incidents_form.html:6
 #: incidents/templates/incidents/incidents_form.html:59
+#: incidents/templates/incidents/incidents_list.html:66
 #: incidents/templates/incidents/incidents_timeline.html:210
 msgid "new incident"
 msgstr ""
@@ -229,6 +257,7 @@ msgid "total incidents"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_dashboard.html:62
+#: incidents/templates/incidents/user_profile.html:168
 msgid "waiting"
 msgstr ""
 
@@ -262,6 +291,8 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_dashboard.html:125
 #: incidents/templates/incidents/incidents_form.html:423
+#: incidents/templates/incidents/incidents_list.html:245
+#: incidents/templates/incidents/incidents_yearly_report.html:157
 msgid "title"
 msgstr ""
 
@@ -274,6 +305,9 @@ msgid "date"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_dashboard.html:128
+#: incidents/templates/incidents/incidents_detail.html:320
+#: incidents/templates/incidents/incidents_list.html:258
+#: incidents/templates/incidents/incidents_yearly_report.html:162
 msgid "actions"
 msgstr ""
 
@@ -302,8 +336,23 @@ msgid "previous one"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:37
+#: incidents/templates/incidents/incidents_detail.html:95
 #: incidents/templates/incidents/incidents_detail.html:300
 msgid "files"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:62
+msgid "description"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:73
+#: incidents/templates/incidents/incidents_form.html:310
+msgid "resolution process"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:84
+#: incidents/templates/incidents/incidents_form.html:323
+msgid "impact"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:131
@@ -322,8 +371,17 @@ msgstr ""
 msgid "add a comment"
 msgstr ""
 
+#: incidents/templates/incidents/incidents_detail.html:182
+msgid "write your comment here..."
+msgstr ""
+
 #: incidents/templates/incidents/incidents_detail.html:187
 msgid "send"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:201
+#: incidents/templates/incidents/incidents_form.html:136
+msgid "global informations"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:208
@@ -333,6 +391,8 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:226
 #: incidents/templates/incidents/incidents_form.html:226
+#: incidents/templates/incidents/incidents_list.html:150
+#: incidents/templates/incidents/incidents_list.html:257
 #: incidents/templates/incidents/incidents_timeline.html:364
 msgid "assigned to"
 msgstr ""
@@ -347,6 +407,7 @@ msgid "category"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:254
+#: incidents/templates/incidents/incidents_yearly_report.html:161
 msgid "duration"
 msgstr ""
 
@@ -355,6 +416,7 @@ msgid "ongoing"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:270
+#: incidents/templates/incidents/user_profile.html:123
 msgid "unknown"
 msgstr ""
 
@@ -362,13 +424,23 @@ msgstr ""
 msgid "last update"
 msgstr ""
 
+#: incidents/templates/incidents/incidents_detail.html:296
+#: incidents/templates/incidents/user_profile.html:141
+msgid "statistics"
+msgstr ""
+
 #: incidents/templates/incidents/incidents_detail.html:310
 msgid "updates"
 msgstr ""
 
+#: incidents/templates/incidents/incidents_detail.html:325
 #: incidents/templates/incidents/incidents_form.html:6
 #: incidents/templates/incidents/incidents_form.html:65
 msgid "edit incident"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_detail.html:334
+msgid "file preview"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:67
@@ -381,10 +453,6 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:93
 msgid "error in the form"
-msgstr ""
-
-#: incidents/templates/incidents/incidents_form.html:136
-msgid "global informations"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:146
@@ -400,24 +468,34 @@ msgid "select a category"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:186
+#: incidents/templates/incidents/incidents_list.html:98
+#: incidents/templates/incidents/incidents_list.html:190
+#: incidents/templates/incidents/incidents_list.html:249
 #: incidents/templates/incidents/incidents_timeline.html:257
 msgid "status"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:206
+#: incidents/templates/incidents/incidents_list.html:114
+#: incidents/templates/incidents/incidents_list.html:250
+#: incidents/templates/incidents/incidents_list.html:383
 #: incidents/templates/incidents/incidents_timeline.html:235
+#: incidents/templates/incidents/incidents_yearly_report.html:158
 msgid "severity"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:229
+#: incidents/templates/incidents/incidents_list.html:295
 msgid "unassigned"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:245
+#: incidents/templates/incidents/incidents_yearly_report.html:159
 msgid "start date"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:262
+#: incidents/templates/incidents/incidents_yearly_report.html:160
 msgid "end date"
 msgstr ""
 
@@ -437,20 +515,12 @@ msgstr ""
 msgid "resolution and impacts"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:310
-msgid "resolution process"
-msgstr ""
-
 #: incidents/templates/incidents/incidents_form.html:311
 msgid "how the incident was or will be resolved ?"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:315
 msgid "describe the steps taken to resolve the incident..."
-msgstr ""
-
-#: incidents/templates/incidents/incidents_form.html:323
-msgid "impact"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:324
@@ -491,6 +561,7 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:459
 #: incidents/templates/incidents/incidents_form.html:461
+#: incidents/templates/incidents/user_profile.html:288
 msgid "cancel"
 msgstr ""
 
@@ -499,8 +570,88 @@ msgid "update"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_form.html:465
+#: incidents/templates/incidents/incidents_list.html:347
+#: incidents/templates/incidents/incidents_list.html:469
 #: incidents/templates/incidents/incidents_timeline.html:430
 msgid "create incident"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:39
+msgid "manage and follow incidents"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:55
+#: incidents/templates/incidents/incidents_yearly_report.html:35
+msgid "export"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:76
+msgid "Search an incident by title, id, details..."
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:83
+msgid "filters"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:90
+msgid "advanced filters"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:130
+msgid "period"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:153
+msgid "all"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:164
+msgid "reset"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:167
+msgid "apply filters"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:184
+msgid "active filters"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:253
+msgid "creation date"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:317
+#: incidents/templates/incidents/incidents_list.html:440
+msgid "assign to me"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:323
+#: incidents/templates/incidents/incidents_timeline.html:403
+msgid "comment"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:342
+#: incidents/templates/incidents/incidents_list.html:464
+msgid "no incident found"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:343
+#: incidents/templates/incidents/incidents_list.html:465
+msgid "no incident corresponds to actual search critera"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:345
+#: incidents/templates/incidents/incidents_list.html:467
+msgid "reset filters"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:433
+msgid "mark as resolved"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_list.html:446
+msgid "commment"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_timeline.html:5
@@ -525,16 +676,239 @@ msgstr ""
 msgid "details"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_timeline.html:403
-msgid "comment"
-msgstr ""
-
 #: incidents/templates/incidents/incidents_timeline.html:421
 msgid "no incident for"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_timeline.html:422
 msgid "no incident recorded for this period"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:4
+msgid "annual repoprt"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:17
+msgid "annual report"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:47
+msgid "total incidents "
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:52
+msgid "more than last year"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:54
+msgid "less than last year"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:64
+msgid "avg resolution time"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:69
+msgid "h longer than last year"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:71
+msgid "h faster than last year"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:85
+msgid "of all incidents"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:98
+msgid "monthly distribution"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:111
+msgid "severity distribution"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:125
+msgid "resolution time by severity"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:139
+msgid "yearly trend"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:185
+msgid "no incidents found"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:208
+#: incidents/templates/incidents/incidents_yearly_report.html:300
+msgid "number of incidents"
+msgstr ""
+
+#: incidents/templates/incidents/incidents_yearly_report.html:267
+msgid "average resolution time (hours)"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:4
+#: incidents/templates/incidents/user_profile.html:76
+#: incidents/templates/incidents/user_profile.html:78
+msgid "my profile"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:79
+msgid "manage your personal informations"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:105
+msgid "administrator"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:107
+msgid "manager"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:109
+msgid "user"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:118
+msgid "username"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:122
+msgid "email"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:126
+msgid "member since"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:130
+msgid "last connection"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:147
+msgid "incidents created"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:152
+msgid "assigned inncidents"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:189
+msgid "personal informations"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:204
+msgid "user name"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:219
+msgid "firstname"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:233
+msgid "name"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:248
+msgid "email address"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:262
+msgid "save modifications"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:270
+msgid "confirm your username"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:283
+msgid ""
+"This change will affect your connection. You will have to use your new "
+"username on next connection"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:289
+msgid "I agree"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:305
+#: incidents/templates/incidents/user_profile.html:356
+msgid "change password"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:316
+msgid "current password"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:328
+msgid "new password"
+msgstr ""
+
+#: incidents/templates/incidents/user_profile.html:343
+msgid "confirm new password"
+msgstr ""
+
+#: incidents/templates/registration/login.html:48
+msgid "Incident Management"
+msgstr ""
+
+#: incidents/templates/registration/login.html:49
+msgid ""
+"Efficiently track, manage, and resolve incidents in one centralized platform."
+msgstr ""
+
+#: incidents/templates/registration/login.html:65
+msgid "Welcome"
+msgstr ""
+
+#: incidents/templates/registration/login.html:67
+msgid "Sign in to access your dashboard"
+msgstr ""
+
+#: incidents/templates/registration/login.html:82
+msgid "Authentication failed"
+msgstr ""
+
+#: incidents/templates/registration/login.html:83
+msgid "The username or password you entered is incorrect."
+msgstr ""
+
+#: incidents/templates/registration/login.html:92
+msgid "Username"
+msgstr ""
+
+#: incidents/templates/registration/login.html:102
+msgid "Enter your username"
+msgstr ""
+
+#: incidents/templates/registration/login.html:113
+msgid "Forgot password?"
+msgstr ""
+
+#: incidents/templates/registration/login.html:124
+msgid "Enter your password"
+msgstr ""
+
+#: incidents/templates/registration/login.html:135
+msgid "Remember me for 30 days"
+msgstr ""
+
+#: incidents/templates/registration/login.html:143
+msgid "Sign in"
+msgstr ""
+
+#: incidents/templates/registration/login.html:156
+msgid "Create an account"
+msgstr ""
+
+#: incidents/templates/registration/login.html:166
+msgid "Secure login"
+msgstr ""
+
+#: incidents/templates/registration/login.html:168
+msgid "Your connection to this site is encrypted and your data is protected"
 msgstr ""
 
 #: templates/base.html:8

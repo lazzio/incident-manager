@@ -353,7 +353,7 @@
                 <div class="flex items-center gap-2">
                   <div class="avatar-group -space-x-2">
                     {% if incident.created_by %}
-                    <div class="avatar placeholder" data-tooltip-target="tooltip-creator" title="{% trans "created by" %} : {{ incident.created_by.get_full_name|default:incident.created_by.username }}">
+                    <div class="avatar placeholder" data-tooltip-target="tooltip-creator" title='{% trans "created by" %} : {{ incident.created_by.get_full_name|default:incident.created_by.username }}'>
                       <div class="bg-neutral text-neutral-content w-8 rounded-full">
                         <span>{{ incident.created_by.username|slice:":1"|upper }}</span>
                       </div>
@@ -361,7 +361,7 @@
                     {% endif %}
                     
                     {% if incident.assigned_to %}
-                    <div class="avatar placeholder" data-tooltip-target="tooltip-assignee" title="{% trans "assigned to" %} : {{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}">
+                    <div class="avatar placeholder" data-tooltip-target="tooltip-assignee" title='{% trans "assigned to" %} : {{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}'>
                       <div class="bg-primary text-primary-content w-8 rounded-full">
                         <span>{{ incident.assigned_to.username|slice:":1"|upper }}</span>
                       </div>

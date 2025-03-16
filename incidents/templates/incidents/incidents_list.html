@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% block title %}Incidents{% endblock %}
 
@@ -35,7 +36,7 @@
     <div>
       {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents'}]" %}
       <h1 class="text-3xl font-bold">Incidents</h1>
-      <p class="text-muted-foreground mt-1">Gérez et suivez tous les incidents du système</p>
+      <p class="text-muted-foreground mt-1">{% trans "manage and follow incidents" %}</p>
     </div>
     
     <div class="flex items-center gap-3">
@@ -51,7 +52,7 @@
       <div class="dropdown dropdown-end">
         <button class="btn btn-outline btn-sm">
           <span class="material-symbols-rounded mr-1">file_export</span>
-          Exporter
+          {% trans "export" %}
         </button>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-2">
           <li><a href="?export=csv">Export CSV</a></li>
@@ -62,31 +63,31 @@
 
       <a href="{% url 'incident_create' %}" class="btn btn-primary">
         <span class="material-symbols-rounded mr-1">library_add</span>
-        Nouvel incident
+        {% trans "new incident" %}
       </a>
     </div>
   </div>
 
-  <!-- Barre de recherche et filtres -->
+  <!-- Search bar and filters -->
   <div class="card bg-base-100 shadow-lg">
     <div class="card-body p-4">
       <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
         <!-- Recherche -->
-        {% include "components/search_bar.html" with current_value=request.GET.search placeholder="Rechercher un incident par titre, ID ou détails..." preserved_params=preserved_params clear_function="clearSearch" %}
+        {% include "components/search_bar.html" with current_value=request.GET.search placeholder=_("Search an incident by title, id, details...") preserved_params=preserved_params clear_function="clearSearch" %}
 
-        <!-- Boutons de filtres -->
+        <!-- filters buttons -->
         <div class="flex items-center gap-2 lg:w-auto w-full">
           <div class="dropdown dropdown-end">
             <button class="btn btn-outline">
               <span class="material-symbols-rounded mr-1">filter_alt</span>
-              Filtres
+              {% trans "filters" %}
               {% if has_active_filters %}
               <div class="badge badge-primary ml-2">{{ active_filters_count }}</div>
               {% endif %}
             </button>
             <div tabindex="0" class="dropdown-content z-[1] card card-compact w-80 p-0 shadow-lg bg-base-100 mt-2">
               <div class="card-body">
-                <h3 class="font-medium text-base">Filtres avancés</h3>
+                <h3 class="font-medium text-base">{% trans "advanced filters" %}</h3>
                 <form method="get" id="filterForm" class="space-y-4 pt-2">
                   {% if request.GET.search %}
                   <input type="hidden" name="search" value="{{ request.GET.search }}">
@@ -94,7 +95,7 @@
                   
                   <div class="form-control">
                     <label class="label">
-                      <span class="label-text">Statut</span>
+                      <span class="label-text">{% trans "status" %}</span>
                     </label>
                     <div class="flex flex-wrap gap-1">
                       {% for value, label in status_choices %}
@@ -110,7 +111,7 @@
                   
                   <div class="form-control">
                     <label class="label">
-                      <span class="label-text">Sévérité</span>
+                      <span class="label-text">{% trans "severity" %}</span>
                     </label>
                     <div class="flex flex-wrap gap-1">
                       {% for value, label in severity_choices %}
@@ -126,7 +127,7 @@
                   
                   <div class="form-control">
                     <label class="label">
-                      <span class="label-text">Période</span>
+                      <span class="label-text">{% trans "period" %}</span>
                     </label>
                     <div class="grid grid-cols-2 gap-2">
                       <div>
@@ -146,10 +147,10 @@
                   
                   <div class="form-control">
                     <label class="label">
-                      <span class="label-text">Assigné à</span>
+                      <span class="label-text">{% trans "assigned to" %}</span>
                     </label>
                     <select name="assigned_to" class="select select-bordered w-full">
-                      <option value="">Tous</option>
+                      <option value="">{% trans "all" %}</option>
                       {% for user in users %}
                       <option value="{{ user.id }}" {% if request.GET.assigned_to == user.id|stringformat:"i" %}selected{% endif %}>
                         {{ user.get_full_name|default:user.username }}
@@ -160,10 +161,10 @@
                   
                   <div class="flex justify-between pt-2">
                     <button type="button" onclick="clearFilters()" class="btn btn-sm btn-ghost">
-                      Réinitialiser
+                      {% trans "reset" %}
                     </button>
                     <button type="submit" class="btn btn-sm btn-primary">
-                      Appliquer les filtres
+                      {% trans "apply filters" %}
                     </button>
                   </div>
                 </form>
@@ -177,16 +178,16 @@
         </div>
       </div>
       
-      <!-- Filtres actifs -->
+      <!-- Active filters -->
       {% if has_active_filters %}
       <div class="flex flex-wrap gap-2 mt-4 items-center">
-        <span class="text-sm text-muted-foreground">Filtres actifs:</span>
+        <span class="text-sm text-muted-foreground">{% trans "active filters" %} :</span>
         {% if request.GET.search %}
-        {% include "components/filter_pill.html" with label="Recherche" value=request.GET.search filter_name="search" remove_function="removeFilter" %}
+        {% include "components/filter_pill.html" with label=_("search") value=request.GET.search filter_name="search" remove_function="removeFilter" %}
         {% endif %}
         
         {% for status in selected_status %}
-        {% include "components/filter_pill.html" with label="Statut" value=status filter_name="status" color_class="badge-info" remove_function="removeFilterValue" %}
+        {% include "components/filter_pill.html" with label=_("status") value=status filter_name="status" color_class="badge-info" remove_function="removeFilterValue" %}
         {% endfor %}
         
         {% for severity in selected_severity %}
@@ -200,7 +201,7 @@
         
         {% if request.GET.date_from or request.GET.date_to %}
         <div class="filter-pill badge badge-secondary gap-1">
-          <span>Période: {% if request.GET.date_from %}Du {{ request.GET.date_from }}{% endif %} {% if request.GET.date_to %}au {{ request.GET.date_to }}{% endif %}</span>
+          <span>{% if request.GET.date_from %}{% trans "from" %} {{ request.GET.date_from }}{% endif %} {% if request.GET.date_to %}{% trans "to" %} {{ request.GET.date_to }}{% endif %}</span>
           <button onclick="removeDateFilters()" class="ml-1">
             <span class="material-symbols-rounded">cancel</span>
           </button>
@@ -235,26 +236,26 @@
                 <tr>
                   <th class="cursor-pointer" onclick="sortBy('id')">
                     <div class="flex items-center gap-1">
-                      ID
+                      {% trans "id" %}
                       <span class="material-symbols-rounded text-xs {% if sort_by == 'id' %}opacity-100{% else %}opacity-30{% endif %}">arrow_downward_alt</span>
                     </div>
                   </th>
                   <th class="cursor-pointer" onclick="sortBy('title')">
                     <div class="flex items-center gap-1">
-                      Titre
+                      {% trans "title" %}
                       <span class="material-symbols-rounded text-xs {% if sort_by == 'title' %}opacity-100{% else %}opacity-30{% endif %}">arrow_downward_alt</span>
                     </div>
                   </th>
-                  <th>Statut</th>
-                  <th>Sévérité</th>
+                  <th>{% trans "status" %}</th>
+                  <th>{% trans "severity" %}</th>
                   <th class="cursor-pointer" onclick="sortBy('created_at')">
                     <div class="flex items-center gap-1">
-                      Date de création
+                      {% trans "creation date" %}
                       <span class="material-symbols-rounded text-xs {% if sort_by == 'created_at' %}opacity-100{% else %}opacity-30{% endif %}">arrow_downward_alt</span>
                     </div>
                   </th>
-                  <th>Assigné à</th>
-                  <th>Actions</th>
+                  <th>{% trans "assigned to" %}</th>
+                  <th>{% trans "actions" %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -272,7 +273,7 @@
                     {% include "components/status_badge.html" with status=incident.status %}
                   </td>
                   <td>
-                    {% include "components/severity_badge.html" with severity=incident.severity low_text="Basse" medium_text="Moyenne" high_text="Haute" critical_text="Critique" %}
+                    {% include "components/severity_badge.html" with severity=incident.severity low_text=_("low") medium_text=_("medium") high_text=_("high") critical_text=_("critical") %}
                   </td>
                   <td>
                     <div class="flex items-center gap-1">
@@ -291,7 +292,7 @@
                       <span>{{ incident.assigned_to.get_full_name|default:incident.assigned_to.username }}</span>
                     </div>
                     {% else %}
-                    <span class="text-muted-foreground">Non assigné</span>
+                    <span class="text-muted-foreground">{% trans "unassigned" %}</span>
                     {% endif %}
                   </td>
                   <td>
@@ -306,26 +307,26 @@
                           <li>
                             <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
                               <span class="material-symbols-rounded mr-1">task_alt</span>
-                              <span>Marquer comme résolu</span>
+                              <span>{%% trans "mark as resolved" }</span>
                             </a>
                           </li>
                           {% endif %}
                           <li>
                             <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
                               <span class="material-symbols-rounded mr-1">person_add</span>
-                              <span>M'assigner</span>
+                              <span>{% trans "assign to me" %}</span>
                             </a>
                           </li>
                           <li>
                             <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
                               <span class="material-symbols-rounded mr-1">comment</span>
-                              <span>Commenter</span>
+                              <span>{% trans "comment" %}</span>
                             </a>
                           </li>
                           <li>
                             <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
                               <span class="material-symbols-rounded mr-1">delete</span>
-                              <span>Supprimer</span>
+                              <span>{% trans "delete" %}</span>
                             </a>
                           </li>
                         </ul>
@@ -338,12 +339,12 @@
                   <td colspan="7" class="text-center py-10">
                     <div class="flex flex-col items-center">
                       <img src="{% static 'img/iconsax/All/bulk/document-text.svg' %}" class="w-16 h-16 text-base-content/20 mb-4" alt="No incidents">
-                      <h3 class="font-bold text-lg">Aucun incident trouvé</h3>
-                      <p class="text-muted-foreground mb-4">Aucun incident ne correspond aux critères de recherche actuels.</p>
+                      <h3 class="font-bold text-lg">{% trans "no incident found" %}</h3>
+                      <p class="text-muted-foreground mb-4">{% trans "no incident corresponds to actual search critera" %}</p>
                       {% if has_active_filters %}
-                      <button onclick="clearFilters()" class="btn btn-primary btn-sm">Effacer les filtres</button>
+                      <button onclick="clearFilters()" class="btn btn-primary btn-sm">{% trans "reset filters" %}</button>
                       {% else %}
-                      <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">Créer un incident</a>
+                      <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">{% trans "create incident" %}</a>
                       {% endif %}
                     </div>
                   </td>
@@ -373,26 +374,26 @@
             </h2>
             
             <div class="flex flex-col gap-2 mt-2 text-sm">
-              <!-- Sévérité -->
+              <!-- Severity -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
                   <span class="material-symbols-rounded">gpp_maybe</span>
                 </div>
                 <div>
-                  <span class="text-muted-foreground">Sévérité:</span>
+                  <span class="text-muted-foreground">{% trans "severity" %} :</span>
                   {% if incident.severity == 'LOW' %}
-                  <span class="font-medium">Basse</span>
+                  <span class="font-medium">{% trans "low" %}</span>
                   {% elif incident.severity == 'MEDIUM' %}
-                  <span class="font-medium">Moyenne</span>
+                  <span class="font-medium">{% trans "medium" %}</span>
                   {% elif incident.severity == 'HIGH' %}
-                  <span class="font-medium text-warning">Haute</span>
+                  <span class="font-medium text-warning">{% trans "high" %}</span>
                   {% elif incident.severity == 'CRITICAL' %}
-                  <span class="font-medium text-error">Critique</span>
+                  <span class="font-medium text-error">{% trans "critical" %}</span>
                   {% endif %}
                 </div>
               </div>
               
-              <!-- Date de création -->
+              <!-- Creation date -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
                   <span class="material-symbols-rounded">calendar_month</span>
@@ -400,7 +401,7 @@
                 <span class="text-muted-foreground">{{ incident.created_at|date:"d/m/Y H:i" }}</span>
               </div>
               
-              <!-- Assigné à -->
+              <!-- Assigned to -->
               <div class="flex items-center gap-2">
                 <div class="icon-wrapper opacity-70">
                   <span class="material-symbols-rounded">account_circle</span>
@@ -429,26 +430,26 @@
                   <li>
                     <a href="{% url 'incident_update' incident.id %}?quick_action=resolve" class="flex items-center">
                       <span class="material-symbols-rounded mr-1">task_alt</span>
-                      <span>Marquer comme résolu</span>
+                      <span>{% trans "mark as resolved" %}</span>
                     </a>
                   </li>
                   {% endif %}
                   <li>
                     <a href="#" onclick="assignToMe({{ incident.id }})" class="flex items-center">
                       <span class="material-symbols-rounded mr-1">person_add</span>
-                      <span>M'assigner</span>
+                      <span>{% trans "assign to me" %}</span>
                     </a>
                   </li>
                   <li>
                     <a href="{% url 'incident_detail' incident.id %}#comments" class="flex items-center">
                       <span class="material-symbols-rounded mr-1">comment</span>
-                      <span>Commenter</span>
-                    </a>
+                      <span>{% trans "commment" %}</span>
+                    </a> 
                   </li>
                   <li>
                     <a href="{% url 'incident_delete' incident.id %}" class="flex items-center text-error">
                       <span class="material-symbols-rounded text-xs scale-75">delete</span>
-                      <span>Supprimer</span>
+                      <span>{% trans "delete" %}</span>
                     </a>
                   </li>
                 </ul>
@@ -460,12 +461,12 @@
         <div class="col-span-full text-center py-10">
           <div class="flex flex-col items-center">
             <img src="{% static 'img/iconsax/All/bulk/document-text.svg' %}" class="w-16 h-16 text-base-content/20 mb-4" alt="No incidents">
-            <h3 class="font-bold text-lg">Aucun incident trouvé</h3>
-            <p class="text-muted-foreground mb-4">Aucun incident ne correspond aux critères de recherche actuels.</p>
+            <h3 class="font-bold text-lg">{% trans "no incident found" %}</h3>
+            <p class="text-muted-foreground mb-4">{% trans "no incident corresponds to actual search critera" %}</p>
             {% if has_active_filters %}
-            <button onclick="clearFilters()" class="btn btn-primary btn-sm">Effacer les filtres</button>
+            <button onclick="clearFilters()" class="btn btn-primary btn-sm">{% trans "reset filters" %}</button>
             {% else %}
-            <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">Créer un incident</a>
+            <a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">{% trans "create incident" %}</a>
             {% endif %}
           </div>
         </div>
