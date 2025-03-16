@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block title %}
-{% if form.instance.id %}Modifier l'incident{% else %}Nouvel incident{% endif %}
+{% if form.instance.id %}{% trans "edit incident" %}{% else %}{% trans "new incident" %}{% endif %}
 {% endblock %}
 
 {% block extra_head %}
@@ -53,29 +54,29 @@
     {% url 'incident_list' as incident_list_url %}
     
     {% if form.instance.id %}
-      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents', 'url': '/incidents/'}, {'label': 'Incident #"|add:form.instance.id|stringformat:"s"|add:"', 'url': '/incident/"|add:form.instance.id|stringformat:"s"|add:"/'}, {'label': 'Modifier'}]" %}
+      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents', 'url': '/incidents/'}, {'label': 'Incident #"|add:form.instance.id|stringformat:"s"|add:"', 'url': '/incident/"|add:form.instance.id|stringformat:"s"|add:"/'}, {'label': _('edit')}]" %}
     {% else %}
-      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents', 'url': '/incidents/'}, {'label': 'Nouvel incident'}]" %}
+      {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label': 'Incidents', 'url': '/incidents/'}, {'label': _('new incident')}]" %}
     {% endif %}
     
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold">
         {% if form.instance.id %}
-        Modifier l'incident #{{ form.instance.id }}
+        {% trans "edit incident" %} #{{ form.instance.id }}
         {% else %}
-        Créer un nouvel incident
+        {% trans "create a new incident" %}
         {% endif %}
       </h1>
       
       {% if form.instance.id %}
       <div class="flex items-center gap-4">
         <div>
-          <div class="text-sm text-muted-foreground">Créé le</div>
+          <div class="text-sm text-muted-foreground">{% trans "created at" %}</div>
           <div>{{ form.instance.created_at|date:"d/m/Y H:i" }}</div>
         </div>
         
         <div>
-          <div class="text-sm text-muted-foreground">Mis à jour le</div>
+          <div class="text-sm text-muted-foreground">{% trans "updated at" %}</div>
           <div>{{ form.instance.updated_at|date:"d/m/Y H:i" }}</div>
         </div>
       </div>
@@ -89,7 +90,7 @@
     <div>
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
       <div>
-        <h3 class="font-bold">Erreurs dans le formulaire</h3>
+        <h3 class="font-bold">{% trans "error in the form" %}</h3>
         <ul class="mt-2 list-disc pl-5">
           {% for field in form %}
             {% for error in field.errors %}
@@ -132,7 +133,7 @@
     <div class="card bg-base-100 shadow-lg form-section">
       <div class="card-body p-0">
         <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="general">
-          {% include "components/card_header.html" with title="Informations générales" icon="library_books" %}
+          {% include "components/card_header.html" with title=_("global informations") icon="library_books" %}
           <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
         </div>
         
@@ -142,11 +143,11 @@
             <div class="lg:col-span-2">
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Titre de l'incident *</span>
+                  <span class="label-text font-medium">{% trans "incident title" %} *</span>
                 </div>
                 <input type="text" name="title" value="{{ form.title.value|default:'' }}" 
                        class="input input-bordered w-full {% if form.title.errors %}input-error{% endif %}"
-                       placeholder="Entrez un titre descriptif" required>
+                       placeholder="{% trans 'enter a description of incindent' %}" required>
                 {% if form.title.errors %}
                 <div class="label">
                   <span class="label-text-alt text-error">{{ form.title.errors }}</span>
@@ -158,12 +159,12 @@
             <div>
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Catégorie *</span>
+                  <span class="label-text font-medium">{% trans "category" %} *</span>
                 </div>
                 <select name="category" 
                         class="select select-bordered w-full {% if form.category.errors %}select-error{% endif %}"
                         required>
-                  <option value="" {% if not form.category.value %}selected{% endif %}>Sélectionnez une catégorie</option>
+                  <option value="" {% if not form.category.value %}selected{% endif %}>{% trans "select a category" %}</option>
                   {% for value, label in form.fields.category.choices %}
                   <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
                   {% endfor %}
@@ -182,7 +183,7 @@
             <div>
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Statut *</span>
+                  <span class="label-text font-medium">{% trans "status" %} *</span>
                 </div>
                 <select name="status" 
                         class="select select-bordered w-full {% if form.status.errors %}select-error{% endif %}"
@@ -202,7 +203,7 @@
             <div>
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Sévérité *</span>
+                  <span class="label-text font-medium">{% trans "severity" %} *</span>
                 </div>
                 <select name="severity" 
                         class="select select-bordered w-full {% if form.severity.errors %}select-error{% endif %}"
@@ -222,10 +223,10 @@
             <div>
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Assigné à</span>
+                  <span class="label-text font-medium">{% trans "assigned to" %}</span>
                 </div>
                 <select name="assigned_to" class="select select-bordered w-full">
-                  <option value="">Non assigné</option>
+                  <option value="">{% trans "unassigned" %}</option>
                   {% for user in users %}
                   <option value="{{ user.id }}" {% if form.assigned_to.value == user.id %}selected{% endif %}>
                     {{ user.get_full_name|default:user.username }}
@@ -241,7 +242,7 @@
             <div>
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Date de début *</span>
+                  <span class="label-text font-medium">{% trans "start date" %} *</span>
                 </div>
                 <input type="datetime-local" name="start_date" 
                        value="{{ form.start_date.value|date:'Y-m-d\TH:i'|default:'' }}" 
@@ -258,8 +259,8 @@
             <div>
               <label class="form-control w-full">
                 <div class="label">
-                  <span class="label-text font-medium">Date de fin</span>
-                  <span class="label-text-alt">Optionnel pour les incidents en cours</span>
+                  <span class="label-text font-medium">{% trans "end date" %}</span>
+                  <span class="label-text-alt">{% trans "optional for ongoing incidents" %}</span>
                 </div>
                 <input type="datetime-local" name="end_date" 
                        value="{{ form.end_date.value|date:'Y-m-d\TH:i'|default:'' }}" 
@@ -277,11 +278,11 @@
           <div>
             <label class="form-control w-full">
               <div class="label">
-                <span class="label-text font-medium">Détails de l'incident *</span>
+                <span class="label-text font-medium">{% trans "incident details" %} *</span>
               </div>
-              <textarea name="details" rows="5" 
+              <textarea name="details" rows="5"
                      class="textarea textarea-bordered w-full {% if form.details.errors %}textarea-error{% endif %}"
-                     placeholder="Décrivez l'incident en détail..." required>{{ form.details.value|default:'' }}</textarea>
+                     placeholder='{% trans "detail current incident" %}' required>{{ form.details.value|default:'' }}</textarea>
               {% if form.details.errors %}
               <div class="label">
                 <span class="label-text-alt text-error">{{ form.details.errors }}</span>
@@ -297,7 +298,7 @@
     <div class="card bg-base-100 shadow-lg form-section">
       <div class="card-body p-0">
         <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="resolution">
-          {% include "components/card_header.html" with title="Résolution et impact" icon="checklist" %}
+          {% include "components/card_header.html" with title=_("resolution and impacts") icon="checklist" %}
           <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
         </div>
         
@@ -306,12 +307,12 @@
           <div>
             <label class="form-control w-full">
               <div class="label">
-                <span class="label-text font-medium">Processus de résolution</span>
-                <span class="label-text-alt">Comment l'incident a été ou sera résolu</span>
+                <span class="label-text font-medium">{% trans "resolution process" %}</span>
+                <span class="label-text-alt">{% trans "how the incident was or will be resolved ?" %}</span>
               </div>
               <textarea name="resolution_process" rows="3"
                      class="textarea textarea-bordered w-full"
-                     placeholder="Décrivez les étapes prises pour résoudre l'incident...">{{ form.resolution_process.value|default:'' }}</textarea>
+                     placeholder='{% trans "describe the steps taken to resolve the incident..." %}'>{{ form.resolution_process.value|default:'' }}</textarea>
             </label>
           </div>
           
@@ -319,12 +320,12 @@
           <div>
             <label class="form-control w-full">
               <div class="label">
-                <span class="label-text font-medium">Impact</span>
-                <span class="label-text-alt">Impact de l'incident sur les utilisateurs ou le système</span>
+                <span class="label-text font-medium">{% trans "impact" %}</span>
+                <span class="label-text-alt">{% trans "impact of the incident on users or the system" %}</span>
               </div>
               <textarea name="impact" rows="3"
                      class="textarea textarea-bordered w-full"
-                     placeholder="Décrivez l'impact de cet incident...">{{ form.impact.value|default:'' }}</textarea>
+                     placeholder='{% trans "describe the impact of this incident..." %}'>{{ form.impact.value|default:'' }}</textarea>
             </label>
           </div>
         </div>
@@ -335,7 +336,7 @@
     <div class="card bg-base-100 shadow-lg form-section">
       <div class="card-body p-0">
         <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="attachments">
-          {% include "components/card_header.html" with title="Fichiers attachés" icon="attach_file" %}
+          {% include "components/card_header.html" with title=_("attached files") icon="attach_file" %}
           <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
         </div>
         
@@ -343,14 +344,14 @@
           <!-- Zone d'upload des fichiers -->
           <div class="drag-area flex flex-col items-center justify-center p-8 rounded-lg text-center" id="dropZone">
             <span class="material-symbols-rounded mb-4 text-muted-foreground mb-4" style="font-size: 48px;">upload_file</span>
-            <h3 class="text-lg font-semibold">Glissez et déposez des fichiers ici</h3>
+            <h3 class="text-lg font-semibold">{% trans "drag&drop files here" %}</h3>
             <p class="text-sm text-muted-foreground mb-4">ou</p>
             <label class="btn btn-primary">
               <span class="material-symbols-rounded mr-1">folder_open</span>
-              Parcourir les fichiers
+              {% trans "browse files" %}
               <input type="file" name="files" multiple class="hidden" id="fileInput">
             </label>
-            <p class="text-xs text-muted-foreground mt-4">Formats acceptés: PDF, PNG, JPG, DOCX, etc.</p>
+            <p class="text-xs text-muted-foreground mt-4">{% trans "accepted formats" %}: PDF, PNG, JPG, DOCX, etc.</p>
           </div>
           
           <!-- Prévisualisations des fichiers -->
@@ -395,7 +396,7 @@
       <div class="card bg-base-100 shadow-lg form-section">
         <div class="card-body p-0">
           <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="links">
-            {% include "components/card_header.html" with title="Lien #"|add:forloop.counter|stringformat:"s" icon="link" %}
+            {% include "components/card_header.html" with title='_("link") #'|add:forloop.counter|stringformat:"s" icon="link" %}
           </div>
           
           {{ link_form.id }}
@@ -406,7 +407,7 @@
               <div>
                 <label class="form-control w-full">
                   <div class="label">
-                    <span class="label-text font-medium">URL</span>
+                    <span class="label-text font-medium">{% trans "url" %}</span>
                   </div>
                   {{ link_form.url }}
                   {% if link_form.url.errors %}
@@ -419,7 +420,7 @@
               <div>
                 <label class="form-control w-full">
                   <div class="label">
-                    <span class="label-text font-medium">Titre</span>
+                    <span class="label-text font-medium">{% trans "title" %}</span>
                   </div>
                   {{ link_form.title }}
                   {% if link_form.title.errors %}
@@ -434,7 +435,7 @@
             {% if link_form.instance.pk %}
             <div class="flex justify-end">
               <label class="cursor-pointer label">
-                <span class="label-text mr-2">Supprimer ce lien</span>
+                <span class="label-text mr-2">{% trans "remove link" %}</span>
                 <input type="checkbox" name="{{ link_form.DELETE.html_name }}" class="checkbox checkbox-error" />
               </label>
             </div>
@@ -448,20 +449,20 @@
     <div class="text-center">
       <button type="button" id="add-link" class="btn btn-outline">
         <span class="material-symbols-rounded mr-2">add_link</span>
-        Ajouter un lien
+        {% trans "add a link" %}
       </button>
     </div>
     
     <!-- Boutons d'action -->
     <div class="flex flex-wrap justify-end gap-2 sticky bottom-0 py-4 px-6 bg-base-100 border-t border-base-300 shadow-lg">
       {% if form.instance.id %}
-      <a href="{% url 'incident_detail' form.instance.id %}" class="btn btn-ghost">Annuler</a>
+      <a href="{% url 'incident_detail' form.instance.id %}" class="btn btn-ghost">{% trans "cancel" %}</a>
       {% else %}
-      <a href="{% url 'incident_list' %}" class="btn btn-ghost">Annuler</a>
+      <a href="{% url 'incident_list' %}" class="btn btn-ghost">{% trans "cancel" %}</a>
       {% endif %}
       <button type="submit" class="btn btn-primary" id="submitBtn">
         <span class="material-symbols-rounded mr-1">save</span>
-        {% if form.instance.id %}Mettre à jour{% else %}Créer l'incident{% endif %}
+        {% if form.instance.id %}{% trans "update" %}{% else %}{% trans "create incident" %}{% endif %}
       </button>
     </div>
   </form>

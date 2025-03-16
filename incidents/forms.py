@@ -3,6 +3,7 @@ from .models import Incident, IncidentLink, IncidentUpdate, Comment
 from django.forms import inlineformset_factory
 from django.utils import timezone
 from .widgets import MultipleFileInput
+from django.utils.translation import gettext as _
 
 """
 Django forms for the incident management system.
@@ -19,11 +20,12 @@ FormSets:
 """
 
 class IncidentForm(forms.ModelForm):
-    # Ajouter le champ files explicitement avec le widget MultipleFileInput
+    # Add the files field explicitly with the MultipleFileInput widget
     files = forms.FileField(
         widget=MultipleFileInput(),
         required=False,
-        label="Fichiers attachés"
+        label=_("attached files"),
+        help_text=_("Max. 10 MB")
     )
     
     class Meta:
@@ -62,13 +64,13 @@ class IncidentForm(forms.ModelForm):
         end_date = cleaned_data.get('end_date')
         
         if end_date and start_date and end_date < start_date:
-            self.add_error('end_date', "La date de fin ne peut pas être antérieure à la date de début.")
+            self.add_error('end_date', _("end date can't be prior to start date"))
         
         status = cleaned_data.get('status')
         if status == 'resolved' and not end_date:  # Changed from 'CLOSED' to match STATUS_CHOICES
-            self.add_error('end_date', "Une date de fin est requise pour les incidents clôturés.")
+            self.add_error('end_date', _("end date is required for resolved incidents"))
         
-        # Supprimer l'erreur sur le champ 'files' s'il y en a une
+        # Delete the error on the 'files' field if there is one
         if 'files' in self._errors:
             del self._errors['files']
             
