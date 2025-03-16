@@ -37,6 +37,11 @@ def lint():
         print("❌ Des problèmes de lint ont été détectés.")
         return 1
 
+def translate():
+    """Compile translations"""
+    subprocess.call(["django-admin", "makemessages", "-l", "fr", "-l", "en", "-l", "es"])
+    # subprocess.call(["django-admin", "compilemessages"])
+
 def migrate():
     """Apply migrations"""
     subprocess.run("python manage.py makemigrations", shell=True)
@@ -55,4 +60,5 @@ def dev():
     # Run Django commands
     migrate()
     collectstatic()
+    translate()
     return subprocess.call(["python", "manage.py", "runserver"])

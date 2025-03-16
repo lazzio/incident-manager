@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load table_extras %}
 <div class="overflow-x-auto">
     <table class="table table-zebra w-full">
@@ -51,7 +52,7 @@
                             {% include empty_state_component with title=empty_title message=empty_message action_url=empty_action_url action_text=empty_action_text %}
                         {% else %}
                             <div class="text-center opacity-50 py-8">
-                                {{ empty_message|default:"No data available" }}
+                                {{ empty_message|default:_("no data available") }}
                             </div>
                         {% endif %}
                     </td>

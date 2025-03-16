@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% block title %}Dashboard{% endblock %}
 
@@ -30,24 +31,24 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 class="text-3xl font-bold">Dashboard</h1>
-            <p class="text-muted-foreground mt-1">Bienvenue dans votre tableau de bord de gestion d'incidents</p>
+            <p class="text-muted-foreground mt-1">{% trans "welcome on your incidents dashboard" %}</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             <div class="dropdown dropdown-end">
                 <button class="btn btn-ghost btn-sm">
                     <span class="material-symbols-rounded mr-2">filter_alt</span>
-                    Filtres
+                    {% trans "filter" %}
                 </button>
                 <ul tabindex="0" class="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a href="?period=day">Aujourd'hui</a></li>
-                    <li><a href="?period=week">Cette semaine</a></li>
-                    <li><a href="?period=month">Ce mois</a></li>
-                    <li><a href="?period=year">Cette année</a></li>
+                    <li><a href="?period=day">{% trans "today" %}</a></li>
+                    <li><a href="?period=week">{% trans "current week" %}</a></li>
+                    <li><a href="?period=month"><{% trans "current month" %}</a></li>
+                    <li><a href="?period=year">{% trans "current year" %}</a></li>
                 </ul>
             </div>
             <a href="{% url 'incident_create' %}" class="btn btn-primary">
                 <span class="material-symbols-rounded mr-2">library_add</span>
-                Nouvel incident
+                {% trans "new incident" %}
             </a>
         </div>
     </div>
@@ -55,16 +56,16 @@
     <!-- Cartes statistiques avec indicateurs de tendance -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total des incidents -->
-        {% include "components/stats_card.html" with title="Total des incidents" value=total_incidents icon="stacks" trend="+8%" trend_positive=True %}
+        {% include "components/stats_card.html" with title=_("total incidents") value=total_incidents icon="stacks" trend="+8%" trend_positive=True %}
 
         <!-- Incidents en attente -->
-        {% include "components/stats_card.html" with title="En attente" value=open_incidents icon="hourglass_top" icon_bg="bg-info/10" trend="+12%" trend_positive=False %}
+        {% include "components/stats_card.html" with title=_("waiting") value=open_incidents icon="hourglass_top" icon_bg="bg-info/10" trend="+12%" trend_positive=False %}
 
         <!-- Incidents en cours -->
-        {% include "components/stats_card.html" with title="En cours" value=in_progress_incidents icon="run_circle" icon_bg="bg-warning/10" icon_class="text-warning" trend="-5%" trend_positive=True %}
+        {% include "components/stats_card.html" with title=_("running") value=in_progress_incidents icon="run_circle" icon_bg="bg-warning/10" icon_class="text-warning" trend="-5%" trend_positive=True %}
 
         <!-- Incidents résolus -->
-        {% include "components/stats_card.html" with title="Résolus" value=resolved_incidents icon="task_alt" icon_bg="bg-success/10" icon_class="text-success" trend="+15%" trend_positive=True %}
+        {% include "components/stats_card.html" with title=_("resolved") value=resolved_incidents icon="task_alt" icon_bg="bg-success/10" icon_class="text-success" trend="+15%" trend_positive=True %}
     </div>
 
     <!-- Widgets de graphique et listes -->
@@ -73,11 +74,11 @@
         <div class="card bg-base-100 shadow-lg lg:col-span-2">
             <div class="card-body dashboard-card">
                 <div class="card-header flex justify-between items-center">
-                    {% include "components/card_header.html" with title="Activité des incidents" icon="chart_data" %}
+                    {% include "components/card_header.html" with title=_("activity") icon="chart_data" %}
                     <div class="join">
-                        <button class="join-item btn btn-xs" data-period="day">Jour</button>
-                        <button class="join-item btn btn-xs btn-active" data-period="week">Semaine</button>
-                        <button class="join-item btn btn-xs" data-period="month">Mois</button>
+                        <button class="join-item btn btn-xs" data-period="day">{% trans "day" %}</button>
+                        <button class="join-item btn btn-xs btn-active" data-period="week">{% trans "week" %}</button>
+                        <button class="join-item btn btn-xs" data-period="month">{% trans "month" %}</button>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -90,7 +91,7 @@
         <div class="card bg-base-100 shadow-lg">
             <div class="card-body dashboard-card">
                 <div class="card-header">
-                    {% include "components/card_header.html" with title="Sévérité des incidents" icon="data_usage" %}
+                    {% include "components/card_header.html" with title=_("incidents severity") icon="data_usage" %}
                 </div>
                 <div class="chart-container">
                     <canvas id="severityChart"></canvas>
@@ -100,7 +101,7 @@
                     <div class="stat bg-base-200 rounded-lg p-2">
                         <div class="stat-title text-xs">{{ category.name|title }}</div>
                         <div class="stat-value text-lg">{{ category.count }}</div>
-                        <div class="stat-desc text-xs">{{ category.percentage|floatformat:0 }}% du total</div>
+                        <div class="stat-desc text-xs">{{ category.percentage|floatformat:0 }}% {% trans "of total" %}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -114,17 +115,17 @@
         <div class="card bg-base-100 shadow-lg lg:col-span-2">
             <div class="card-body">
                 {% url 'incident_list' as incident_list_url %}
-                {% include "components/card_header.html" with title="Incidents récents" icon="early_on" action_url=incident_list_url action_label="Voir tous" %}
+                {% include "components/card_header.html" with title=_("recent incidents") icon="early_on" action_url=incident_list_url action_label=_("see all") %}
                 
                 <div class="overflow-x-auto">
                     <table class="table table-zebra w-full">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Titre</th>
-                                <th>État</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                <th>{% trans "id" %}</th>
+                                <th>{% trans "title" %}</th>
+                                <th>{% trans "state" %}</th>
+                                <th>{% trans "date" %}</th>
+                                <th>{% trans "actions" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,28 +156,28 @@
         <div class="card bg-base-100 shadow-lg">
             <div class="card-body dashboard-card">
                 <div class="card-header">
-                    {% include "components/card_header.html" with title="Temps de résolution" icon="timer" %}
+                    {% include "components/card_header.html" with title=_("resolution time") icon="timer" %}
                 </div>
                 
                 <div class="flex justify-center items-center my-4">
                     <div class="radial-progress text-primary" style="--value:75; --size:12rem; --thickness: 1rem;">
                         <div class="flex flex-col items-center">
                             <span class="text-3xl font-bold">75%</span>
-                            <span class="text-xs text-muted-foreground">dans le SLA</span>
+                            <span class="text-xs text-muted-foreground">{% trans "in SLA" %}</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="stats bg-base-200 stats-vertical shadow mt-4">
                     <div class="stat">
-                        <div class="stat-title">Temps moyen</div>
+                        <div class="stat-title">{% trans "average time" %}</div>
                         <div class="stat-value text-lg">12h 34m</div>
-                        <div class="stat-desc text-success">↘︎ 23% vs précédent</div>
+                        <div class="stat-desc text-success">↘︎ 23% {% trans "vs previous one" %}</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-title">Incidents critiques</div>
+                        <div class="stat-title">{% trans "critical incident" %}</div>
                         <div class="stat-value text-lg">4h 12m</div>
-                        <div class="stat-desc text-error">↗︎ 8% vs précédent</div>
+                        <div class="stat-desc text-error">↗︎ 8% vs {% trans "previous one" %}</div>
                     </div>
                 </div>
             </div>
@@ -189,9 +190,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Données simulées pour le graphique d'activité
     const activityData = {
-        labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         datasets: [{
-            label: ' Nouveaux',
+            label: ' New',
             data: [3, 5, 2, 7, 4, 1, 2],
             borderColor: '#3abff8',
             backgroundColor: 'rgba(58, 191, 248, 0.2)',
@@ -199,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fill: true,
             tension: 0.4
         }, {
-            label: ' Résolus',
+            label: ' Resolved',
             data: [2, 4, 3, 5, 6, 2, 1],
             borderColor: '#36d399',
             backgroundColor: 'rgba(54, 211, 153, 0.2)', 
@@ -211,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Données simulées pour le graphique de sévérité
     const severityData = {
-        labels: [' Critique', ' Haute', ' Moyenne', ' Basse'],
+        labels: [' Critical', ' High', ' Medium', ' Low'],
         datasets: [{
             data: [
                 {% for category in categories %}
@@ -304,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 newData1 = [2, 4, 6, 3, 1, 0, 0, 1];
                 newData2 = [1, 3, 5, 4, 2, 1, 0, 0];
             } else if (period === 'week') {
-                newLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                newLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                 newData1 = [3, 5, 2, 7, 4, 1, 2];
                 newData2 = [2, 4, 3, 5, 6, 2, 1];
             } else if (period === 'month') {

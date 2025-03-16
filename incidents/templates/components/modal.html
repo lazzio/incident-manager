@@ -1,3 +1,4 @@
+{% load i18n %}
 <div id="{{ id|default:'modal' }}" class="fixed inset-0 bg-black/0 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
     <div id="{{ id|default:'modal' }}-container" class="bg-base-100 rounded-lg shadow-lg max-w-4xl w-full mx-4 overflow-hidden transform scale-95 transition-all duration-300 ease-in-out">
         <div class="flex justify-between items-center p-4 border-b border-base-300">
@@ -17,11 +18,11 @@
             {% if show_download %}
             <a id="{{ id|default:'modal' }}-download" href="#" class="btn btn-primary">
                 <span class="material-symbols-rounded mr-2">download</span>
-                Télécharger
+                {% trans "download" %}
             </a>
             {% endif %}
             <button class="btn btn-ghost close-modal" data-modal-id="{{ id|default:'modal' }}">
-                Fermer
+                {% trans "close" %}
             </button>
         </div>
     </div>

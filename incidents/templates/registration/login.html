@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr" class="h-full">
@@ -44,8 +45,8 @@
             
             <div class="relative z-10 max-w-md text-center">
                 <span class="material-symbols-rounded mb-4" style="font-size: 6rem">blood_pressure</span>
-                <h1 class="text-3xl font-bold mb-2">Incident Management</h1>
-                <p class="text-lg text/80">Efficiently track, manage, and resolve incidents in one centralized platform.</p>
+                <h1 class="text-3xl font-bold mb-2">{% trans "Incident Management" %}</h1>
+                <p class="text-lg text/80">{% trans "Efficiently track, manage, and resolve incidents in one centralized platform." %}</p>
             </div>
         </div>
         
@@ -61,9 +62,9 @@
 
                 <!-- Title section -->
                 <div class="text-center opacity-0 animate-fadeIn animate-delay-100">
-                    <h2 class="text-2xl font-bold tracking-tight">Welcome</h2>
+                    <h2 class="text-2xl font-bold tracking-tight">{% trans "Welcome" %}</h2>
                     <p class="text-sm text-base-content/70 mt-2">
-                        Sign in to access your dashboard
+                        {% trans "Sign in to access your dashboard" %}
                     </p>
                 </div>
 
@@ -78,8 +79,8 @@
                                 <div class="flex items-center">
                                     <span class="material-symbols-rounded">error</span>
                                     <div>
-                                        <h3 class="font-medium">Authentication failed</h3>
-                                        <div class="text-sm">The username or password you entered is incorrect.</div>
+                                        <h3 class="font-medium">{% trans "Authentication failed" %}</h3>
+                                        <div class="text-sm">{% trans "The username or password you entered is incorrect." %}</div>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +89,7 @@
                             <!-- Username field -->
                             <div class="form-control">
                                 <label for="id_username" class="label">
-                                    <span class="label-text font-medium">Username</span>
+                                    <span class="label-text font-medium">{% trans "Username" %}</span>
                                 </label>
                                 <div class="relative form-input-icon group">
                                     <span class="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 form-icon transition-colors duration-200">person</span>
@@ -98,7 +99,7 @@
                                         autocomplete="username"
                                         required
                                         class="input input-bordered w-full pl-10 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                        placeholder="Enter your username">
+                                        placeholder='{% trans "Enter your username" %}'>
                                 </div>
                             </div>
 
@@ -109,7 +110,7 @@
                                         <span class="label-text font-medium">Password</span>
                                     </label>
                                     <a href="{% url 'password_reset' %}" class="text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-200">
-                                        Forgot password?
+                                        {% trans "Forgot password?" %%}
                                     </a>
                                 </div>
                                 <div class="relative form-input-icon group">
@@ -120,7 +121,7 @@
                                         autocomplete="current-password"
                                         required
                                         class="input input-bordered w-full pl-10 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                        placeholder="Enter your password">
+                                        placeholder='{% trans "Enter your password" %}'>
                                 </div>
                             </div>
 
@@ -131,7 +132,7 @@
                                     name="remember"
                                     class="checkbox checkbox-sm checkbox-primary">
                                 <label for="remember" class="ml-2 text-sm">
-                                    Remember me for 30 days
+                                    {% trans "Remember me for 30 days" %}
                                 </label>
                             </div>
 
@@ -139,7 +140,7 @@
                             <div>
                                 <button type="submit" class="btn btn-primary w-full hover:shadow-lg transition-all duration-200">
                                     <span class="material-symbols-rounded mr-2">login</span>
-                                    Sign in
+                                    {% trans "Sign in" %}
                                 </button>
                             </div>
                         </form>
@@ -152,7 +153,7 @@
                     <p class="text-sm text-base-content/70">
                         Don't have an account?
                         <a href="{% url 'register' %}" class="font-medium text-primary hover:text-primary/80 transition-colors duration-200">
-                            Create an account
+                            {% trans "Create an account" %}
                         </a>
                     </p>
                 </div>
@@ -162,9 +163,9 @@
                 <div class="text-center text-xs text-base-content/50 mt-8 opacity-0 animate-fadeIn animate-delay-300">
                     <div class="flex items-center justify-center mb-2">
                         <span class="material-symbols-rounded text-sm mr-1">shield</span>
-                        <span>Secure login</span>
+                        <span>{% trans "Secure login" %}</span>
                     </div>
-                    <p>Your connection to this site is encrypted and your data is protected</p>
+                    <p>{% trans "Your connection to this site is encrypted and your data is protected" %}</p>
                 </div>
             </div>
         </div>

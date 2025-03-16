@@ -1,21 +1,22 @@
+{% load i18n %}
 {% if severity == 'LOW' %}
 <div class="badge {% if large %}badge-lg{% endif %} badge-ghost gap-1">
     <span class="material-symbols-rounded text-xs scale-75">south</span>
-    {{ low_text|default:"Basse" }}
+    {{ low_text|default:_("low") }}
 </div>
 {% elif severity == 'MEDIUM' %}
 <div class="badge {% if large %}badge-lg{% endif %} badge-info gap-1">
     <span class="material-symbols-rounded text-xs scale-75">remove</span>
-    {{ medium_text|default:"Moyenne" }}
+    {{ medium_text|default:_("medium") }}
 </div>
 {% elif severity == 'HIGH' %}
 <div class="badge {% if large %}badge-lg{% endif %} badge-warning gap-1">
     <span class="material-symbols-rounded text-xs scale-75">north</span>
-    {{ high_text|default:"Haute" }}
+    {{ high_text|default:_("high") }}
 </div>
 {% elif severity == 'CRITICAL' %}
 <div class="badge {% if large %}badge-lg{% endif %} badge-error gap-1">
     <span class="material-symbols-rounded text-xs scale-75">skull</span>
-    {{ critical_text|default:"Critique" }}
+    {{ critical_text|default:_("critical") }}
 </div>
 {% endif %}
