@@ -124,13 +124,6 @@
                     <span class="material-symbols-rounded mr-1">download</span>
                     {% trans "download" %}
                   </a>
-                  {% if file.is_image %}
-                  <button onclick="openModal('imageModal', '{{ file.file.url }}', '{{ file.filename }}')"
-                    class="btn btn-xs btn-outline">
-                    <span class="material-symbols-rounded mr-1">visibility</span>
-                    {% trans "preview" %}
-                  </button>
-                  {% endif %}
                 </div>
               </div>
             </div>
