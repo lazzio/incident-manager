@@ -126,6 +126,8 @@
   </div>
   {% endif %}
   
+  <div class="grid grid-cols-6 gap-4">
+    <div class="col-span-4 col-start-2">
   <form method="post" enctype="multipart/form-data" class="space-y-6" id="incidentForm">
     {% csrf_token %}
     
@@ -454,7 +456,7 @@
     </div>
     
     <!-- Boutons d'action -->
-    <div class="flex flex-wrap justify-end gap-2 sticky bottom-0 py-4 px-6 bg-base-100 border-t border-base-300 shadow-lg">
+    <div class="flex flex-wrap justify-end gap-2 sticky bottom-0 py-4 px-6">
       {% if form.instance.id %}
       <a href="{% url 'incident_detail' form.instance.id %}" class="btn btn-ghost">{% trans "cancel" %}</a>
       {% else %}
@@ -466,6 +468,8 @@
       </button>
     </div>
   </form>
+  </div>
+</div>
 </div>
 {% endblock %}
 

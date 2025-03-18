@@ -72,292 +72,309 @@
 
 {% block content %}
 <div class="space-y-6 fade-in">
-    <!-- Breadcrumbs header --> 
+
+    <!-- Breadcrumbs header -->
     <div>
         {% include "components/breadcrumbs.html" with items="[{'label': 'Dashboard', 'url': '/dashboard/'}, {'label':_('my profile')}]" %}
 
         <h1 class="text-3xl font-bold">{% trans "my profile" %}</h1>
         <p class="text-muted-foreground mt-1">{% trans "manage your personal informations" %}</p>
     </div>
-
-    <!-- User info and stats -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- User profile card -->
-        <div class="card bg-base-100 shadow-lg p-6">
-            <div class="flex flex-col items-center text-center">
-                <!-- User Avatar -->
-                <div class="avatar-upload mb-4">
-                    <div class="avatar placeholder">
-                        <div class="bg-primary text-primary-content rounded-full w-24">
-                            <span class="text-3xl">{{ user.username|slice:":1"|upper }}</span>
-                        </div>
-                    </div>
-                    <div class="avatar-edit">
-                        <button class="btn btn-circle btn-sm btn-primary">
-                            <span class="material-symbols-rounded">edit</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Username and role -->
-                <h2 class="text-xl font-bold">{{ user.get_full_name|default:user.username }}</h2>
-                <p class="text-muted-foreground">
-                    {% if user.is_superuser %}
-                    {% trans "administrator" %}
-                    {% elif user.is_staff %}
-                    {% trans "manager" %}
-                    {% else %}
-                    {% trans "user" %}
-                    {% endif %}
-                </p>
-
-                <div class="divider"></div>
-
-                <!-- Account info -->
-                <div class="w-full text-left">
-                    <div class="mb-2">
-                        <span class="text-muted-foreground">{% trans "username" %} :</span>
-                        <span class="font-medium">{{ user.username }}</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted-foreground">{% trans "email" %}:</span>
-                        <span class="font-medium">{{ user.email|default:_("unknown") }}</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted-foreground">{% trans "member since" %} :</span>
-                        <span class="font-medium">{{ user.date_joined|date:"d/m/Y" }}</span>
-                    </div>
-                    <div>
-                        <span class="text-muted-foreground">{% trans "last connection" %} :</span>
-                        <span class="font-medium">{{ user.last_login|date:"d/m/Y H:i" }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- User stats -->
-        <div class="lg:col-span-2">
-            <div class="card bg-base-100 shadow-lg mb-6">
-                <div class="card-body">
-                    {% include "components/card_header.html" with title=_("statistics") icon="analytics" %}
-
-                    <!-- Stats grid -->
-                    <div class="stats stats-vertical lg:stats-horizontal shadow w-full text-center">
-                        <div class="stat">
-                            <div class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ user_stats.created_incidents }}</div>
-                            <div class="stat-title text-base/7">{% trans "incidents created" %}</div>
-                        </div>
-
-                        <div class="stat">
-                            <div class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ user_stats.assigned_incidents }}</div>
-                            <div class="stat-title text-base/7">{% trans "assigned inncidents" %}</div>
-                        </div>
-
-                        <div class="stat">
-                            <div class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ user_stats.resolved_assigned }}</div>
-                            <div class="stat-title text-base/7">{% trans "resolved" %}</div>
-                        </div>
-                    </div>
-
-                    <!-- Additional stats in circles -->
-                    <div class="flex flex-wrap justify-center gap-4 mt-4">
-                        <div class="stat-card radial-progress text-primary"
-                            style="--value:{{ user_stats.open_assigned|default:0 }}; --size:7rem; --thickness: 0.5rem;"
-                            role="progressbar">
-                            <div class="absolute inset-0 flex items-center justify-center flex-col">
-                                <span class="text-xl font-bold">{{ user_stats.open_assigned }}</span>
-                                <span class="text-xs">{% trans "waiting" %}</span>
-                            </div>
-                        </div>
-
-                        <div class="stat-card radial-progress text-warning"
-                            style="--value:{{ user_stats.in_progress_assigned|default:0 }}; --size:7rem; --thickness: 0.5rem;"
-                            role="progressbar">
-                            <div class="absolute inset-0 flex items-center justify-center flex-col">
-                                <span class="text-xl font-bold">{{ user_stats.in_progress_assigned }}</span>
-                                <span class="text-xs">{% trans "running" %}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Profile settings section -->
-            <div class=" card bg-base-100 shadow-lg profile-section mb-6">
-                <div class="card-body p-0">
-                    <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header"
-                        data-section="profile">
-                        {% include "components/card_header.html" with title=_("personal informations") icon="person" %}
-                        <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
-                    </div>
-
-                    <div class="p-6 space-y-4 form-section-content" id="profile">
-                        <form method="post" class="space-y-4" id="profile-form">
-                            {% csrf_token %}
-                            <input type="hidden" name="form_type" value="profile">
-                            {{ profile_form.confirm_username_change }}
-                            <input type="hidden" id="original_username" value="{{ user.username }}">
-
-                            <!-- Username field -->
-                            <div>
-                                <label class="form-control w-full">
-                                    <div class="label">
-                                        <span class="label-text font-medium">{% trans "user name"%}</span>
-                                    </div>
-                                    {{ profile_form.username }}
-                                    {% if profile_form.username.errors %}
-                                    <div class="label">
-                                        <span class="label-text-alt text-error">{{ profile_form.username.errors }}</span>
-                                    </div>
-                                    {% endif %}
-                                </label>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="form-control w-full">
-                                        <div class="label">
-                                            <span class="label-text font-medium">{% trans "firstname" %}</span>
-                                        </div>
-                                        {{ profile_form.first_name }}
-                                        {% if profile_form.first_name.errors %}
-                                        <div class="label">
-                                            <span class="label-text-alt text-error">{{ profile_form.first_name.errors }}</span>
-                                        </div>
-                                        {% endif %}
-                                    </label>
-                                </div>
-
-                                <div>
-                                    <label class="form-control w-full">
-                                        <div class="label">
-                                            <span class="label-text font-medium">{% trans "name" %}</span>
-                                        </div>
-                                        {{ profile_form.last_name }}
-                                        {% if profile_form.last_name.errors %}
-                                        <div class="label">
-                                            <span class="label-text-alt text-error">{{ profile_form.last_name.errors }}</span>
-                                        </div>
-                                        {% endif %}
-                                    </label>
+    <div class="grid grid-cols-6 gap-4">
+        <div class="col-span-4 col-start-2">
+            <!-- User info and stats -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- User profile card -->
+                <div class="card bg-base-100 shadow-lg p-6">
+                    <div class="flex flex-col items-center text-center">
+                        <!-- User Avatar -->
+                        <div class="avatar-upload mb-4">
+                            <div class="avatar placeholder">
+                                <div class="bg-primary text-primary-content rounded-full w-24">
+                                    <span class="text-3xl">{{ user.username|slice:":1"|upper }}</span>
                                 </div>
                             </div>
-
-                            <div>
-                                <label class="form-control w-full">
-                                    <div class="label">
-                                        <span class="label-text font-medium">{% trans "email address" %}</span>
-                                    </div>
-                                    {{ profile_form.email }}
-                                    {% if profile_form.email.errors %}
-                                    <div class="label">
-                                        <span class="label-text-alt text-error">{{ profile_form.email.errors }}</span>
-                                    </div>
-                                    {% endif %}
-                                </label>
-                            </div>
-
-                            <div class="flex justify-end">
-                                <button type="submit" class="btn btn-primary">
-                                    <span class="material-symbols-rounded mr-1">save</span>
-                                    {% trans "save modifications" %}
+                            <div class="avatar-edit">
+                                <button class="btn btn-circle btn-sm btn-primary">
+                                    <span class="material-symbols-rounded">edit</span>
                                 </button>
                             </div>
-                        </form>
+                        </div>
 
-                        <!-- Username change confirmation modal -->
-                        <dialog id="username_change_modal" class="modal modal-bottom sm:modal-middle">
-                            <div class="modal-box">
-                                <h3 class="font-bold text-lg">{% trans "confirm your username" %}</h3>
-                                <div class="py-4">
-                                    <p>{ trans "you are about to change your username"} :</p>
-                                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2 my-4">
-                                        <div class="badge badge-lg badge-neutral" id="old_username_display"></div>
-                                        <span class="material-symbols-rounded">arrow_forward</span>
-                                        <div class="badge badge-lg badge-primary" id="new_username_display"></div>
+                        <!-- Username and role -->
+                        <h2 class="text-xl font-bold">{{ user.get_full_name|default:user.username }}</h2>
+                        <p class="text-muted-foreground">
+                            {% if user.is_superuser %}
+                            {% trans "administrator" %}
+                            {% elif user.is_staff %}
+                            {% trans "manager" %}
+                            {% else %}
+                            {% trans "user" %}
+                            {% endif %}
+                        </p>
+
+                        <div class="divider"></div>
+
+                        <!-- Account info -->
+                        <div class="w-full text-left">
+                            <div class="mb-2">
+                                <span class="text-muted-foreground">{% trans "username" %} :</span>
+                                <span class="font-medium">{{ user.username }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted-foreground">{% trans "email" %}:</span>
+                                <span class="font-medium">{{ user.email|default:_("unknown") }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted-foreground">{% trans "member since" %} :</span>
+                                <span class="font-medium">{{ user.date_joined|date:"d/m/Y" }}</span>
+                            </div>
+                            <div>
+                                <span class="text-muted-foreground">{% trans "last connection" %} :</span>
+                                <span class="font-medium">{{ user.last_login|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User stats -->
+                <div class="lg:col-span-2">
+                    <div class="card bg-base-100 shadow-lg mb-6">
+                        <div class="card-body">
+                            {% include "components/card_header.html" with title=_("statistics") icon="analytics" %}
+
+                            <!-- Stats grid -->
+                            <div class="stats stats-vertical lg:stats-horizontal shadow w-full text-center">
+                                <div class="stat">
+                                    <div
+                                        class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                                        {{ user_stats.created_incidents }}</div>
+                                    <div class="stat-title text-base/7">{% trans "incidents created" %}</div>
+                                </div>
+
+                                <div class="stat">
+                                    <div
+                                        class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                                        {{ user_stats.assigned_incidents }}</div>
+                                    <div class="stat-title text-base/7">{% trans "assigned inncidents" %}</div>
+                                </div>
+
+                                <div class="stat">
+                                    <div
+                                        class="stat-value text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                                        {{ user_stats.resolved_assigned }}</div>
+                                    <div class="stat-title text-base/7">{% trans "resolved" %}</div>
+                                </div>
+                            </div>
+
+                            <!-- Additional stats in circles -->
+                            <div class="flex flex-wrap justify-center gap-4 mt-4">
+                                <div class="stat-card radial-progress text-primary"
+                                    style="--value:{{ user_stats.open_assigned|default:0 }}; --size:7rem; --thickness: 0.5rem;"
+                                    role="progressbar">
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <span class="text-xl font-bold">{{ user_stats.open_assigned }}</span>
+                                        <span class="text-xs">{% trans "waiting" %}</span>
                                     </div>
                                 </div>
 
-                                <div class="modal-warning">
-                                    <span class="material-symbols-rounded text-warning mr-2">warning</span>
-                                    <p class="text-sm">
-                                        {% trans "This change will affect your connection. You will have to use your new username on next connection" %}
-                                    </p>
-                                </div>
-
-                                <div class="modal-action">
-                                    <button type="button" id="cancel_username_change" class="btn">{% trans "cancel" %}</button>
-                                    <button type="button" id="confirm_username_change" class="btn btn-primary">{% trans "I agree" %}</button>
+                                <div class="stat-card radial-progress text-warning"
+                                    style="--value:{{ user_stats.in_progress_assigned|default:0 }}; --size:7rem; --thickness: 0.5rem;"
+                                    role="progressbar">
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <span class="text-xl font-bold">{{ user_stats.in_progress_assigned }}</span>
+                                        <span class="text-xs">{% trans "running" %}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <form method="dialog" class="modal-backdrop">
-                                <button>{% trans "close" %}</button>
-                            </form>
-                        </dialog>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Password section -->
-            <div class="card bg-base-100 shadow-lg profile-section">
-                <div class="card-body p-0">
-                    <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header"
-                        data-section="password">
-                        {% include "components/card_header.html" with title=_("change password") icon="password" %}
-                        <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
+                        </div>
                     </div>
 
-                    <div class="p-6 space-y-4 form-section-content" id="password">
-                        <form method="post" class="space-y-4">
-                            {% csrf_token %}
-                            <input type="hidden" name="form_type" value="password">
-
-                            <div class="form-control w-full">
-                                <div class="label">
-                                    <span class="label-text font-medium">{% trans "current password" %}</span>
-                                </div>
-                                {{ password_form.old_password }}
-                                {% if password_form.old_password.errors %}
-                                <div class="label">
-                                    <span class="label-text-alt text-error">{{ password_form.old_password.errors }}</span>
-                                </div>
-                                {% endif %}
+                    <!-- Profile settings section -->
+                    <div class=" card bg-base-100 shadow-lg profile-section mb-6">
+                        <div class="card-body p-0">
+                            <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header"
+                                data-section="profile">
+                                {% include "components/card_header.html" with title=_("personal informations") icon="person" %}
+                                <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
                             </div>
 
-                            <div class="form-control w-full">
-                                <div class="label">
-                                    <span class="label-text font-medium">{% trans "new password" %}</span>
-                                </div>
-                                {{ password_form.new_password1 }}
-                                {% if password_form.new_password1.errors %}
-                                <div class="label">
-                                    <span class="label-text-alt text-error">{{ password_form.new_password1.errors }}</span>
-                                </div>
-                                {% endif %}
-                                <div class="label">
-                                    <span class="label-text-alt text-muted-foreground">{{ password_form.new_password1.help_text }}</span>
-                                </div>
+                            <div class="p-6 space-y-4 form-section-content" id="profile">
+                                <form method="post" class="space-y-4" id="profile-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="form_type" value="profile">
+                                    {{ profile_form.confirm_username_change }}
+                                    <input type="hidden" id="original_username" value="{{ user.username }}">
+
+                                    <!-- Username field -->
+                                    <div>
+                                        <label class="form-control w-full">
+                                            <div class="label">
+                                                <span class="label-text font-medium">{% trans "user name"%}</span>
+                                            </div>
+                                            {{ profile_form.username }}
+                                            {% if profile_form.username.errors %}
+                                            <div class="label">
+                                                <span class="label-text-alt text-error">{{ profile_form.username.errors }}</span>
+                                            </div>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="form-control w-full">
+                                                <div class="label">
+                                                    <span class="label-text font-medium">{% trans "firstname" %}</span>
+                                                </div>
+                                                {{ profile_form.first_name }}
+                                                {% if profile_form.first_name.errors %}
+                                                <div class="label">
+                                                    <span class="label-text-alt text-error">{{
+                                                        profile_form.first_name.errors }}</span>
+                                                </div>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label class="form-control w-full">
+                                                <div class="label">
+                                                    <span class="label-text font-medium">{% trans "name" %}</span>
+                                                </div>
+                                                {{ profile_form.last_name }}
+                                                {% if profile_form.last_name.errors %}
+                                                <div class="label">
+                                                    <span class="label-text-alt text-error">{{
+                                                        profile_form.last_name.errors }}</span>
+                                                </div>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="form-control w-full">
+                                            <div class="label">
+                                                <span class="label-text font-medium">{% trans "email address" %}</span>
+                                            </div>
+                                            {{ profile_form.email }}
+                                            {% if profile_form.email.errors %}
+                                            <div class="label">
+                                                <span class="label-text-alt text-error">{{ profile_form.email.errors }}</span>
+                                            </div>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <span class="material-symbols-rounded mr-1">save</span>
+                                            {% trans "save modifications" %}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Username change confirmation modal -->
+                                <dialog id="username_change_modal" class="modal modal-bottom sm:modal-middle">
+                                    <div class="modal-box">
+                                        <h3 class="font-bold text-lg">{% trans "confirm your username" %}</h3>
+                                        <div class="py-4">
+                                            <p>{ trans "you are about to change your username"} :</p>
+                                            <div
+                                                class="flex flex-col sm:flex-row items-center justify-center gap-2 my-4">
+                                                <div class="badge badge-lg badge-neutral" id="old_username_display">
+                                                </div>
+                                                <span class="material-symbols-rounded">arrow_forward</span>
+                                                <div class="badge badge-lg badge-primary" id="new_username_display">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-warning">
+                                            <span class="material-symbols-rounded text-warning mr-2">warning</span>
+                                            <p class="text-sm">
+                                                {% trans "This change will affect your connection. You will have to use your new username on next connection" %}
+                                            </p>
+                                        </div>
+
+                                        <div class="modal-action">
+                                            <button type="button" id="cancel_username_change" class="btn">{% trans
+                                                "cancel" %}</button>
+                                            <button type="button" id="confirm_username_change"
+                                                class="btn btn-primary">{% trans "I agree" %}</button>
+                                        </div>
+                                    </div>
+                                    <form method="dialog" class="modal-backdrop">
+                                        <button>{% trans "close" %}</button>
+                                    </form>
+                                </dialog>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password section -->
+                    <div class="card bg-base-100 shadow-lg profile-section">
+                        <div class="card-body p-0">
+                            <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header"
+                                data-section="password">
+                                {% include "components/card_header.html" with title=_("change password") icon="password" %}
+                                <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
                             </div>
 
-                            <div class="form-control w-full">
-                                <div class="label">
-                                    <span class="label-text font-medium">{% trans "confirm new password" %}</span>
-                                </div>
-                                {{ password_form.new_password2 }}
-                                {% if password_form.new_password2.errors %}
-                                <div class="label">
-                                    <span class="label-text-alt text-error">{{ password_form.new_password2.errors }}</span>
-                                </div>
-                                {% endif %}
-                            </div>
+                            <div class="p-6 space-y-4 form-section-content" id="password">
+                                <form method="post" class="space-y-4">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="form_type" value="password">
 
-                            <div class="flex justify-end">
-                                <button type="submit" class="btn btn-primary">
-                                    <span class="material-symbols-rounded mr-1">lock_reset</span>
-                                    {% trans "change password" %}
-                                </button>
+                                    <div class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text font-medium">{% trans "current password" %}</span>
+                                        </div>
+                                        {{ password_form.old_password }}
+                                        {% if password_form.old_password.errors %}
+                                        <div class="label">
+                                            <span class="label-text-alt text-error">{{ password_form.old_password.errors }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text font-medium">{% trans "new password" %}</span>
+                                        </div>
+                                        {{ password_form.new_password1 }}
+                                        {% if password_form.new_password1.errors %}
+                                        <div class="label">
+                                            <span class="label-text-alt text-error">{{ password_form.new_password1.errors }}</span>
+                                        </div>
+                                        {% endif %}
+                                        <div class="label">
+                                            <span class="label-text-alt text-muted-foreground">{{ password_form.new_password1.help_text }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text font-medium">{% trans "confirm new password" %}</span>
+                                        </div>
+                                        {{ password_form.new_password2 }}
+                                        {% if password_form.new_password2.errors %}
+                                        <div class="label">
+                                            <span class="label-text-alt text-error">{{ password_form.new_password2.errors }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <span class="material-symbols-rounded mr-1">lock_reset</span>
+                                            {% trans "change password" %}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
