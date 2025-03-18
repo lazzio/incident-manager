@@ -1,3 +1,17 @@
+## [0.12.0](https://github.com/lazzio/incident-manager/-/compare/v0.11.0...v0.12.0) (2025-03-18)
+
+### Features
+
+* set dev or production settings ([#36](https://github.com/lazzio/incident-manager/-/issues/36)) ([c38c689](https://github.com/lazzio/incident-manager/-/commit/c38c68985ffe9b223099ff777b2e0fd34af9e337))
+
+### Bug Fixes
+
+* remove preview button ([#37](https://github.com/lazzio/incident-manager/-/issues/37)) ([1e9a8d5](https://github.com/lazzio/incident-manager/-/commit/1e9a8d5bc338e4a35ecfe9c00d7e6f5907ea5bfd))
+
+### Refactor
+
+* ignore some files ([#38](https://github.com/lazzio/incident-manager/-/issues/38)) ([9acf821](https://github.com/lazzio/incident-manager/-/commit/9acf8217ade16718b68c6a5e22e7397f932c566b))
+
 ## [0.11.0](https://github.com/lazzio/incident-manager/-/compare/v0.10.0...v0.11.0) (2025-03-18)
 
 ### Features
