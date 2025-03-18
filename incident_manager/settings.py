@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -159,3 +162,52 @@ APPEND_SLASH = True
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
 ]
+
+if os.getenv("APP_ENV") == "production":
+    DEBUG = False
+    ALLOWED_HOSTS = ['127.0.0.1', "localhost"]
+    
+    # Database configuration
+    ENGINE = os.getenv("DB_ENGINE")
+    match ENGINE:
+        case 'postgresql':
+            DATABASES = {
+                'default': {
+                    'ENGINE': f'django.db.backends.{ENGINE}',
+                    'NAME': os.getenv("DB_NAME"),
+                    'USER': os.getenv("DB_USER"),
+                    'PASSWORD': os.getenv("DB_PASSWORD"),
+                    'HOST': os.getenv("DB_HOST"),
+                    'PORT': os.getenv("DB_PORT"),
+                }
+            }
+        case 'mysql':
+            DATABASES = {
+                'default': {
+                    'ENGINE': f'django.db.backends.{ENGINE}',
+                    'NAME': os.getenv("DB_NAME"),
+                    'USER': os.getenv("DB_USER"),
+                    'PASSWORD': os.getenv("DB_PASSWORD"),
+                    'HOST': os.getenv("DB_HOST"),
+                    'PORT': os.getenv("DB_PORT"),
+                }
+            }
+        case _:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                }
+            }
+    
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
