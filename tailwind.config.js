@@ -123,7 +123,7 @@ module.exports = {
   ],
   // Configuration de DaisyUI (facultatif)
   daisyui: {
-    darkTheme: "dark",
+    darkTheme: "light",
     base: true,
     styled: true,
     utils: true,

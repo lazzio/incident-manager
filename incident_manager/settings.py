@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-x)-t-)sk@v%andkbdk++#tqx^=ec+b-@-x!%29i(e)u5mthidf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', "localhost"]
+ALLOWED_HOSTS = ['127.0.0.1', "localhost", "*"]
 
 # Security settings
 CSRF_COOKIE_SECURE = True
@@ -141,7 +141,18 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Configuration WhiteNoise optimisée pour la production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False  # Plus flexible en production
+WHITENOISE_AUTOREFRESH = False  # Désactive le rechargement auto en production
+WHITENOISE_USE_FINDERS = False  # Pour meilleures performances en production
+WHITENOISE_COMPRESS = True  # Compression activée
+
+STORAGE = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    }
+}
 
 # Media files configuration
 MEDIA_URL = '/media/'
@@ -165,7 +176,6 @@ LOCALE_PATHS = [
 
 if os.getenv("APP_ENV") == "production":
     DEBUG = False
-    ALLOWED_HOSTS = ['127.0.0.1', "localhost"]
     
     # Database configuration
     ENGINE = os.getenv("DB_ENGINE")
