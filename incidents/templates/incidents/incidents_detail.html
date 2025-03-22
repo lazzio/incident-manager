@@ -137,6 +137,35 @@
         </div>
       </div>
 
+      <!-- Links -->
+      <div id="files" class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          {% include "components/card_header.html" with title=_("links") icon="attach_file" %}
+          <div class="divider my-2"></div>
+          <div class="grid grid-cols-1 gap-4">
+            {% for link in links %}
+              <div>
+                <h3 class="card-title
+                  text-sm line-clamp-2" title="{{ link.title }}">
+                  {{ link.title }}
+                </h3>
+                <div>
+                  <a href="{{ link.url }}" target="_blank">
+                    <span class="mt-1">{{ link.url }}</span>
+                  </a>
+                </div>
+              </div>
+            {% empty %}
+              <div class="col-span-full py-8 flex flex-col items-center">
+                <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">link</span>
+                <p class="opacity-50">
+                  </p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
       <!-- Comments -->
       <div id="comments" class="card bg-base-100 shadow-xl">
         <div class="card-body">

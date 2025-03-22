@@ -27,6 +27,7 @@ class IncidentDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['updates'] = self.object.updates.all()
         context['update_form'] = IncidentUpdateForm()
+        context['links'] = self.object.links.all()
         context['comments'] = self.object.comments.all()
         context['comment_form'] = CommentForm()
         context['incident_files'] = self.object.files.all().order_by('-uploaded_at')
