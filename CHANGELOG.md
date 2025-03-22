@@ -1,3 +1,9 @@
+## [0.12.2](https://github.com/lazzio/incident-manager/-/compare/v0.12.1...v0.12.2) (2025-03-22)
+
+### Bug Fixes
+
+* unable to edit incident if file does not exist in media ([#41](https://github.com/lazzio/incident-manager/-/issues/41)) ([880f4d4](https://github.com/lazzio/incident-manager/-/commit/880f4d4197371389f5ab4e862177b73d9827dd2b))
+
 ## [0.12.1](https://github.com/lazzio/incident-manager/-/compare/v0.12.0...v0.12.1) (2025-03-22)
 
 ### Bug Fixes
