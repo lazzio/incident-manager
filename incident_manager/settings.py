@@ -141,7 +141,13 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Configuration WhiteNoise optimisée pour la production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False  # Plus flexible en production
+WHITENOISE_AUTOREFRESH = False  # Désactive le rechargement auto en production
+WHITENOISE_USE_FINDERS = False  # Pour meilleures performances en production
+WHITENOISE_COMPRESS = True  # Compression activée
+
 STORAGE = {
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
