@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load static %}
+{% load file_tags %}
 
 {% block title %}
 {% if form.instance.id %}{% trans "edit incident" %}{% else %}{% trans "new incident" %}{% endif %}
@@ -371,15 +372,29 @@
                     </button>
                   </div>
                   {% if file.is_image %}
-                  <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md overflow-hidden">
-                    <img src="{{ file.file.url }}" alt="{{ file.filename }}" class="h-full object-contain">
-                  </div>
+                    {% if file.file|file_exists %}
+                    <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md overflow-hidden">
+                      <img src="{{ file.file.url }}" alt="{{ file.filename }}" class="h-full object-contain">
+                    </div>
+                    {% else %}
+                    <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md text-error">
+                      <span class="material-symbols-rounded mr-1">error</span>
+                      {% trans "file not found" %}
+                    </div>
+                    {% endif %}
                   {% else %}
-                  <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md">
-                    <span class="material-symbols-rounded opacity-50">description</span>
-                  </div>
+                    {% if file.file|file_exists %}
+                    <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md">
+                      <span class="material-symbols-rounded opacity-50">description</span>
+                    </div>
+                    <div class="text-xs opacity-70 mt-1">{{ file.file.size|filesizeformat }}</div>
+                    {% else %}
+                    <div class="w-full h-20 flex items-center justify-center bg-base-300 rounded-md text-error">
+                      <span class="material-symbols-rounded mr-1">error</span>
+                      {% trans "file not found" %}
+                    </div>
+                    {% endif %}
                   {% endif %}
-                  <div class="text-xs opacity-70 mt-1">{{ file.file.size|filesizeformat }}</div>
                 </div>
               </div>
               {% endfor %}
