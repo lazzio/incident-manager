@@ -1,3 +1,9 @@
+## [0.13.0](https://github.com/lazzio/incident-manager/-/compare/v0.12.2...v0.13.0) (2025-03-22)
+
+### Features
+
+* display links in detail view ([#42](https://github.com/lazzio/incident-manager/-/issues/42)) ([c419eda](https://github.com/lazzio/incident-manager/-/commit/c419eda8e3110fa781ddee3fab9df3d8a2521c07))
+
 ## [0.12.2](https://github.com/lazzio/incident-manager/-/compare/v0.12.1...v0.12.2) (2025-03-22)
 
 ### Bug Fixes
