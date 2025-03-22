@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 22:25+0100\n"
+"POT-Creation-Date: 2025-03-22 13:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,12 +98,12 @@ msgstr ""
 msgid "back"
 msgstr ""
 
-#: incidents/templates/components/modal.html:21
+#: incidents/templates/components/modal.html:23
 #: incidents/templates/incidents/incidents_detail.html:125
 msgid "download"
 msgstr ""
 
-#: incidents/templates/components/modal.html:25
+#: incidents/templates/components/modal.html:28
 #: incidents/templates/incidents/user_profile.html:309
 msgid "close"
 msgstr ""
