@@ -1,3 +1,9 @@
+## [0.12.1](https://github.com/lazzio/incident-manager/-/compare/v0.12.0...v0.12.1) (2025-03-22)
+
+### Bug Fixes
+
+* file preview and download ([#40](https://github.com/lazzio/incident-manager/-/issues/40)) ([908cc32](https://github.com/lazzio/incident-manager/-/commit/908cc328a41d01092ec663be9562020a12c19f88))
+
 ## [0.12.0](https://github.com/lazzio/incident-manager/-/compare/v0.11.0...v0.12.0) (2025-03-18)
 
 ### Features
