@@ -1,3 +1,9 @@
+## [0.14.0](https://github.com/lazzio/incident-manager/-/compare/v0.13.0...v0.14.0) (2025-03-23)
+
+### Features
+
+* use a wysiwyg for text fields ([#43](https://github.com/lazzio/incident-manager/-/issues/43)) ([3d89880](https://github.com/lazzio/incident-manager/-/commit/3d89880aba2212f4b87ee9bc7f3e4af4c04ec83f))
+
 ## [0.13.0](https://github.com/lazzio/incident-manager/-/compare/v0.12.2...v0.13.0) (2025-03-22)
 
 ### Features
