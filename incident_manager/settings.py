@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_quill",
     "incidents",
 ]
 
@@ -153,7 +154,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Chemin de redirection de connexion
-# LOGIN_URL = '/admin/login/'
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'  # ou votre page d'accueil
 LOGOUT_REDIRECT_URL = 'login'
 

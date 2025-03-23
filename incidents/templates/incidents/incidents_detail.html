@@ -61,8 +61,8 @@
         <div class="card-body">
           {% include "components/card_header.html" with title=_("description") icon="description" %}
           <div class="divider my-2"></div>
-          <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
-            {{ incident.details }}
+          <div class="bg-base-200 rounded-lg -mt-8 whitespace-pre-wrap ql-editor">
+            {{ incident.details.html|safe }}
           </div>
         </div>
       </div>
@@ -72,8 +72,8 @@
         <div class="card-body">
           {% include "components/card_header.html" with title=_("resolution process") icon="construction" %}
           <div class="divider my-2"></div>
-          <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
-            {{ incident.resolution_process }}
+          <div class="bg-base-200 rounded-lg -mt-8 whitespace-pre-wrap ql-editor">
+            {{ incident.resolution_process.html|safe }}
           </div>
         </div>
       </div>
@@ -83,8 +83,8 @@
         <div class="card-body">
           {% include "components/card_header.html" with title=_("impact") icon="balance" %}
           <div class="divider my-2"></div>
-          <div class="bg-base-200 rounded-lg p-4 whitespace-pre-wrap">
-            {{ incident.impact }}
+          <div class="bg-base-200 rounded-lg -mt-8 whitespace-pre-wrap ql-editor">
+            {{ incident.impact.html|safe }}
           </div>
         </div>
       </div>
@@ -130,7 +130,7 @@
             {% empty %}
             <div class="col-span-full py-8 flex flex-col items-center">
               <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">upload_file</span>
-              <p class="opacity-50">{% trans "no files attached to this incident." %}</p>
+              <p class="opacity-50">{% trans "no files attached to this incident" %}</p>
             </div>
             {% endfor %}
           </div>
@@ -158,8 +158,7 @@
             {% empty %}
               <div class="col-span-full py-8 flex flex-col items-center">
                 <span class="material-symbols-rounded opacity-30 mb-4" style="font-size: 48px;">link</span>
-                <p class="opacity-50">
-                  </p>
+                <p class="opacity-50">{% trans "no link yet" %}</p>
               </div>
             {% endfor %}
           </div>

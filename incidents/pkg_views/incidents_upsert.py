@@ -236,11 +236,11 @@ def create_incident(request):
                 if not incident.details:
                     incident.details = "Détails à ajouter"
                 
-                if not incident.resolution_process:
-                    incident.resolution_process = "Processus de résolution à définir"
+                # if not incident.resolution_process:
+                #     incident.resolution_process = "Processus de résolution à définir"
                 
-                if not incident.impact:
-                    incident.impact = "Impact à évaluer"
+                # if not incident.impact:
+                #     incident.impact = "Impact à évaluer"
                 
                 # Sauvegarder l'incident avec des traces de débogage
                 print("Saving incident with data:", vars(incident))

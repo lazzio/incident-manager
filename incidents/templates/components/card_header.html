@@ -1,9 +1,9 @@
 {% load i18n %}
 <div class="card-header flex justify-between items-center">
     <h2 class="card-title">
-        {% if icon %}<span class="material-symbols-rounded mr-2">{{ icon }}</span>{% endif %}
+        {% if icon %}<span class="material-symbols-rounded mr-1">{{ icon }}</span>{% endif %}
         {{ title }}
-        {% if badge %}<span class="badge ml-2">{{ badge }}</span>{% endif %}
+        {% if badge %}<span class="badge ml-1">{{ badge }}</span>{% endif %}
     </h2>
     {% if action_url %}
     <a href="{{ action_url }}" class="btn btn-ghost btn-xs">

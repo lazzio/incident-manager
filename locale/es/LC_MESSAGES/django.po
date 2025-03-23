@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-22 18:43+0100\n"
+"POT-Creation-Date: 2025-03-23 14:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: incidents/forms.py:27
 #: incidents/templates/incidents/incidents_confirm_delete.html:54
-#: incidents/templates/incidents/incidents_form.html:342
+#: incidents/templates/incidents/incidents_form.html:329
 msgid "attached files"
 msgstr ""
 
@@ -29,27 +29,27 @@ msgstr ""
 msgid "Max. 10 MB"
 msgstr ""
 
-#: incidents/forms.py:67
+#: incidents/forms.py:81
 msgid "end date can't be prior to start date"
 msgstr ""
 
-#: incidents/forms.py:71
+#: incidents/forms.py:85
 msgid "end date is required for resolved incidents"
 msgstr ""
 
-#: incidents/models.py:9
+#: incidents/models.py:10
 msgid "Critical"
 msgstr ""
 
-#: incidents/models.py:10
+#: incidents/models.py:11
 msgid "High"
 msgstr ""
 
-#: incidents/models.py:11
+#: incidents/models.py:12
 msgid "Medium"
 msgstr ""
 
-#: incidents/models.py:12
+#: incidents/models.py:13
 msgid "Low"
 msgstr ""
 
@@ -179,7 +179,7 @@ msgstr ""
 #: incidents/templates/incidents/incidents_confirm_delete.html:5
 #: incidents/templates/incidents/incidents_confirm_delete.html:31
 #: incidents/templates/incidents/incidents_confirm_delete.html:76
-#: incidents/templates/incidents/incidents_detail.html:356
+#: incidents/templates/incidents/incidents_detail.html:348
 msgid "delete incident"
 msgstr ""
 
@@ -194,7 +194,7 @@ msgid "id"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_confirm_delete.html:40
-#: incidents/templates/incidents/incidents_detail.html:311
+#: incidents/templates/incidents/incidents_detail.html:303
 #: incidents/templates/incidents/incidents_form.html:75
 msgid "created at"
 msgstr ""
@@ -209,7 +209,7 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_confirm_delete.html:53
 #: incidents/templates/incidents/incidents_detail.html:36
-#: incidents/templates/incidents/incidents_detail.html:335
+#: incidents/templates/incidents/incidents_detail.html:327
 msgid "comments"
 msgstr ""
 
@@ -291,7 +291,7 @@ msgid "recent incidents"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_dashboard.html:125
-#: incidents/templates/incidents/incidents_form.html:440
+#: incidents/templates/incidents/incidents_form.html:428
 #: incidents/templates/incidents/incidents_list.html:245
 #: incidents/templates/incidents/incidents_yearly_report.html:157
 msgid "title"
@@ -306,7 +306,7 @@ msgid "date"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_dashboard.html:128
-#: incidents/templates/incidents/incidents_detail.html:350
+#: incidents/templates/incidents/incidents_detail.html:342
 #: incidents/templates/incidents/incidents_list.html:258
 #: incidents/templates/incidents/incidents_yearly_report.html:162
 msgid "actions"
@@ -338,7 +338,7 @@ msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:37
 #: incidents/templates/incidents/incidents_detail.html:95
-#: incidents/templates/incidents/incidents_detail.html:330
+#: incidents/templates/incidents/incidents_detail.html:322
 msgid "files"
 msgstr ""
 
@@ -347,12 +347,12 @@ msgid "description"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:73
-#: incidents/templates/incidents/incidents_form.html:313
+#: incidents/templates/incidents/incidents_form.html:307
 msgid "resolution process"
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:84
-#: incidents/templates/incidents/incidents_form.html:326
+#: incidents/templates/incidents/incidents_form.html:316
 msgid "impact"
 msgstr ""
 
@@ -361,86 +361,87 @@ msgid "no files attached to this incident."
 msgstr ""
 
 #: incidents/templates/incidents/incidents_detail.html:143
+#: incidents/templates/incidents/incidents_form.html:403
 msgid "links"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:200
+#: incidents/templates/incidents/incidents_detail.html:192
 msgid "no comments yet. Be the first to comment on this incident."
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:207
+#: incidents/templates/incidents/incidents_detail.html:199
 msgid "add a comment"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:212
+#: incidents/templates/incidents/incidents_detail.html:204
 msgid "write your comment here..."
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:217
+#: incidents/templates/incidents/incidents_detail.html:209
 msgid "send"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:231
-#: incidents/templates/incidents/incidents_form.html:139
+#: incidents/templates/incidents/incidents_detail.html:223
+#: incidents/templates/incidents/incidents_form.html:140
 msgid "global informations"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:238
+#: incidents/templates/incidents/incidents_detail.html:230
 #: incidents/templates/incidents/incidents_timeline.html:356
 msgid "created by"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:256
-#: incidents/templates/incidents/incidents_form.html:229
+#: incidents/templates/incidents/incidents_detail.html:248
+#: incidents/templates/incidents/incidents_form.html:230
 #: incidents/templates/incidents/incidents_list.html:150
 #: incidents/templates/incidents/incidents_list.html:257
 #: incidents/templates/incidents/incidents_timeline.html:364
 msgid "assigned to"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:265
+#: incidents/templates/incidents/incidents_detail.html:257
 msgid "not assigned"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:274
-#: incidents/templates/incidents/incidents_form.html:165
+#: incidents/templates/incidents/incidents_detail.html:266
+#: incidents/templates/incidents/incidents_form.html:166
 msgid "category"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:284
+#: incidents/templates/incidents/incidents_detail.html:276
 #: incidents/templates/incidents/incidents_yearly_report.html:161
 msgid "duration"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:298
+#: incidents/templates/incidents/incidents_detail.html:290
 msgid "ongoing"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:300
+#: incidents/templates/incidents/incidents_detail.html:292
 #: incidents/templates/incidents/user_profile.html:126
 msgid "unknown"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:315
+#: incidents/templates/incidents/incidents_detail.html:307
 msgid "last update"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:326
+#: incidents/templates/incidents/incidents_detail.html:318
 #: incidents/templates/incidents/user_profile.html:144
 msgid "statistics"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:340
+#: incidents/templates/incidents/incidents_detail.html:332
 msgid "updates"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:355
+#: incidents/templates/incidents/incidents_detail.html:347
 #: incidents/templates/incidents/incidents_form.html:7
 #: incidents/templates/incidents/incidents_form.html:66
 msgid "edit incident"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_detail.html:364
+#: incidents/templates/incidents/incidents_detail.html:356
 msgid "file preview"
 msgstr ""
 
@@ -456,19 +457,19 @@ msgstr ""
 msgid "error in the form"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:149
+#: incidents/templates/incidents/incidents_form.html:150
 msgid "incident title"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:153
+#: incidents/templates/incidents/incidents_form.html:154
 msgid "enter a description of incindent"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:170
+#: incidents/templates/incidents/incidents_form.html:171
 msgid "select a category"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:189
+#: incidents/templates/incidents/incidents_form.html:190
 #: incidents/templates/incidents/incidents_list.html:98
 #: incidents/templates/incidents/incidents_list.html:190
 #: incidents/templates/incidents/incidents_list.html:249
@@ -476,7 +477,7 @@ msgstr ""
 msgid "status"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:209
+#: incidents/templates/incidents/incidents_form.html:210
 #: incidents/templates/incidents/incidents_list.html:114
 #: incidents/templates/incidents/incidents_list.html:250
 #: incidents/templates/incidents/incidents_list.html:383
@@ -485,96 +486,80 @@ msgstr ""
 msgid "severity"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:232
+#: incidents/templates/incidents/incidents_form.html:233
 #: incidents/templates/incidents/incidents_list.html:295
 msgid "unassigned"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:248
+#: incidents/templates/incidents/incidents_form.html:249
 #: incidents/templates/incidents/incidents_yearly_report.html:159
 msgid "start date"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:265
+#: incidents/templates/incidents/incidents_form.html:266
 #: incidents/templates/incidents/incidents_yearly_report.html:160
 msgid "end date"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:266
+#: incidents/templates/incidents/incidents_form.html:267
 msgid "optional for ongoing incidents"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:284
+#: incidents/templates/incidents/incidents_form.html:283
 msgid "incident details"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:288
-msgid "detail current incident"
-msgstr ""
-
-#: incidents/templates/incidents/incidents_form.html:304
+#: incidents/templates/incidents/incidents_form.html:299
 msgid "resolution and impacts"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:314
+#: incidents/templates/incidents/incidents_form.html:308
 msgid "how the incident was or will be resolved ?"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:318
-msgid "describe the steps taken to resolve the incident..."
-msgstr ""
-
-#: incidents/templates/incidents/incidents_form.html:327
+#: incidents/templates/incidents/incidents_form.html:317
 msgid "impact of the incident on users or the system"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:331
-msgid "describe the impact of this incident..."
-msgstr ""
-
-#: incidents/templates/incidents/incidents_form.html:350
+#: incidents/templates/incidents/incidents_form.html:337
 msgid "drag&drop files here"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:354
+#: incidents/templates/incidents/incidents_form.html:341
 msgid "browse files"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:357
+#: incidents/templates/incidents/incidents_form.html:344
 msgid "accepted formats"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:382
-#: incidents/templates/incidents/incidents_form.html:394
+#: incidents/templates/incidents/incidents_form.html:369
+#: incidents/templates/incidents/incidents_form.html:381
 msgid "file not found"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:416
-msgid "link"
-msgstr ""
-
-#: incidents/templates/incidents/incidents_form.html:427
+#: incidents/templates/incidents/incidents_form.html:415
 msgid "url"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:455
+#: incidents/templates/incidents/incidents_form.html:443
 msgid "remove link"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:469
+#: incidents/templates/incidents/incidents_form.html:457
 msgid "add a link"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:476
-#: incidents/templates/incidents/incidents_form.html:478
+#: incidents/templates/incidents/incidents_form.html:464
+#: incidents/templates/incidents/incidents_form.html:466
 msgid "cancel"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:482
+#: incidents/templates/incidents/incidents_form.html:470
 msgid "update"
 msgstr ""
 
-#: incidents/templates/incidents/incidents_form.html:482
+#: incidents/templates/incidents/incidents_form.html:470
 #: incidents/templates/incidents/incidents_list.html:347
 #: incidents/templates/incidents/incidents_list.html:469
 #: incidents/templates/incidents/incidents_timeline.html:430
@@ -924,6 +909,6 @@ msgstr ""
 msgid "Incident Manager"
 msgstr ""
 
-#: templates/base.html:181
+#: templates/base.html:183
 msgid "Nouvel incident"
 msgstr ""

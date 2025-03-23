@@ -131,6 +131,7 @@
     <div class="col-span-4 col-start-2">
   <form method="post" enctype="multipart/form-data" class="space-y-6" id="incidentForm">
     {% csrf_token %}
+    {{ form.media }}
     
     <!-- Section: Informations générales -->
     <div class="card bg-base-100 shadow-lg form-section">
@@ -278,20 +279,14 @@
           </div>
           
           <!-- Détails -->
-          <div>
-            <label class="form-control w-full">
-              <div class="label">
-                <span class="label-text font-medium">{% trans "incident details" %} *</span>
-              </div>
-              <textarea name="details" rows="5"
-                     class="textarea textarea-bordered w-full {% if form.details.errors %}textarea-error{% endif %}"
-                     placeholder='{% trans "detail current incident" %}' required>{{ form.details.value|default:'' }}</textarea>
+          <div class="pb-8 form-group w-full">
+            <label class="label-text font-medium" for="{{ form.details.id_for_label }}">{% trans "incident details" %} *</label>
+              {{ form.details }}
               {% if form.details.errors %}
-              <div class="label">
-                <span class="label-text-alt text-error">{{ form.details.errors }}</span>
-              </div>
+                <div class="label">
+                  <span class="label-text-alt text-error">{{ form.details.errors }}</span>
+                </div>
               {% endif %}
-            </label>
           </div>
         </div>
       </div>
@@ -307,29 +302,21 @@
         
         <div class="p-6 space-y-4 form-section-content" id="resolution">
           <!-- Process de résolution -->
-          <div>
-            <label class="form-control w-full">
-              <div class="label">
-                <span class="label-text font-medium">{% trans "resolution process" %}</span>
-                <span class="label-text-alt">{% trans "how the incident was or will be resolved ?" %}</span>
-              </div>
-              <textarea name="resolution_process" rows="3"
-                     class="textarea textarea-bordered w-full"
-                     placeholder='{% trans "describe the steps taken to resolve the incident..." %}'>{{ form.resolution_process.value|default:'' }}</textarea>
+          <div class="pb-8 form-group w-full">
+            <label class="label" for="{{ form.resolution_process.id_for_label }}">
+              <span class="label-text font-medium">{% trans "resolution process" %}</span>
+              <span class="label-text-alt">{% trans "how the incident was or will be resolved ?" %}</span>
             </label>
+            {{ form.resolution_process }}
           </div>
           
           <!-- Impact -->
-          <div>
-            <label class="form-control w-full">
-              <div class="label">
+          <div class="pb-8 form-group w-full">
+            <label class="label" for="{{ form.impact.id_for_label }}">
                 <span class="label-text font-medium">{% trans "impact" %}</span>
                 <span class="label-text-alt">{% trans "impact of the incident on users or the system" %}</span>
-              </div>
-              <textarea name="impact" rows="3"
-                     class="textarea textarea-bordered w-full"
-                     placeholder='{% trans "describe the impact of this incident..." %}'>{{ form.impact.value|default:'' }}</textarea>
             </label>
+                {{ form.impact }}
           </div>
         </div>
       </div>
@@ -413,8 +400,9 @@
       <div class="card bg-base-100 shadow-lg form-section">
         <div class="card-body p-0">
           <div class="p-4 border-b border-base-300 flex justify-between items-center form-section-header" data-section="links">
-            {% include "components/card_header.html" with title='_("link") #'|add:forloop.counter|stringformat:"s" icon="link" %}
-          </div>
+            {% include "components/card_header.html" with title=_("links") icon="link" %}
+            <span class="material-symbols-rounded rotate-icon">expand_circle_down</span>
+        </div>
           
           {{ link_form.id }}
           {% if link_form.instance.pk %}{{ link_form.DELETE }}{% endif %}
