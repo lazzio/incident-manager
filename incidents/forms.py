@@ -37,9 +37,9 @@ class IncidentForm(forms.ModelForm):
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'details': forms.Textarea(attrs={'rows': 5}),
-            'resolution_process': forms.Textarea(attrs={'rows': 3}),
-            'impact': forms.Textarea(attrs={'rows': 3}),
+            # 'details' n'a pas besoin de widget personnalisé car QuillField fournit son propre widget
+            #'resolution_process': forms.Textarea(attrs={'rows': 3}),
+            #'impact': forms.Textarea(attrs={'rows': 3}),
         }
     
     def __init__(self, *args, **kwargs):
@@ -55,6 +55,20 @@ class IncidentForm(forms.ModelForm):
         self.fields['resolution_process'].required = False
         self.fields['impact'].required = False
         self.fields['assigned_to'].required = False
+        
+        # Ajouter une classe CSS aux champs QuillField
+        if 'resolution_process' in self.fields:
+            self.fields['resolution_process'].widget.attrs.update({
+                'class': 'border border-gray-300 rounded'
+            })
+        if 'impact' in self.fields:
+            self.fields['impact'].widget.attrs.update({
+                'class': 'border border-gray-300 rounded'
+            })
+        if 'details' in self.fields:
+            self.fields['details'].widget.attrs.update({
+                'class': 'border border-gray-300 rounded'
+            })
     
     def clean(self):
         cleaned_data = super().clean()

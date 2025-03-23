@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.conf import settings
 import os
+from django_quill.fields import QuillField
 
 class Severity(models.TextChoices):
     CRITICAL = 'CRITICAL', _('Critical')
@@ -31,9 +32,9 @@ class Incident(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField(null=True, blank=True)
     duration = models.DurationField(null=True, blank=True)
-    details = models.TextField()
-    resolution_process = models.TextField()
-    impact = models.TextField()
+    details = QuillField()
+    resolution_process = QuillField()
+    impact = QuillField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_incidents')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
